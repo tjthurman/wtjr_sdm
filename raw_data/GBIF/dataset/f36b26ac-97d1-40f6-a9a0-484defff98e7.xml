@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.1/eml.xsd"
+        packageId="f36b26ac-97d1-40f6-a9a0-484defff98e7"  system="http://gbif.org" scope="system"
+  xml:lang="en">
+
+<dataset>
+      <alternateIdentifier>10.15468/2xhucd</alternateIdentifier>
+        <alternateIdentifier>http://ipt.vertnet.org:8080/ipt/resource?r=uwymv_mamm</alternateIdentifier>
+        <alternateIdentifier>http://ipt.vertnet.org:8080/ipt/resource.do?r=uwymv_mamm</alternateIdentifier>
+        <alternateIdentifier>f36b26ac-97d1-40f6-a9a0-484defff98e7</alternateIdentifier>
+        <alternateIdentifier>14879</alternateIdentifier>
+    <title>UWYMV Mammal Collection (Arctos)</title>
+    <creator>
+    <individualName>
+<givenName>Matthew</givenName>          <surName>Carling</surName>
+    </individualName>
+<organizationName>University of Wyoming Museum of Vertebrates</organizationName><positionName>Curator</positionName>    <address>
+<deliveryPoint>Berry Biodiversity Conservation Center</deliveryPoint><city>Laramie</city><administrativeArea>WY</administrativeArea><postalCode>82071</postalCode><country>UNITED_STATES</country>    </address>
+<phone>(307) 766-6169</phone><electronicMailAddress>mcarling@uwyo.edu</electronicMailAddress><onlineUrl>http://www.uwyo.edu/carlinglab</onlineUrl>    </creator>
+    <metadataProvider>
+    <individualName>
+<givenName>Matthew</givenName>          <surName>Carling</surName>
+    </individualName>
+<organizationName>University of Wyoming Museum of Vertebrates</organizationName><positionName>Curator</positionName>    <address>
+<deliveryPoint>Berry Biodiversity Conservation Center</deliveryPoint><city>Laramie</city><administrativeArea>WY</administrativeArea><postalCode>82071</postalCode><country>UNITED_STATES</country>    </address>
+<phone>(307) 766-6169</phone><electronicMailAddress>mcarling@uwyo.edu</electronicMailAddress><onlineUrl>http://www.uwyo.edu/carlinglab</onlineUrl>    </metadataProvider>
+    <associatedParty>
+    <individualName>
+<givenName>Laura</givenName>          <surName>Russell</surName>
+    </individualName>
+<organizationName>VertNet</organizationName><positionName>VertNet Programmer</positionName><electronicMailAddress>larussell@vertnet.org</electronicMailAddress>    <role>PROGRAMMER</role>
+    </associatedParty>
+    <associatedParty>
+    <individualName>
+<givenName>David</givenName>          <surName>Bloom</surName>
+    </individualName>
+<positionName>VertNet Coordinator</positionName><electronicMailAddress>dbloom@vertnet.org</electronicMailAddress>    <role>PROGRAMMER</role>
+    </associatedParty>
+    <associatedParty>
+    <individualName>
+<givenName>John</givenName>          <surName>Wieczorek</surName>
+    </individualName>
+<organizationName>Museum of Vertebrate Zoology at UC Berkeley</organizationName><positionName>Information Architect</positionName><electronicMailAddress>tuco@berkeley.edu</electronicMailAddress>    <role>PROGRAMMER</role>
+    </associatedParty>
+    <associatedParty>
+    <individualName>
+<givenName>Dusty</givenName>          <surName>McDonald</surName>
+    </individualName>
+<organizationName>University of Alaska Museum</organizationName><positionName>Arctos Database Programmer</positionName><electronicMailAddress>dlmcdonald@alaska.edu</electronicMailAddress><onlineUrl>http://arctos.database.museum</onlineUrl>    <role>POINT_OF_CONTACT</role>
+    </associatedParty>
+      <pubDate>
+      2020-04-01
+      </pubDate>
+    <language>ENGLISH</language>
+    <abstract>
+        <para>The UWYMV Mammal Collection is housed in the Robert and Carol Berry Biodiversity Conservation Center on the campus of the University of Wyoming. It is a part of the Department of Zoology and Physiology. The UWYMV Mammal Collection is focused regionally on Wyoming and taxonomically on muskrats, deer mice, and bobcats. There are small series of a variety of mammals from throughout the Rocky Mountain region. The majority of specimens were collected from the 1940s through the 1970s, but the collection is currently undergoing rapid expansion.</para>
+    </abstract>
+        <keywordSet>
+              <keyword>Occurrence</keyword>
+              <keywordThesaurus>GBIF Dataset Type Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_type.xml</keywordThesaurus>
+        </keywordSet>
+        <keywordSet>
+              <keyword>Specimen</keyword>
+              <keywordThesaurus>GBIF Dataset Subtype Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_subtype.xml</keywordThesaurus>
+        </keywordSet>
+      <additionalInfo>
+          <para>http://vertnet.org/resources/norms.html</para>
+      </additionalInfo>
+      <intellectualRights>
+        <para>To the extent possible under law, the publisher has waived all rights to these data and has dedicated them to the <ulink url="http://creativecommons.org/publicdomain/zero/1.0/legalcode"><citetitle>Public Domain (CC0 1.0)</citetitle></ulink>. Users may copy, modify, distribute and use the work, including for commercial purposes, without restriction.</para>
+      </intellectualRights>
+      <distribution scope="document">
+          <online>
+              <url function="information">http://www.uwyo.edu/biodiversity/vertebrate-museum/</url>
+          </online>
+      </distribution>
+      <coverage>
+            <geographicCoverage>
+                  <geographicDescription>The UWYMV Mammal Collection has global coverage but the majority of holdings are from Wyoming and the Rocky Mountain region.</geographicDescription>
+                  <boundingCoordinates>
+                      <westBoundingCoordinate>-180</westBoundingCoordinate>
+                      <eastBoundingCoordinate>180</eastBoundingCoordinate>
+                      <northBoundingCoordinate>90</northBoundingCoordinate>
+                      <southBoundingCoordinate>-90</southBoundingCoordinate>
+                  </boundingCoordinates>
+            </geographicCoverage>
+              <taxonomicCoverage>
+                    <generalTaxonomicCoverage>Taxonomic strengths of the UWYMV Mammal Collection include muskrats, deer mice, and bobcats.</generalTaxonomicCoverage>
+                    <taxonomicClassification>
+                          <taxonRankName>Class</taxonRankName>
+                        <taxonRankValue>Mammalia</taxonRankValue>
+                    </taxonomicClassification>
+              </taxonomicCoverage>
+      </coverage>
+      <maintenance>
+          <description>
+              <para></para>
+          </description>
+          <maintenanceUpdateFrequency>unkown</maintenanceUpdateFrequency>
+      </maintenance>
+      <contact>
+    <individualName>
+<givenName>Elizabeth</givenName>          <surName>Wommack</surName>
+    </individualName>
+<organizationName>University of Wyoming Museum of Vertebrates</organizationName><positionName>Collections Manager</positionName>    <address>
+<deliveryPoint>Berry Biodiversity Conservation Center</deliveryPoint><city>Laramie</city><administrativeArea>WY</administrativeArea><postalCode>82071</postalCode><country>UNITED_STATES</country>    </address>
+<phone>(307) 766-6227</phone><electronicMailAddress>ewommack@uwyo.edu</electronicMailAddress>      </contact>
+      <contact>
+    <individualName>
+<givenName>Matthew</givenName>          <surName>Carling</surName>
+    </individualName>
+<organizationName>University of Wyoming Museum of Vertebrates</organizationName><positionName>Curator</positionName>    <address>
+<deliveryPoint>Berry Biodiversity Conservation Center</deliveryPoint><city>Laramie</city><administrativeArea>WY</administrativeArea><postalCode>82071</postalCode><country>UNITED_STATES</country>    </address>
+<phone>(307) 766-6169</phone><electronicMailAddress>mcarling@uwyo.edu</electronicMailAddress><onlineUrl>http://www.uwyo.edu/carlinglab</onlineUrl>      </contact>
+
+</dataset>
+
+<additionalMetadata>
+    <metadata>
+      <gbif>
+        <dateStamp>2020-04-01T19:17:49Z</dateStamp>
+      <citation>Carling M (2020). UWYMV Mammal Collection (Arctos). Version 31.37. University of Wyoming Museum of Vertebrates. Occurrence dataset https://doi.org/10.15468/2xhucd accessed via GBIF.org on 2020-04-01.</citation>
+              <livingTimePeriod>1903-present</livingTimePeriod>
+        </gbif>
+    </metadata>
+</additionalMetadata>
+
+</eml:eml>

@@ -1,0 +1,807 @@
+---
+pagetitle: "data_curation"
+output: 
+  html_document:
+    theme: yeti
+    highlight: tango
+    code_folding: hide
+bibliography: ../wtjr.bib
+editor_options: 
+  chunk_output_type: console
+---
+
+``` {r, message = F, warning = F, echo = F}
+knitr::opts_chunk$set(warning = F, message = F, fig.align = "center", cache = F)
+options(scipen = 1, digits = 2)
+# Load packages -----------------------------------------------------------
+library(tidyverse)
+library(readxl)
+library(rnaturalearth)
+library(rnaturalearthhires)
+library(sp)
+```
+
+# Assembling and curating WTJR occurrence data
+
+### Compiling publicly-available sources
+
+```{r load Vertnet Arctos GBIF}
+arctos <- read.csv("raw_data/ArctosData_43FA2173A0.csv", stringsAsFactors = F)
+gbif <- read.delim("raw_data/GBIF/verbatim.txt", quote = "", stringsAsFactors = F)
+vert <- read.delim("raw_data/vertnet_leptownsendii_allrecords_apr2_2020.txt", quote = "", stringsAsFactors = F)
+```
+
+I first compiled WTJR occurrence data by searching three public databases:
+
+1. The VertNet database [@vertnetPaper; @vertnetSearch]. I searched for all occurrence records with `genus = "lepus"` and `specificepithet = "townsendii"`. This search was performed on April 2, 2020, and returned `r dim(vert)[1]` records.
+
+2. The GBIF database [@gbif]. I searched for all occurrence records with the scientific name `Lepus townsendii`. This search was performed April 1, 2020, and returned `r dim(gbif)[1]` records. Here is a custom DOI for this search: <https://doi.org/10.15468/dl.5rne5a>.
+
+3. The Arctos database [@arctos]. I searched for all occurrence records of `lepus townsendii`, search performed on April 2, 2020. This returned `r dim(arctos)[1]` records.
+
+In total, these three databases contain `r dim(arctos)[1] + dim(gbif)[1] + dim(vert)[1]` records (`r dim(arctos)[1]` from Arctos, `r dim(gbif)[1]` from GBIF, and `r dim(vert)[1]` from Vertnet). Then, I did a variety of data curation checks. 
+
+### Curation
+
+#### Location data
+
+```{r have location}
+arctos.loc <- arctos %>% 
+  filter(!is.na(DEC_LAT),
+         !is.na(DEC_LONG)) %>% 
+  mutate(database = "arctos")
+gbif.loc <- gbif %>% 
+  filter(!is.na(decimalLatitude),
+         !is.na(decimalLongitude)) %>% 
+  mutate(database = "gbif")
+vert.loc <- vert %>% 
+  filter(!is.na(decimallatitude), 
+         !is.na(decimallongitude)) %>% 
+  mutate(database = "vertnet")
+```
+
+First, I removed all records without latitude and longitude data. This leaves `r dim(arctos.loc)[1]` records from Arctos, `r dim(gbif.loc)[1]` from GBIF, and `r dim(vert.loc)[1]` from Vertnet. 
+
+#### Record type
+
+Next, I summarized what type of record each of these occurrence entries is from. Arctos does not specify this, but as a database of museum samples it should be equivalent to "Preserved Specimen" in the other two databases. The other two databases have a few different types:
+
+```{r record type}
+arctos.loc %>% 
+  dplyr::mutate(type = "PreservedSpecimen") %>% 
+  dplyr::select(type, database) %>% 
+  rbind(., dplyr::select(gbif.loc, database, type = basisOfRecord)) %>% 
+  rbind(., dplyr::select(vert.loc, database, type = basisofrecord)) %>% 
+  dplyr::group_by(database, type) %>% 
+  tally() %>% 
+  ungroup() %>% 
+  pivot_wider(names_from = "database", values_from = "n", values_fill = list(n = 0)) %>% 
+  knitr::kable(., booktabs = T)
+```
+
+
+We will exclude fossil specimens.
+
+For the machine observations, the records in GBIF and Vertnet have the same data and lat/lon, indicating they are duplicates. In cases of duplicates, we will keep the Vertnet entries and remove the duplicates from the GBIF dataset. The videos that these machine observations are derived from can be found [here](http://macaulaylibrary.org/video/417477) and [here](http://macaulaylibrary.org/video/422855).
+
+```{r check machine observations}
+gbif.loc.machine <- gbif.loc %>% 
+  filter(basisOfRecord == "MachineObservation") 
+vert.loc.machine <- vert.loc %>% 
+  filter(basisofrecord == "MachineObservation") 
+```
+
+```{r check human observations}
+gbif.loc.human <- gbif.loc %>% 
+  filter(basisOfRecord == "HumanObservation") %>% 
+  filter(institutionCode == "iNaturalist")
+human.obs.tally <- gbif.loc.human %>% 
+  group_by(datasetName) %>% 
+  tally()
+```
+
+The human observations in the GBIF dataset are almost all from the iNaturalist research-grade observations dataset. One is from "Anymals.org," which I haven't heard of and will exclude. 
+
+#### Museum sample overlap
+
+Which records are duplicates across the databases?
+
+```{r subset to museum}
+arctos.loc.museum <- arctos.loc
+gbif.loc.museum <- gbif.loc  %>% 
+  filter(basisOfRecord == "PreservedSpecimen")
+vert.loc.museum <- vert.loc %>% 
+  filter(basisofrecord == "PreservedSpecimen")
+```
+
+Will start with GBIF and Vertnet. First, look at overlap in access rights:
+
+```{r list access rights, results = "hide"}
+gbif.loc.museum %>% 
+  group_by(database, accessRights) %>% 
+  tally()
+
+vert.loc.museum %>% 
+  group_by(database, accessrights) %>% 
+  tally()
+```
+
+So, they both have 234 records from the KU, 18 from the field museum, 25 not-for-profit, and 21 open access. It would be pretty surprising if those were all for different samples and those tllies matched exactly, so I'm sure they are just present in both databases. But, let's check:
+
+```{r name unification}
+# Annoyingly, lot of shared column names but with different capitalizations
+# standardize to lowercase, then combine
+colnames(gbif.loc.museum) <- str_to_lower(colnames(gbif.loc.museum))
+colnames(vert.loc.museum) <- str_to_lower(colnames(vert.loc.museum))
+overlap.col <- colnames(gbif.loc.museum)[which(colnames(gbif.loc.museum) %in% colnames(vert.loc.museum))]
+```
+
+```{r check kansas, results = "hide"}
+# Kansas collection
+kansas <- gbif.loc.museum %>% 
+  dplyr::select(any_of(overlap.col)) %>% 
+  rbind(., dplyr::select(vert.loc.museum, any_of(overlap.col))) %>% 
+  filter(str_detect(accessrights, pattern = "biodiversity.ku.edu")) 
+# How many unique catalog numbers within each database?
+kansas %>% 
+  group_by(database) %>% 
+  distinct(catalognumber) %>% 
+  tally()
+# How many unique catalog numbers across databases?
+kansas %>% 
+  distinct(catalognumber) %>% 
+  tally()
+# OK, so the kansas records are the same between the two databases. 
+```
+
+```{r check chicago, results = "hide"}
+chicago <- gbif.loc.museum %>% 
+  dplyr::select(any_of(overlap.col)) %>% 
+  rbind(., dplyr::select(vert.loc.museum, any_of(overlap.col))) %>% 
+  filter(str_detect(accessrights, pattern = "fieldmuseum.org")) 
+# How many unique catalog numbers within each database?
+chicago %>% 
+  group_by(database) %>% 
+  distinct(catalognumber) %>% 
+  tally()
+# How many unique catalog numbers across databases?
+chicago %>% 
+  distinct(catalognumber) %>% 
+  tally()
+# And the chicago records are the same between the two databases. 
+```
+
+```{r check non-profit, results = "hide"}
+nonprofit <- gbif.loc.museum %>% 
+  dplyr::select(any_of(overlap.col)) %>% 
+  rbind(., dplyr::select(vert.loc.museum, any_of(overlap.col))) %>% 
+  filter(str_detect(accessrights, pattern = "not-for-profit use only")) 
+# How many unique catalog numbers within each database?
+nonprofit %>% 
+  group_by(database) %>% 
+  distinct(catalognumber) %>% 
+  tally()
+# How many unique catalog numbers across databases?
+nonprofit %>% 
+  distinct(catalognumber) %>% 
+  tally()
+# And the non-profit records are the same between the two databases. 
+```
+
+```{r check open access, results = "hide"}
+open <- gbif.loc.museum %>% 
+  dplyr::select(any_of(overlap.col)) %>% 
+  rbind(., dplyr::select(vert.loc.museum, any_of(overlap.col))) %>% 
+  filter(str_detect(accessrights, pattern = "http://creativecommons.org")) 
+# How many unique catalog numbers within each database?
+open %>% 
+  group_by(database) %>% 
+  distinct(catalognumber) %>% 
+  tally()
+# How many unique catalog numbers across databases?
+open %>% 
+  distinct(catalognumber) %>% 
+  tally()
+# And the open access records are the same between the two databases. 
+```
+
+Indeed, these all have the same number of unique catalog numbers within each dataset as they have shared across both datasets. So, those are all duplicates across the databases. 
+
+Next, we check records where the access rights are from Vertnet:
+
+Now, what about the rest of them (access rights empty or from vertnet)? Let's start with ones where the access rights are from Vertnet for each, as I expect the overlap there is particularly high. The following (much, much longer code) is to figure this out. Check it out if you want, or just skip to the conclusions. 
+
+```{r check vertnet, eval = T, results = "hide"}
+vertaccess <- gbif.loc.museum %>% 
+  dplyr::select(any_of(overlap.col)) %>% 
+  rbind(., dplyr::select(vert.loc.museum, any_of(overlap.col))) %>% 
+  filter(str_detect(accessrights, pattern = "vertnet.org")) 
+# Same idea, look at unique things across datasets. 
+vertaccess %>% 
+  group_by(database) %>%  
+  distinct(catalognumber, year, month, day, decimallatitude, decimallongitude) %>% 
+  tally()
+# 523 unique combos of catalog #, date, and location in gbif
+# 452 in vertnet
+# Thats 975, equal to the number of rows. 
+vertaccess %>% 
+  distinct(catalognumber, institutioncode, decimallatitude, decimallongitude) %>% 
+  tally()
+# 633 unique combos total across the two dataset. From those two numbers,
+# we would thus expect 342 entries to be duplicated across the two datasets (975-633).
+
+# That's including all the date and location info, but the catalog #s should be unique
+# to reach record (right?). 
+
+# You do have to add institutioncode, as there is some overlap in catalog numbers
+# (e.g., two different museums will both have specimen #900 or whatever). 
+vertaccess %>% 
+  group_by(database) %>%  
+  distinct(catalognumber, institutioncode) %>% 
+  tally()
+# 523 unique combos of catalog # and insitute in gibf
+# 452 in vertnet
+# Thats the same as above, good. 
+vertaccess %>% 
+  distinct(catalognumber, institutioncode) %>% 
+  tally()
+# Here, though, there are only 617 unique combos.
+# This would imply 358 duplicated records, more than implied above.
+
+# So evidently there are some records that have the same
+# institution code and catalog number, but different dates and or locations?
+
+# From some testing, it is the location data that are required to get 633
+# unique combos across the two datasets. 
+
+# Given that, what may be happening is that the decimal lat longs across the datasets
+# are basically the same, but different at e.g., the 10th decimal place,
+# leading some entries that are duplicates to not be identified as such.
+# Can round them to a far-out decimal place to check:
+
+vertaccess <- vertaccess %>% 
+  mutate(roundlat = round(decimallatitude, digits = 25),
+         roundlon = round(decimallongitude, digits = 25)) 
+
+vertaccess %>% 
+  group_by(database) %>%  
+  distinct(catalognumber, institutioncode, roundlat, roundlon) %>% 
+  tally()
+# 523 unique  in gibf
+# 452 in vertnet
+# Thats the same as above, good. 
+vertaccess %>% 
+  distinct(catalognumber, institutioncode, roundlat, roundlon) %>% 
+  tally()
+# Back down to 617 again. Can take things out to the 25th decimal place and still get 
+# 617, so that was the issue before: the unrounded deccimallatitude and decimallongitude 
+# are underestimating the number of duplicates. 
+
+# Ok, so we now expect 358 duplicated records (975-617). So, there should be 358
+# catalog/institution combos with 2 rows of entries, and
+# 259 unique entries:
+
+vertaccess %>% 
+  group_by(catalognumber, institutioncode) %>% 
+  tally() %>% 
+  ungroup() %>% 
+  filter(n == 2) %>% 
+  tally()
+# 358!
+
+vertaccess %>% 
+  group_by(catalognumber, institutioncode) %>% 
+  tally() %>% 
+  ungroup() %>% 
+  filter(n == 1) %>% 
+  tally()
+# And 259!
+
+# So, this all makes sense. 
+```
+
+```{r make lists of vertnet access dupes}
+# Let's identify those records:
+prob.dupes.vertnetrights <- vertaccess %>% 
+  group_by(catalognumber, institutioncode) %>% 
+  tally() %>% 
+  filter(n == 2) %>% 
+  unite(col = "recordID", catalognumber, institutioncode, remove = F, sep = "-")
+prob.unique.vertnetrights <- vertaccess %>% 
+  group_by(catalognumber, institutioncode) %>% 
+  tally() %>% 
+  filter(n == 1) %>% 
+  unite(col = "recordID", catalognumber, institutioncode, remove = F, sep = "-")
+```
+
+So, by cross-referencing specimen catalog numbers and location info across Vertnet and GBIF, we find a lot of overlap. For occurrences that have Vertnet access rights, there are `r dim(prob.dupes.vertnetrights)[1]` occurrence entries that are duplicates across the datasets. That is, while together Vertnet and GBIF contain `r dim(vertaccess)[1]` occurrences from museum records (with Vertnet access rights), there are only `r dim(prob.dupes.vertnetrights)[1] + dim(prob.unique.vertnetrights)[1]` unique occurrences across the datasets. 
+
+On to records with no access rights listed: 
+
+```{r check no access rights, results = "hide"}
+noaccess <- gbif.loc.museum %>% 
+  dplyr::select(any_of(overlap.col)) %>% 
+  rbind(., dplyr::select(vert.loc.museum, any_of(overlap.col))) %>% 
+  filter(str_length(accessrights) < 1) 
+# Will do the same thing as above, rounding the location data to 25 decimals
+noaccess <- noaccess %>% 
+  mutate(roundlat = round(decimallatitude, digits = 25),
+         roundlon = round(decimallongitude, digits = 25)) 
+
+
+noaccess %>% 
+  group_by(database) %>%  
+  distinct(catalognumber, institutioncode) %>% 
+  tally()
+# 90 unique combos of catalog # and insitute in gibf
+# 138 in vertnet 
+noaccess %>% 
+  distinct(catalognumber, institutioncode) %>% 
+  tally()
+# here 197 distinct entries, so perhaps there's less overlap among the things with no listed rights?
+
+noaccess %>% 
+  group_by(database) %>%  
+  distinct(catalognumber, institutioncode, roundlat, roundlon) %>% 
+  tally()
+# 90 unique combos of catalog # and insitute in gibf
+# 138 in vertnet 
+# Same as with catalog #s codes only
+noaccess %>% 
+  distinct(catalognumber, institutioncode, roundlat, roundlon) %>% 
+  tally()
+# and same again.
+
+# This implies relatively little overlap here: only 31 repeated entries (228-197)
+noaccess %>% 
+  group_by(catalognumber, institutioncode, roundlat, roundlon) %>% 
+  tally() %>% 
+  ungroup() %>% 
+  filter(n == 2) %>% 
+  tally()
+# Indeed, 31 with multiple rows
+noaccess %>% 
+  group_by(catalognumber, institutioncode, roundlat, roundlon) %>% 
+  tally() %>% 
+  ungroup() %>% 
+  filter(n == 1) %>% 
+  tally()
+# And 166 unique ones, as expected. 
+```
+
+```{r make lists of no access dupes}
+# Let's identify those records:
+prob.dupes.norights <- noaccess %>% 
+  group_by(catalognumber, institutioncode) %>% 
+  tally() %>% 
+  filter(n == 2) %>% 
+  unite(col = "recordID", catalognumber, institutioncode, remove = F, sep = "-")
+prob.unique.norights <- noaccess %>% 
+  group_by(catalognumber, institutioncode) %>% 
+  tally() %>% 
+  filter(n == 1) %>% 
+  unite(col = "recordID", catalognumber, institutioncode, remove = F, sep = "-")
+```
+
+Among occurrences that have no access rights listed, there is much less overlap. Across the two datasets, there are `r dim(noaccess)[1]` total entries, of which `r dim(prob.dupes.norights)[1]` are duplicates, such that there are `r dim(prob.unique.norights)[1]` total unique occurrences across these datasets (that have no listed access rights). 
+
+### Combine Vertnet and GBIF
+
+We will combine the Vertnet and GBIF records, and then move on to checking these records against Arctos for duplicates. How many records should we lose? We're excludng the fossils records but keeping everything else from Vertnet, so `r dim(vert.loc)[1] - dim(filter(vert.loc, basisofrecord == "FossilSpecimen"))[1]` records there. For GBIF, we're keeping all but one of the human observations (`r dim(gbif.loc.human)[1]`), excluding fossils, and excluding everything that overlaps with Vertnet. Adding that all up, we should have 914 observations from GBIF: `r dim(gbif.loc.human)[1]` human observations, and only 224 specimens that aren't already in Vertnet. Thus, after combining Vertnet and GBIF, we should have 890 + 914 = 1804 unique records. 
+
+```{r filter and combine GBIF and Vertnet}
+# Fix names 
+colnames(gbif.loc) <- str_to_lower(colnames(gbif.loc))
+colnames(vert.loc) <- str_to_lower(colnames(vert.loc))
+
+# Filter Gbif
+gbif.loc.filter <- gbif.loc %>% 
+  dplyr::select(any_of(overlap.col)) %>% # subset down to shared names
+  mutate(database = "gbif") %>% # add the database column
+  unite(col = "recordID", catalognumber, institutioncode, remove = F, sep = "-") %>% # get unique record IDs for matching against duplicate lists
+  filter(basisofrecord != "FossilSpecimen") %>% # get rid of the fossils (not using)
+  filter(basisofrecord != "MachineObservation")  %>% # get rid of machine obserbations (overlap with Vertnet)
+  filter(!str_detect(accessrights, pattern = "biodiversity.ku.edu")) %>%  # get rid of Kansas stuff (overlap with Vertnet)
+  filter(!str_detect(accessrights, pattern = "fieldmuseum.org")) %>%  # get rid of Chicago stuff (overlap with Vertnet)
+  filter(!str_detect(accessrights, pattern = "not-for-profit use only")) %>%  # get rid of Non-profit stuff (overlap with Vertnet)
+  filter(!str_detect(accessrights, pattern = "http://creativecommons.org")) %>% # get rid of open access stuff (overlap with Vertnet)
+  filter(recordID %in% prob.dupes.vertnetrights$recordID == F) %>%  # remove the stuff with vertnet rights that overlaps with Vertnet
+  filter(recordID %in% prob.dupes.norights$recordID == F) %>%  # remove the stuff with no access rights that overlaps with Vertnet
+  filter(!str_detect(institutioncode, pattern = "Anymals"))  %>% # remove the one Anymals.org record
+  dplyr::select(-recordID) # remove the now-unneeded recordID column
+# Filter Vertnet
+vert.loc.filter <- vert.loc %>%
+  dplyr::select(any_of(overlap.col)) %>% # subset down to shared names
+  mutate(database = "vertnet") %>% 
+  filter(basisofrecord != "FossilSpecimen") # get rid of the fossils (not using)
+
+# Combine the two
+combo.gbif.vert <- rbind(gbif.loc.filter, vert.loc.filter)
+```
+
+So, after filtering and combining these datsets we expected 1804 unique records and we got `r dim(combo.gbif.vert)[1]` records.
+
+#### Duplicates with Arctos
+
+```{r crossRef Arctos to combo, results = "hide"}
+# Subset the combo data down to just museum specimens
+# to avoid any spurious overlap between collection IDs
+# across categories.
+combo.museum <- combo.gbif.vert %>% 
+  filter(basisofrecord == "PreservedSpecimen")
+
+# Now, how many of the arctos records have catalog IDs that match those in
+# the combo dataset:
+sum(arctos.loc$GUID %in% combo.gbif.vert$catalognumber)
+# So, 430 aout of 434.
+
+# Let's look at those 4. 
+arctos.pos.unique <- arctos.loc[which(arctos.loc$GUID %in% combo.gbif.vert$catalognumber == F), ]
+```
+
+Nearly all of the Arctos records overlap with the other datasets: 430 of the 434 Arctos records have catalog IDs that match a catalog ID in the combined GBIF+Vertnet dataset. Let's just plot the remaining 4 on the map (empty green triangles) to see whether they are unique:
+
+```{r plot arctos overlap}
+state_prov <- ne_states(c("united states of america", "canada"))
+plot(state_prov, 
+     xlim = c(-115, -95),
+     ylim = c(36, 56),
+     axes = TRUE, 
+     col = "grey95")
+# Add the points for individual observation
+points(x = combo.gbif.vert$decimallongitude, 
+       y = combo.gbif.vert$decimallatitude,
+       col = ifelse(combo.gbif.vert$database == "gbif", alpha("orange", 0.7), alpha("blue", 0.7)),
+       pch = 20, 
+       cex = 1)
+points(x = arctos.pos.unique$DEC_LONG,
+       y = arctos.pos.unique$DEC_LAT,
+       col = "green",
+       pch = 2, 
+       cex = 2)
+box()
+```
+
+Two of these records seem to be new, and two are in the same location as other observations. 
+
+OK, two of those look like they're truly new, and two look to be in the same spot as other observations. We can compare those 4 records more closely against the other datasets:
+
+```{r checking Arctos possible uniques, results= "hide"}
+z <- arctos.pos.unique %>% 
+  dplyr::select(GUID, YEAR_COLLECTED, MONTH_COLLECTED, DAY_COLLECTED, DEC_LAT, DEC_LONG)
+
+# Going through and checking the dates for each one:
+combo.gbif.vert %>% 
+  filter(year == 2008,
+         month == 6,
+         day == 22)
+
+# MSB:Mamm:128006- No samples from this day in Combo
+# ASNHC:Mamm:15161- Duplicate. This sample exists in combo, but the catalog # is only the 15161 part
+# UMZM:Mamm:20235- No samples from this day in Combo
+# ASNHC:Mamm:14080- Dupicate. This sample exists in combo, but the catalog # is only the 14080 part. 
+
+# OK, so let's narrow down to the two proabbly unique ones and do a couple more checks to make sure they don't
+# exist in the combo dataset.
+arctos.probably.unique <- arctos.pos.unique %>% 
+  filter(!str_detect(GUID, "ASNHC"))
+# One is from the UMZM. From searching the combo dataset for UMZM, there are no entries there. So seems like a new one.
+# The other is from the MSB.
+MSB <- combo.gbif.vert %>% 
+  filter(institutionid == "MSB")
+# There are 39 samples from the MSB, but they do not share catalog numbers or dates with this one in Arctos.
+```
+
+After these checks, the two apparently new records in Arctos are indeed not present in the GBIF and Vertnet databases. 
+
+#### Combine Arctos with GBIF and Vertnet
+
+```{r combine Vertnet GBIF and Arctos}
+# Try the same thing with overlapping column names
+colnames(arctos.probably.unique) <- str_to_lower(colnames(arctos.probably.unique))
+overlap2 <- colnames(arctos.probably.unique)[which(colnames(arctos.probably.unique) %in% colnames(combo.gbif.vert))]
+# Looks like there are much fewer this time, will have to do some manual renaming
+
+combo.db <- arctos.probably.unique %>% 
+  dplyr::select(catalognumber = guid,
+         decimallatitude = dec_lat,
+         decimallongitude = dec_long,
+         year = year_collected,
+         month = month_collected,
+         day = day_collected,
+         everything()) %>% 
+  full_join(., combo.gbif.vert) 
+```
+
+This leads to a total of `r dim(combo.db)[1]` records across the publicly available databases. 
+
+
+### Records used for phenotyping
+
+```{r import phenotypic data}
+# Load the phenotypic data, but strip some of the phenotype and other columns we don't need 
+pheno <- readxl::read_xlsx("raw_data/Ltowsendii_database_FINAL.xlsx") %>% 
+  dplyr::select(OBJECTID_1, source, Museum, verbDate, decLat, decLong, numberObs)
+```
+
+We will also incorporate the samples used for phenotyping into our occurence data. Many of these are from museums, and will likely overlap with the museum specimens. 
+
+First, some of the phenotypic records that don't come from museums:
+
+```{r pheno outside museum, results = "hide"}
+# Might be easiest to go museum-by-museum
+# as the catalog numebrs and things don't match up easily across museums and datasets.
+pheno.nomuseum <- pheno %>% 
+  filter(is.na(Museum))
+# OK, of these most of them are input from
+# journal articles and textbooks, and thus should not overlap with the online databases.
+# Two of these are from iNaturalist, let's see if their dates match anything from the combo.db,
+# which includes iNaturalist observations:
+combo.db %>% 
+  filter(year == 2014,
+         month == 3, 
+         day == 23)
+# Looks like the dates don't match, so should be no overlap there.
+# Finally, three of these do seem to be from museums, but with no museum code.
+# They're all from USNM. Just searching that against combo.db, there's no records
+# with USNM. I also searched the ID numbers listed against combo.db, and nothing turned up. 
+# So, the ones without a museum listed all look good
+```
+
+These do not overlap with the other databases. 
+
+On to the phenotypic specimens from museums. Which museums from the phenotypic dataset are represented in the combined database?
+
+```{r matching museum}
+museums <- unique(pheno$Museum)[!is.na(unique(pheno$Museum))]
+museums.shared <- museums[which(museums %in% combo.db$institutioncode)]
+# OK, so seven museum/institution codes match between the two datasets:
+# DMNS, MVZ, and UMNH
+for (museum in museums.shared) {
+  sub <- combo.db %>% 
+    filter(institutioncode == museum)
+  pheno.sub <- pheno %>% 
+    filter(Museum == museum)
+  assign(x = paste("combo", museum, sep = "."), value = sub, envir = globalenv())
+  assign(x = paste("pheno", museum, sep = "."), value = pheno.sub, envir = globalenv())
+}
+```
+
+OK, its the DMNS, LACM, MCZ, MVZ, UMNH, UWBM, UWYMV. Let's look at each of these in turn
+
+```{r DMNS, results = "hide"}
+# Get the ones with unique catalog numbers
+# DMNS
+pheno.DMNS.unique <- pheno.DMNS %>% 
+  mutate(catalognumber = str_squish(str_remove(source, pattern = "PreservedSpecimen"))) %>% 
+  filter(catalognumber %in% combo.db$catalognumber == F)
+# after looking through these, there are 9 entries in the phenotypic data that don't match catalog numbers in the combo dataset. 
+
+# Can check nby doing a little plotting of points to see if they overlap.
+# plot(x = combo.DMNS$decimallongitude,
+#        y = combo.DMNS$decimallatitude,
+#        col = "red")
+# points(x = pheno.DMNS.unique$decLong,
+#      y = pheno.DMNS.unique$decLat,
+#      pch = 20, col = "black")
+# Looks like they don't. So, seems like these 9 records are new. 
+```
+
+Of the `r dim(pheno.DMNS)[1]` records from the DMNS in the phenotypic data, `r dim(pheno.DMNS.unique)[1]` are unique/new.
+
+```{R LACM, results = "hide"}
+pheno.LACM.unique <- pheno.LACM %>% 
+  mutate(catalognumber = parse_number(source)) %>%
+  filter(catalognumber %in% as.numeric(combo.LACM$catalognumber) == F)
+# So, there is 1 catalog number that doesn't match up to catalog numbers in the main dataset.
+```
+
+Of the `r dim(pheno.LACM)[1]` records from the LACM in the phenotypic data, only `r dim(pheno.LACM.unique)[1]` is unique/new.
+
+```{r MCZ, results = "hide"} 
+pheno.MCZ.unique <- pheno.MCZ %>% 
+  mutate(catalognumber = parse_number(source)) %>% 
+  filter(catalognumber %in% as.numeric(combo.MCZ$catalognumber) == F)
+# No unique ones. 
+```
+
+Of the `r dim(pheno.MCZ)[1]` records from the MCZ in the phenotypic data, none are unique/new.
+
+```{R MVZ, results = "hide"}
+pheno.MVZ.unique <- pheno.MVZ %>%
+  separate(source, into = c("extra", "extra2", "code", "number")) %>% 
+  mutate(collection = "Mamm") %>% 
+  unite(col = "catalognumber", code, collection, number, sep = ":") %>% 
+  filter(catalognumber %in% combo.MVZ$catalognumber == F)
+# So, there are 2 catalog numbers that don't match up to catalog numbers in the main dataset.
+
+# plot(x = combo.MVZ$decimallongitude,
+#        y = combo.MVZ$decimallatitude,
+#        col = "red")
+# points(x = pheno.MVZ.unique$decLong,
+#      y = pheno.MVZ.unique$decLat,
+#      pch = 20, col = "black")
+# These match up spatially to other records. In double-checking them, though the catalog IDs don't match, 
+# I think that is because of a transpostion during data entry, either in our data or theirs. 
+# the unique IDs here are 47608 and 47609, while the entries in the combo dataset have the same dates and locations,
+# but are listed as 47068 and 47069.
+```
+
+Of the `r dim(pheno.MVZ)[1]` records from the MVZ in the phenotypic data, I don't think any are unique/new. There are two that have unique catalog numbers, but I think those are typos/transpositions in the catalog numbers (either on our end or theirs). 
+
+```{R UMNH, results = "hide"}
+pheno.UMNH.unique <- pheno.UMNH %>% 
+  filter(source %in% combo.UMNH$catalognumber == F)
+# So, there is 1 
+
+# plot(x = combo.UMNH$decimallongitude,
+#        y = combo.UMNH$decimallatitude,
+#        col = "red")
+# points(x = pheno.UMNH.unique$decLong,
+#      y = pheno.UMNH.unique$decLat,
+#      pch = 20, col = "black")
+
+combo.UMNH$catalognumber[which(as.numeric(pheno.UMNH.unique$decLat) == combo.UMNH$decimallatitude)]
+combo.UMNH$catalognumber[which(as.numeric(pheno.UMNH.unique$decLong) == combo.UMNH$decimallongitude)]
+# This one catalog number, 23777, is from the same location as catalog numbers 23805 and 23803. But it does seem to be unique,
+# no otther catalog numbers match it (or seem to be typos related to it).
+```
+
+Of the `r dim(pheno.UMNH)[1]` records from the UMNH in the phenotypic data, there is `r dim(pheno.UMNH.unique)[1]` new/unique record. 
+
+```{R UWBM, results = "hide"}
+pheno.UWBM.unique <- pheno.UWBM %>% 
+  separate(source, into = c("extra", "code", "number")) %>% 
+  mutate(collection = "Mamm") %>% 
+  unite(col = "catalognumber", code, collection, number, sep = ":") %>% 
+  filter(catalognumber %in% combo.UWBM$catalognumber == F)
+# None are unique.
+```
+
+Of the `r dim(pheno.UWBM)[1]` records from the UWBM in the phenotypic data, none are unique/new.
+
+```{r UWYMV, results = "hide"}
+pheno.UWYMV.unique <- pheno.UWYMV %>% 
+  mutate(catalognumber = str_squish(str_remove(source, "PreservedSpecimen"))) %>% 
+  filter(catalognumber %in% combo.UWYMV$catalognumber == F)
+# No unique ones. 
+```
+
+Of the `r dim(pheno.UWYMV)[1]` records from the UWYMV in the phenotypic data, none are unique/new.
+
+That leaves entries in the phenotypic data which come from museums that aren't represented in the combined Vertnet+GBIF+Arctos database:
+
+```{r non-matching museums, results = "hide"}
+pheno.nomatch <- pheno %>% 
+  filter(!is.na(Museum)) %>% 
+  filter(Museum %in% museums.shared == F)
+
+# Let's Pull just the numbers out of these and see if they match any part of the catalog number in the combo database.
+
+pheno.nomatch.pos.dup <- pheno.nomatch %>% 
+  mutate(catalognumber = abs(parse_number(source))) %>% 
+  filter(catalognumber %in% abs(parse_number(combo.db$catalognumber)))
+# Ok, four of them do, the ones from CAS, which is called CAS_MAM in the pheno dataset but
+# CAS in the combined dataset. 
+
+pheno.nomatch.pos.unique <- pheno.nomatch %>% 
+  mutate(catalognumber = abs(parse_number(source))) %>% 
+  filter(catalognumber %in% abs(parse_number(combo.db$catalognumber))== F)
+# The other 69 seem possibly/probably unique. 
+# A bunch are from the AMNH, which weirdly has no representatives in the combined dataset
+# Another big batch are from UCM. The character "UCM" do not appear in the combined dataset.
+# Another batch is from the UMZM, which we know only has one representative in the combined dataset (with a different catalog number)
+# And the rest are from USNM, and the characters "UMZM" do not appear in the combined dataset. 
+grep("AMNH", x = combo.db)
+grep("UCM", x = combo.db)
+grep("UMZM", x = combo.db)
+grep("USNM", x = combo.db)
+```
+
+Four of those entries are duplicates, but the rest seem to have no matches in the combined dataset. 
+
+
+Thus, though the phenotypic data has `r dim(pheno)[1]` entries total, it has many duplicates with the other reocrds. It will only add `r dim(pheno.nomuseum)[1] + dim(pheno.DMNS.unique)[1] + dim(pheno.LACM.unique)[1] + dim(pheno.UMNH.unique)[1] + dim(pheno.nomatch.pos.unique)[1]` new records: `r dim(pheno.nomuseum)[1]` from records that aren't from a museum, `r dim(pheno.DMNS.unique)[1]` from DMNS, `r dim(pheno.LACM.unique)[1]` from LACM, `r dim(pheno.UMNH.unique)[1]` from UMNH, and `r dim(pheno.nomatch.pos.unique)[1]` from other museums that aren't present in GBIF/Vertnet/Arctos.
+
+### Combine it all together
+
+OK, so now we can add the phenotypic data to the database data. 
+
+```{r final? dataset}
+pheno.unique <- pheno.nomuseum %>% 
+  full_join(pheno.DMNS.unique) %>% 
+  full_join(mutate(pheno.LACM.unique, catalognumber = as.character(catalognumber))) %>% 
+  full_join(pheno.UMNH.unique) %>% 
+  full_join(mutate(pheno.nomatch.pos.unique, catalognumber = as.character(catalognumber))) %>% 
+  dplyr::select(catalognumber = source, decimallatitude = decLat, decimallongitude = decLong)
+
+final <- combo.db %>% 
+  dplyr::select(catalognumber, decimallatitude, decimallongitude) %>% 
+  rbind(., pheno.unique) %>% 
+  mutate(decimallatitude = as.numeric(decimallatitude),
+         decimallongitude = as.numeric(decimallongitude))
+```
+
+
+Here are the records plotted on a map, for further checking:
+
+```{r finalmap}
+plot(state_prov, 
+     xlim = c(floor(min(final$decimallongitude)), 
+              ceiling(max(final$decimallongitude))),
+     ylim = c(floor(min(final$decimallatitude)),
+              ceiling(max(final$decimallatitude))),
+     axes = TRUE, 
+     col = "grey95")
+# Add the points for individual observation
+points(x = final$decimallongitude, 
+       y = final$decimallatitude,
+       col = "orange",
+       pch = 20, 
+       cex = 1)
+box()
+```
+
+#### Location curation
+
+```{r below 36N}
+south <- final %>% 
+  filter(decimallatitude < 36)
+
+
+utep <- combo.db %>% 
+  filter(str_detect(catalognumber, "UTEP"))
+```
+
+Based on the above map, some of these records look as if they may not be correct. A number of records seem to far south, below 36N. 52 or the samples below 36N  are from the earth sciences collection at the University of Texas at El Paso natural history museum. I cross-referenced these against Arctos, and the earth sciences samples at UTEP are all fossil records of WTJR: teeth, bones, and other things found in caves and estimated to be ~15k years old. For some reason they aren't labelled as fossils, but we will exclude them. 
+
+That leaves 3 other records below 36N:
+
+1. One is from 2018, a WTJR shot in a nature preserve in New Mexico, west of Albuquerque. In checking the [Arctos record](http://arctos.database.museum/guid/MSB:Mamm:322166), it looks like it was misidentified and is actually a BTJR. For whatever reason it hasn't been corrected across all the databases yet. 
+2. The second record is from the Peabody collection at Yale, here's their [record page](http://collections.peabody.yale.edu/search/Record/YPM-MAM-007210). It's from 1929, and the location record is Dona Ana county in New Mexico (near White Sands). Given the age and seemingly too-far south location, I will exclude it. 
+3. The last suspicious record is listed as catalog # 1320, from the CAS mammalogy collections. The year is listed as 1911, and the location as Los Angeles County, here's the [Vertnet record](http://portal.vertnet.org/o/cas/mam?id=urn-catalog-cas-mam-1320). In checkin checking the provided GPS coordinate, the location is right in the heart of LA. Since the record is from pre-GPS days, it seems it may have been assigned a GPS point for "Los Angeles County", which makes the precies location dubious. It will be excluded. 
+
+Thus, all the points below 36N are being excluded. 
+
+That leaves a couple points in the north to check on. Visually, 55N looks like a good break point. There are two points above that:
+```{r above 55N}
+north <- final %>% 
+  filter(decimallatitude > 55)
+```
+1. At 60N, the farthest north point, is a hand-curated record from our phenotypic dataset, taken out of Banfield's 1974 "The Mammals of Canada". It will be kept.
+2. The second record above 55N is an iNaturalist record, which has an attached photo [here](https://www.inaturalist.org/observations/35071880). That looks correct.
+
+Thus, we'll keep the northern points. 
+
+### Cleaned, final dataset
+
+```{r clean final}
+final.clean <- final %>% 
+  filter(decimallatitude > 36)
+```
+
+```{r save results}
+write.csv("processed_data/leptown_db_occurrences.csv", x = final.clean, row.names = F)
+```
+
+So, after filtering out the southern points, we're left with `r dim(final.clean)[1]` occurrences of WTJR across Vertnet, GBIF, Arctos, and the hand-curated phenotypic data. Here they are plotted on the map:
+
+
+```{r clean final map}
+plot(state_prov, 
+     xlim = c(floor(min(final.clean$decimallongitude)), 
+              ceiling(max(final.clean$decimallongitude))),
+     ylim = c(floor(min(final.clean$decimallatitude)),
+              ceiling(max(final.clean$decimallatitude))),
+     axes = TRUE, 
+     col = "grey95")
+# Add the points for individual observation
+points(x = final.clean$decimallongitude, 
+       y = final.clean$decimallatitude,
+       col = "orange",
+       pch = 20, 
+       cex = 1)
+box()
+```
+
+# References

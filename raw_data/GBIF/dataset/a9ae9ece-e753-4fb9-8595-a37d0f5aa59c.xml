@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.1/eml.xsd"
+        packageId="a9ae9ece-e753-4fb9-8595-a37d0f5aa59c"  system="http://gbif.org" scope="system"
+  xml:lang="en">
+
+<dataset>
+      <alternateIdentifier>10.15468/estih7</alternateIdentifier>
+        <alternateIdentifier>http://ipt.vertnet.org:8080/ipt/resource?r=sdnhm-mammals</alternateIdentifier>
+    <title>SDNHM Mammology Collection</title>
+    <creator>
+    <individualName>
+<givenName>Philip</givenName>          <surName>Unitt</surName>
+    </individualName>
+<organizationName>San Diego Natural History Museum</organizationName><positionName>Curator</positionName>    <address>
+<deliveryPoint>1788 El Prado, Balboa Park</deliveryPoint><city>San Diego</city><administrativeArea>CA</administrativeArea><postalCode>92101</postalCode><country>UNITED_STATES</country>    </address>
+<phone>+01 619-255-0235</phone><electronicMailAddress>birds@sdnhm.org</electronicMailAddress><onlineUrl>http://www.sdnhm.org/</onlineUrl>    </creator>
+    <metadataProvider>
+    <individualName>
+<givenName>Philip</givenName>          <surName>Unitt</surName>
+    </individualName>
+<organizationName>San Diego Natural History Museum</organizationName><positionName>Curator</positionName>    <address>
+<deliveryPoint>1788 El Prado, Balboa Park</deliveryPoint><city>San Diego</city><administrativeArea>CA</administrativeArea><postalCode>92101</postalCode><country>UNITED_STATES</country>    </address>
+<phone>+01 619-255-0235</phone><electronicMailAddress>birds@sdnhm.org</electronicMailAddress><onlineUrl>http://www.sdnhm.org/</onlineUrl>    </metadataProvider>
+    <associatedParty>
+    <individualName>
+<givenName>David</givenName>          <surName>Bloom</surName>
+    </individualName>
+<organizationName>VertNet</organizationName><positionName>Project Coordinator</positionName><electronicMailAddress>dbloom@vertnet.org</electronicMailAddress><onlineUrl>http://www.vertnet.org/</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+    <associatedParty>
+    <individualName>
+<givenName>John</givenName>          <surName>Wieczorek</surName>
+    </individualName>
+<organizationName>VertNet</organizationName><positionName>Information Architect</positionName><electronicMailAddress>tuco@berkeley.edu</electronicMailAddress><onlineUrl>http://www.vertnet.org</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+      <pubDate>
+      2019-08-29
+      </pubDate>
+    <language>ENGLISH</language>
+    <abstract>
+        <para>Mammals: About 23,450 specimens, about 20,000 skins, almost all with accompanying skulls. About 960 complete skeletons, including virtually all species of southern California and a broad variety of marine mammals, both pinnipeds and cetaceans. The mammal collection was first accredited by the American Society of Mammalogy in 1975 and most recently re-accredited in 1995.
+
+Taxonomic coverage: Almost all species of western North America, including Baja California. Rodents are by far the group best represented, with over 20,200 specimens. Other notable components are over 1900 specimens covering 52 species of bats, 236 specimens covering 28 species of cetaceans, and 142 specimens covering 14 species of pinnipeds. Of mammal families worldwide, 80 are represented, a coverage extended by the museum&amp;#39;s status as a repository for specimens from the San Diego Zoo.
+
+6150 specimens are from the peninsula of Baja California and are the foundation of Laurence M. Huey’s “The Mammals of Baja California, Mexico (Trans. San Diego Soc. Nat. Hist. 13:85-168, 1964). 5271 specimens from San Diego County are the foundation of the San Diego County Mammal Atlas (Proc. San Diego Soc. Nat. Hist. 46, 2017), which addresses the identification, distribution, and ecology of San Diego County&amp;#39;s mammals.
+
+Type specimens: Holotypes of 87 subspecies and 2 species.</para>
+    </abstract>
+        <keywordSet>
+              <keyword>Occurrence</keyword>
+              <keywordThesaurus>GBIF Dataset Type Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_type.xml</keywordThesaurus>
+        </keywordSet>
+        <keywordSet>
+              <keyword>Specimen</keyword>
+              <keywordThesaurus>GBIF Dataset Subtype Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_subtype.xml</keywordThesaurus>
+        </keywordSet>
+      <additionalInfo>
+          <para>http://vertnet.org/resources/norms.html</para>
+      </additionalInfo>
+      <intellectualRights>
+        <para>To the extent possible under law, the publisher has waived all rights to these data and has dedicated them to the <ulink url="http://creativecommons.org/publicdomain/zero/1.0/legalcode"><citetitle>Public Domain (CC0 1.0)</citetitle></ulink>. Users may copy, modify, distribute and use the work, including for commercial purposes, without restriction.</para>
+      </intellectualRights>
+      <distribution scope="document">
+          <online>
+              <url function="information">http://www.sdnhm.org/science/birds-and-mammals/</url>
+          </online>
+      </distribution>
+      <coverage>
+            <geographicCoverage>
+                  <geographicDescription>Global, with emphasis in California (&gt;11,600 specimens), Baja California (6150 specimens), Arizona (&gt;3250 specimens), and Oregon (1576 specimens).</geographicDescription>
+                  <boundingCoordinates>
+                      <westBoundingCoordinate>-180</westBoundingCoordinate>
+                      <eastBoundingCoordinate>180</eastBoundingCoordinate>
+                      <northBoundingCoordinate>90</northBoundingCoordinate>
+                      <southBoundingCoordinate>-90</southBoundingCoordinate>
+                  </boundingCoordinates>
+            </geographicCoverage>
+          <temporalCoverage>
+            <rangeOfDates>
+              <beginDate>
+                <calendarDate>      1878-06-01
+</calendarDate>
+              </beginDate>
+              <endDate>
+                <calendarDate>      2019-06-07
+</calendarDate>
+              </endDate>
+            </rangeOfDates>
+          </temporalCoverage>
+              <taxonomicCoverage>
+                    <generalTaxonomicCoverage>The collection encompasses &gt;20,200 specimens of rodents, &gt;1900 of bats, &gt;1140 of carnivores, &gt;740 of insectivores, &gt;540 of lagomorphs, and 236 of cetaceans.</generalTaxonomicCoverage>
+                    <taxonomicClassification>
+                          <taxonRankName>Class</taxonRankName>
+                        <taxonRankValue>Mammalia</taxonRankValue>
+                    </taxonomicClassification>
+              </taxonomicCoverage>
+      </coverage>
+      <maintenance>
+          <description>
+              <para></para>
+          </description>
+          <maintenanceUpdateFrequency>unkown</maintenanceUpdateFrequency>
+      </maintenance>
+      <contact>
+    <individualName>
+<givenName>Philip</givenName>          <surName>Unitt</surName>
+    </individualName>
+<organizationName>San Diego Natural History Museum</organizationName><positionName>Curator</positionName>    <address>
+<deliveryPoint>1788 El Prado, Balboa Park</deliveryPoint><city>San Diego</city><administrativeArea>CA</administrativeArea><postalCode>92101</postalCode><country>UNITED_STATES</country>    </address>
+<phone>+01 619-255-0235</phone><electronicMailAddress>birds@sdnhm.org</electronicMailAddress><onlineUrl>http://www.sdnhm.org/</onlineUrl>      </contact>
+      <methods>
+            <methodStep>
+                <description>
+                    <para></para>
+                </description>
+            </methodStep>
+      </methods>
+
+      <project >
+          <title>SDNHM collection of mammals</title>
+          <personnel>
+    <individualName>
+<givenName>Philip</givenName>          <surName>Unitt</surName>
+    </individualName>
+    <role>CURATOR</role>
+          </personnel>
+          <personnel>
+    <individualName>
+<givenName>Scott</givenName>          <surName>Tremor</surName>
+    </individualName>
+    <role>POINT_OF_CONTACT</role>
+          </personnel>
+          <abstract>
+              <para></para>
+          </abstract>
+          <funding>
+              <para></para>
+          </funding>
+      </project>
+</dataset>
+
+<additionalMetadata>
+    <metadata>
+      <gbif>
+        <dateStamp>2020-04-01T19:17:47Z</dateStamp>
+      <citation>Unitt P (2019). SDNHM Mammology Collection. San Diego Natural History Museum. Occurrence dataset https://doi.org/10.15468/estih7 accessed via GBIF.org on 2020-04-01.</citation>
+        </gbif>
+    </metadata>
+</additionalMetadata>
+
+</eml:eml>

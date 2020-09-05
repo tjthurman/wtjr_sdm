@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.1/eml.xsd"
+        packageId="f9772d3a-db34-4a33-baa0-7a016a970358"  system="http://gbif.org" scope="system"
+  xml:lang="en">
+
+<dataset>
+      <alternateIdentifier>10.15468/wvqqpo</alternateIdentifier>
+    <title>Angelo State Natural History Collections (ASNHC) - Mammalogy Collection</title>
+    <creator>
+    <individualName>
+<givenName>Robert</givenName>          <surName>Dowler</surName>
+    </individualName>
+<organizationName>Angelo State University</organizationName><positionName>Curator</positionName>    <address>
+<deliveryPoint>ASU Station #10890</deliveryPoint><city>San Angelo</city><administrativeArea>Texas</administrativeArea><postalCode>76909-0890</postalCode><country>UNITED_STATES</country>    </address>
+<phone>(325) 486-6639</phone><electronicMailAddress>robert.dowler@angelo.edu</electronicMailAddress>    </creator>
+    <metadataProvider>
+    <individualName>
+<givenName>Marcia</givenName>          <surName>Revelez</surName>
+    </individualName>
+<organizationName>Angelo State University</organizationName><positionName>Collections Manager</positionName>    <address>
+<deliveryPoint>ASU Station #10890</deliveryPoint><city>San Angelo</city><administrativeArea>Texas</administrativeArea><postalCode>76909-0890</postalCode><country>UNITED_STATES</country>    </address>
+<phone>(325) 486-6699</phone><electronicMailAddress>marcia.revelez@angelo.edu</electronicMailAddress>    </metadataProvider>
+    <associatedParty>
+    <individualName>
+<givenName>Marcia</givenName>          <surName>Revelez</surName>
+    </individualName>
+<organizationName>Angelo State University</organizationName><positionName>Collections Manager</positionName>    <address>
+<deliveryPoint>ASU Station #10890</deliveryPoint><city>San Angelo</city><administrativeArea>Texas</administrativeArea><postalCode>76909-0890</postalCode><country>UNITED_STATES</country>    </address>
+<phone>(325) 486-6699</phone><electronicMailAddress>marcia.revelez@angelo.edu</electronicMailAddress>    <role>CUSTODIAN_STEWARD</role>
+    </associatedParty>
+      <pubDate>
+      2016-06-22
+      </pubDate>
+    <language>ENGLISH</language>
+    <abstract>
+        <para>Begun in the mid-1960s, the Mammalogy Collection houses over 18,000 specimens and is the fourth largest in the state of Texas.  Accredited by the American Society of Mammalogists in 1992, it has significant holdings from the Concho Valley and Edwards Plateau regions of west-central Texas, United States (31 states), Mexico, Australia, Indonesia, and most notably the Galapagos Islands.</para>
+    </abstract>
+        <keywordSet>
+              <keyword>Occurrence</keyword>
+              <keywordThesaurus>GBIF Dataset Type Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_type.xml</keywordThesaurus>
+        </keywordSet>
+        <keywordSet>
+              <keyword>Specimen</keyword>
+              <keywordThesaurus>GBIF Dataset Subtype Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_subtype.xml</keywordThesaurus>
+        </keywordSet>
+      <intellectualRights>
+        <para>This work is licensed under a <ulink url="http://creativecommons.org/licenses/by/4.0/legalcode"><citetitle>Creative Commons Attribution (CC-BY) 4.0 License</citetitle></ulink>.</para>
+      </intellectualRights>
+      <distribution scope="document">
+          <online>
+              <url function="information">http://www.angelo.edu/dept/biology/asnhc/mammal_collection.php</url>
+          </online>
+      </distribution>
+      <coverage>
+            <geographicCoverage>
+                  <geographicDescription>Significant holdings from the Concho Valley and Edwards Plateau regions of west-central Texas, United States (31 states), Mexico, Australia, Indonesia, and most notably the Galapagos Islands.</geographicDescription>
+                  <boundingCoordinates>
+                      <westBoundingCoordinate>-180</westBoundingCoordinate>
+                      <eastBoundingCoordinate>180</eastBoundingCoordinate>
+                      <northBoundingCoordinate>90</northBoundingCoordinate>
+                      <southBoundingCoordinate>-90</southBoundingCoordinate>
+                  </boundingCoordinates>
+            </geographicCoverage>
+              <taxonomicCoverage>
+                    <taxonomicClassification>
+                          <taxonRankName>Class</taxonRankName>
+                        <taxonRankValue>Mammalia</taxonRankValue>
+                          <commonName>Mammals</commonName>
+                    </taxonomicClassification>
+              </taxonomicCoverage>
+      </coverage>
+      <contact>
+    <individualName>
+<givenName>Marcia</givenName>          <surName>Revelez</surName>
+    </individualName>
+<organizationName>Angelo State University</organizationName><positionName>Collections Manager</positionName>    <address>
+<deliveryPoint>ASU Station #10890</deliveryPoint><city>San Angelo</city><administrativeArea>Texas</administrativeArea><postalCode>76909-0890</postalCode><country>UNITED_STATES</country>    </address>
+<phone>(325) 486-6699</phone><electronicMailAddress>marcia.revelez@angelo.edu</electronicMailAddress>      </contact>
+      <methods>
+            <methodStep>
+                <description>
+                    <para></para>
+                </description>
+            </methodStep>
+      </methods>
+
+</dataset>
+
+<additionalMetadata>
+    <metadata>
+      <gbif>
+        <dateStamp>2020-04-01T19:17:46Z</dateStamp>
+      <citation>Dowler R, Revelez M (2016). Angelo State Natural History Collections (ASNHC) - Mammalogy Collection. Angelo State Natural History Collections (ASNHC). Occurrence dataset https://doi.org/10.15468/wvqqpo accessed via GBIF.org on 2020-04-01.</citation>
+              <resourceLogoUrl>http://asnhc.angelo.edu/collections/birds/resources/projects/birds/resources/images/asnhc_logo.png</resourceLogoUrl>
+              <collection>
+                <parentCollectionIdentifier>Not applicable</parentCollectionIdentifier>
+                <collectionIdentifier>https://www.angelo.edu/dept/biology/asnhc/mammal_collection.php</collectionIdentifier>
+                <collectionName>Mammalogy</collectionName>
+              </collection>
+              <livingTimePeriod>Recent</livingTimePeriod>
+        </gbif>
+    </metadata>
+</additionalMetadata>
+
+</eml:eml>

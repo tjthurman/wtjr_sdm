@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.1/eml.xsd"
+        packageId="07e9980a-a9f6-4a35-9df6-26371459e570"  system="http://gbif.org" scope="system"
+  xml:lang="en">
+
+<dataset>
+      <alternateIdentifier>10.15468/vqhgf7</alternateIdentifier>
+        <alternateIdentifier>http://ipt.vertnet.org:8080/ipt/resource?r=ism_mammals</alternateIdentifier>
+        <alternateIdentifier>http://ipt.vertnet.org:8080/ipt/resource.do?r=ism_mammals</alternateIdentifier>
+        <alternateIdentifier>07e9980a-a9f6-4a35-9df6-26371459e570</alternateIdentifier>
+    <title>ISM Mammalogy Collection</title>
+    <creator>
+    <individualName>
+<givenName>Meredith</givenName>          <surName>Mahoney</surName>
+    </individualName>
+<organizationName>Illinois State Museum</organizationName><positionName>Assistant Curator of Zoology</positionName>    <address>
+<deliveryPoint>1011 E. Ash Street</deliveryPoint><city>Springfield</city><administrativeArea>Illinois</administrativeArea><postalCode>62703</postalCode><country>UNITED_STATES</country>    </address>
+<phone>217-785-4843</phone><electronicMailAddress>mjmahoney@museum.state.il.us</electronicMailAddress><onlineUrl>http://www.museum.state.il.us</onlineUrl>    </creator>
+    <metadataProvider>
+    <individualName>
+<givenName>Meredith</givenName>          <surName>Mahoney</surName>
+    </individualName>
+<organizationName>Illinois State Museum</organizationName><positionName>Assistant Curator of Zoology</positionName>    <address>
+<deliveryPoint>1011 E. Ash Street</deliveryPoint><city>Springfield</city><administrativeArea>Illinois</administrativeArea><postalCode>62703</postalCode><country>UNITED_STATES</country>    </address>
+<phone>217-785-4843</phone><electronicMailAddress>mjmahoney@museum.state.il.us</electronicMailAddress><onlineUrl>http://www.museum.state.il.us</onlineUrl>    </metadataProvider>
+    <associatedParty>
+    <individualName>
+<givenName>David</givenName>          <surName>Bloom</surName>
+    </individualName>
+<organizationName>VertNet</organizationName><positionName>VertNet Progammer</positionName><electronicMailAddress>dbloom@vertnet.org</electronicMailAddress><onlineUrl>http://www.vertnet.org</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+    <associatedParty>
+    <individualName>
+<givenName>John</givenName>          <surName>Wieczorek</surName>
+    </individualName>
+<organizationName>Museum of Vertebrate Zoology at UC Berkeley</organizationName><positionName>Information Architect</positionName><electronicMailAddress>tuco@berkeley.edu</electronicMailAddress><onlineUrl>http://www.vertnet.org</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+    <associatedParty>
+    <individualName>
+<givenName>David</givenName>          <surName>Bloom</surName>
+    </individualName>
+<organizationName>VertNet</organizationName><positionName>VertNet Coordinator</positionName><electronicMailAddress>dbloom@vertnet.org</electronicMailAddress><onlineUrl>http://www.vertnet.org</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+      <pubDate>
+      2016-12-22
+      </pubDate>
+    <language>ENGLISH</language>
+    <abstract>
+        <para>The Illinois State Museum&amp;#39;s zoology collections contain over 140,000 specimens representing mammals, birds, reptiles, amphibians, fish, insects, and mollusks. The museum&amp;#39;s collections of vertebrate skeletons and fresh water mollusks are among the most extensive of their type in the U.S. They include large series for many Midwestern species and constitute one of the best comparative collections in the country for the identification of animal remains from archaeological, paleontological, and contemporary forensic contexts.</para>
+    </abstract>
+        <keywordSet>
+              <keyword>Occurrence</keyword>
+              <keywordThesaurus>GBIF Dataset Type Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_type.xml</keywordThesaurus>
+        </keywordSet>
+        <keywordSet>
+              <keyword>Specimen</keyword>
+              <keywordThesaurus>GBIF Dataset Type Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_type.xml</keywordThesaurus>
+        </keywordSet>
+        <keywordSet>
+              <keyword>Specimen</keyword>
+              <keywordThesaurus>GBIF Dataset Subtype Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_subtype.xml</keywordThesaurus>
+        </keywordSet>
+      <additionalInfo>
+          <para>http://vertnet.org/resources/norms.html</para>
+      </additionalInfo>
+      <intellectualRights>
+        <para>To the extent possible under law, the publisher has waived all rights to these data and has dedicated them to the <ulink url="http://creativecommons.org/publicdomain/zero/1.0/legalcode"><citetitle>Public Domain (CC0 1.0)</citetitle></ulink>. Users may copy, modify, distribute and use the work, including for commercial purposes, without restriction.</para>
+      </intellectualRights>
+      <distribution scope="document">
+          <online>
+              <url function="information">http://www.museum.state.il.us/ismdepts/zoology/collections.html</url>
+          </online>
+      </distribution>
+      <coverage>
+            <geographicCoverage>
+                  <geographicDescription>Collections include many Midwestern species and constitute one of the best comparative collections in the country for the identification of animal remains from archaeological, paleontological, and contemporary forensic contexts.</geographicDescription>
+                  <boundingCoordinates>
+                      <westBoundingCoordinate>-180</westBoundingCoordinate>
+                      <eastBoundingCoordinate>180</eastBoundingCoordinate>
+                      <northBoundingCoordinate>90</northBoundingCoordinate>
+                      <southBoundingCoordinate>-90</southBoundingCoordinate>
+                  </boundingCoordinates>
+            </geographicCoverage>
+              <taxonomicCoverage>
+                    <taxonomicClassification>
+                          <taxonRankName>Class</taxonRankName>
+                        <taxonRankValue>Mammalia</taxonRankValue>
+                          <commonName>Mammals</commonName>
+                    </taxonomicClassification>
+              </taxonomicCoverage>
+      </coverage>
+      <maintenance>
+          <description>
+              <para></para>
+          </description>
+          <maintenanceUpdateFrequency>unkown</maintenanceUpdateFrequency>
+      </maintenance>
+      <contact>
+    <individualName>
+<givenName>Meredith</givenName>          <surName>Mahoney</surName>
+    </individualName>
+<organizationName>Illinois State Museum</organizationName><positionName>Assistant Curator of Zoology</positionName>    <address>
+<deliveryPoint>1011 E. Ash Street</deliveryPoint><city>Springfield</city><administrativeArea>Illinois</administrativeArea><postalCode>62703</postalCode><country>UNITED_STATES</country>    </address>
+<phone>217-785-4843</phone><electronicMailAddress>mjmahoney@museum.state.il.us</electronicMailAddress><onlineUrl>http://www.museum.state.il.us</onlineUrl>      </contact>
+
+</dataset>
+
+<additionalMetadata>
+    <metadata>
+      <gbif>
+        <dateStamp>2020-04-01T19:17:49Z</dateStamp>
+      <citation>Mahoney M (2016). ISM Mammalogy Collection. Version 4.2. Illinois State Museum. Occurrence dataset https://doi.org/10.15468/vqhgf7 accessed via GBIF.org on 2020-04-01.</citation>
+              <collection>
+                <parentCollectionIdentifier>ISM</parentCollectionIdentifier>
+                <collectionIdentifier>Mammals</collectionIdentifier>
+                <collectionName>ISM Mammalogy</collectionName>
+              </collection>
+        </gbif>
+    </metadata>
+</additionalMetadata>
+
+</eml:eml>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.1/eml.xsd"
+        packageId="431b19b9-b5b4-4bcb-ae11-072899dd4c52"  system="http://gbif.org" scope="system"
+  xml:lang="en">
+
+<dataset>
+      <alternateIdentifier>10.15468/iw3g35</alternateIdentifier>
+        <alternateIdentifier>http://ipt.vertnet.org:8080/ipt/resource?r=csulb_mammals</alternateIdentifier>
+    <title>California State University, Long Beach Mammals</title>
+    <creator>
+    <individualName>
+<givenName>Suellen</givenName>          <surName>Jacob</surName>
+    </individualName>
+<organizationName>California State University, Long Beach</organizationName><positionName>Vertebrate Collections Manager</positionName>    <address>
+<deliveryPoint>1250 Bellflower Boulevard</deliveryPoint><city>Long Beach</city><administrativeArea>California</administrativeArea><postalCode>90840</postalCode><country>UNITED_STATES</country>    </address>
+<phone>864-985-4883</phone><electronicMailAddress>Suellen.Jacob@csulb.edu</electronicMailAddress><onlineUrl>http://web.csulb.edu/colleges/cnsm/collections/mammals/</onlineUrl>    </creator>
+    <metadataProvider>
+    <individualName>
+<givenName>Suellen</givenName>          <surName>Jacob</surName>
+    </individualName>
+<organizationName>California State University, Long Beach</organizationName><positionName>Vertebrate Collections Manager</positionName>    <address>
+<deliveryPoint>1250 Bellflower Boulevard</deliveryPoint><city>Long Beach</city><administrativeArea>California</administrativeArea><postalCode>90840</postalCode><country>UNITED_STATES</country>    </address>
+<phone>864-985-4883</phone><electronicMailAddress>Suellen.Jacob@csulb.edu</electronicMailAddress><onlineUrl>http://web.csulb.edu/colleges/cnsm/collections/mammals/</onlineUrl>    </metadataProvider>
+    <associatedParty>
+    <individualName>
+<givenName>David</givenName>          <surName>Bloom</surName>
+    </individualName>
+<organizationName>VertNet</organizationName><positionName>VertNet Coordinator</positionName><phone>+01 510 859 7773</phone><electronicMailAddress>dbloom@vertnet.org</electronicMailAddress><onlineUrl>http://vertnet.org</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+    <associatedParty>
+    <individualName>
+<givenName>John</givenName>          <surName>Wieczorek</surName>
+    </individualName>
+<organizationName>VertNet</organizationName><positionName>Information Architect</positionName><electronicMailAddress>tuco@berkeley.edu</electronicMailAddress><onlineUrl>http://vertnet.org/</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+      <pubDate>
+      2017-09-27
+      </pubDate>
+    <language>ENGLISH</language>
+    <abstract>
+        <para>The CSULB Biological Collections include approximately 55,000 preserved diatoms, macroinvertebrates, fish, birds, mammals, and plants.
+
+The mammal collection has about 12,000 specimens preserved as study skins, skulls, skeletons, and fluid preparations. The vast majority of the specimens are regional, with a focus on rodents of Southern California, Utah, and northwestern Mexico. The collection includes vouchers from systematic and parasitological studies of CSULB faculty. A separately housed teaching collection is used for Vertebrate Zoology, Mammalogy, and Introductory Biology classes.</para>
+    </abstract>
+        <keywordSet>
+              <keyword>Occurrence</keyword>
+              <keywordThesaurus>GBIF Dataset Type Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_type.xml</keywordThesaurus>
+        </keywordSet>
+        <keywordSet>
+              <keyword>Specimen</keyword>
+              <keywordThesaurus>GBIF Dataset Subtype Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_subtype.xml</keywordThesaurus>
+        </keywordSet>
+      <additionalInfo>
+          <para>http://vertnet.org/resources/norms.html</para>
+      </additionalInfo>
+      <intellectualRights>
+        <para>To the extent possible under law, the publisher has waived all rights to these data and has dedicated them to the <ulink url="http://creativecommons.org/publicdomain/zero/1.0/legalcode"><citetitle>Public Domain (CC0 1.0)</citetitle></ulink>. Users may copy, modify, distribute and use the work, including for commercial purposes, without restriction.</para>
+      </intellectualRights>
+      <distribution scope="document">
+          <online>
+              <url function="information">http://web.csulb.edu/colleges/cnsm/collections/</url>
+          </online>
+      </distribution>
+      <coverage>
+            <geographicCoverage>
+                  <geographicDescription>Most specimens are regional - from the southwestern states of the USA and northwestern Mexico.</geographicDescription>
+                  <boundingCoordinates>
+                      <westBoundingCoordinate>-180</westBoundingCoordinate>
+                      <eastBoundingCoordinate>180</eastBoundingCoordinate>
+                      <northBoundingCoordinate>90</northBoundingCoordinate>
+                      <southBoundingCoordinate>-90</southBoundingCoordinate>
+                  </boundingCoordinates>
+            </geographicCoverage>
+          <temporalCoverage>
+            <rangeOfDates>
+              <beginDate>
+                <calendarDate>      1908-08-20
+</calendarDate>
+              </beginDate>
+              <endDate>
+                <calendarDate>      2017-09-18
+</calendarDate>
+              </endDate>
+            </rangeOfDates>
+          </temporalCoverage>
+              <taxonomicCoverage>
+                    <generalTaxonomicCoverage>Complete coverage of the species and many of the subspecies of land mammals in southern California and northwestern Mexico.</generalTaxonomicCoverage>
+                    <taxonomicClassification>
+                          <taxonRankName>Class</taxonRankName>
+                        <taxonRankValue>Mammalia</taxonRankValue>
+                          <commonName>Mammals</commonName>
+                    </taxonomicClassification>
+              </taxonomicCoverage>
+      </coverage>
+      <maintenance>
+          <description>
+              <para></para>
+          </description>
+          <maintenanceUpdateFrequency>unkown</maintenanceUpdateFrequency>
+      </maintenance>
+      <contact>
+    <individualName>
+<givenName>Suellen</givenName>          <surName>Jacob</surName>
+    </individualName>
+<organizationName>California State University, Long Beach</organizationName><positionName>Vertebrate Collections Manager</positionName>    <address>
+<deliveryPoint>1250 Bellflower Boulevard</deliveryPoint><city>Long Beach</city><administrativeArea>California</administrativeArea><postalCode>90840</postalCode><country>UNITED_STATES</country>    </address>
+<phone>864-985-4883</phone><electronicMailAddress>Suellen.Jacob@csulb.edu</electronicMailAddress><onlineUrl>http://web.csulb.edu/colleges/cnsm/collections/mammals/</onlineUrl>      </contact>
+
+</dataset>
+
+<additionalMetadata>
+    <metadata>
+      <gbif>
+        <dateStamp>2020-04-01T19:17:47Z</dateStamp>
+      <citation>Jacob S (2017). California State University, Long Beach Mammals. California State University, Long Beach. Occurrence dataset https://doi.org/10.15468/iw3g35 accessed via GBIF.org on 2020-04-01.</citation>
+        </gbif>
+    </metadata>
+</additionalMetadata>
+
+</eml:eml>

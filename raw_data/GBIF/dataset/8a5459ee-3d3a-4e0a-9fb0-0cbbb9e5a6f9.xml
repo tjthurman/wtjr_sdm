@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.1/eml.xsd"
+        packageId="8a5459ee-3d3a-4e0a-9fb0-0cbbb9e5a6f9"  system="http://gbif.org" scope="system"
+  xml:lang="en">
+
+<dataset>
+      <alternateIdentifier>10.15468/lcmhaq</alternateIdentifier>
+        <alternateIdentifier>http://ipt.vertnet.org:8080/ipt/resource?r=kstc_schmidt_mammals</alternateIdentifier>
+        <alternateIdentifier>http://ipt.vertnet.org:8080/ipt/resource.do?r=kstc_schmidt_mammals</alternateIdentifier>
+        <alternateIdentifier>8a5459ee-3d3a-4e0a-9fb0-0cbbb9e5a6f9</alternateIdentifier>
+        <alternateIdentifier>14905</alternateIdentifier>
+    <title>Schmidt Museum of Natural History_Mammals</title>
+    <creator>
+    <individualName>
+<givenName>Bill</givenName>          <surName>Jensen</surName>
+    </individualName>
+<organizationName>Schmidt Museum of Natural History, Emporia State University</organizationName><positionName>Museum Director</positionName>    <address>
+<deliveryPoint>Breukelman Science Hall Room 43</deliveryPoint><city>Emporia</city><administrativeArea>KS</administrativeArea><postalCode>66801</postalCode><country>UNITED_STATES</country>    </address>
+<phone>+01 620-341-5339</phone><electronicMailAddress>wjensen1@emporia.edu</electronicMailAddress><onlineUrl>http://www.emporia.edu/smnh/</onlineUrl>    </creator>
+    <metadataProvider>
+    <individualName>
+<givenName>Bill</givenName>          <surName>Jensen</surName>
+    </individualName>
+<organizationName>Schmidt Museum of Natural History, Emporia State University</organizationName><positionName>Museum Director</positionName>    <address>
+<deliveryPoint>Breukelman Science Hall Room 43</deliveryPoint><city>Emporia</city><administrativeArea>KS</administrativeArea><postalCode>66801</postalCode><country>UNITED_STATES</country>    </address>
+<phone>+01 620-341-5339</phone><electronicMailAddress>wjensen1@emporia.edu</electronicMailAddress><onlineUrl>http://www.emporia.edu/smnh/</onlineUrl>    </metadataProvider>
+    <associatedParty>
+    <individualName>
+<givenName>David</givenName>          <surName>Bloom</surName>
+    </individualName>
+<organizationName>VertNet</organizationName><positionName>VertNet Programmer</positionName><electronicMailAddress>dbloom@vertnet.org</electronicMailAddress><onlineUrl>http://www.vertnet.org</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+    <associatedParty>
+    <individualName>
+<givenName>David</givenName>          <surName>Bloom</surName>
+    </individualName>
+<organizationName>VertNet</organizationName><positionName>VertNet Coordinator</positionName><electronicMailAddress>dbloom@vertnet.org</electronicMailAddress><onlineUrl>http://www.vertnet.org</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+    <associatedParty>
+    <individualName>
+<givenName>John</givenName>          <surName>Wieczorek</surName>
+    </individualName>
+<organizationName>Museum of Vertebrate Zoology at UC Berkeley</organizationName><positionName>Information Architect</positionName><electronicMailAddress>tuco@berkeley.edu</electronicMailAddress>    <role>PROGRAMMER</role>
+    </associatedParty>
+      <pubDate>
+      2016-12-22
+      </pubDate>
+    <language>ENGLISH</language>
+    <abstract>
+        <para>The Schmidt Museum of Natural History contains a comprehensive collection of approximately 600 taxidermy mounts of birds, mammals, reptiles, and fish from Kansas. A research collection of more than 2,500 bird and mammal skins from various parts of the U.S. is maintained for advanced study and research.
+
+The museum mounts are the work of Richard Schmidt whose career began as a school boy in 1925 and culminated with his retirement as taxidermist at Emporia State University (then Emporia Kansas State College). The specimens in the museum are grouped taxonomically and allow visitors to see clearly the color and structural details useful in identifying species. Other interesting features include displays of rare specimens collected in Kansas, invertebrates, an egg collection, unusual color patterns of certain species, techniques for preparing museum mounts, and a tallgrass prairie diorama.</para>
+    </abstract>
+        <keywordSet>
+              <keyword>Occurrence</keyword>
+              <keywordThesaurus>GBIF Dataset Type Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_type.xml</keywordThesaurus>
+        </keywordSet>
+        <keywordSet>
+              <keyword>Specimen</keyword>
+              <keywordThesaurus>GBIF Dataset Subtype Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_subtype.xml</keywordThesaurus>
+        </keywordSet>
+      <additionalInfo>
+          <para>http://vertnet.org/resources/norms.html
+
+KTSC is currently in the process of digitizing the collection in a Specify database and publishing data as it becomes available. Although KSTC routinely updates their data, outdated taxonomic names, mistaken specimen identifications, erroneous localities, and other problems inevitably occur. Investigators should verify data by direct examination of specimens, and notify KSTC if discrepancies are found.</para>
+      </additionalInfo>
+      <intellectualRights>
+        <para>To the extent possible under law, the publisher has waived all rights to these data and has dedicated them to the <ulink url="http://creativecommons.org/publicdomain/zero/1.0/legalcode"><citetitle>Public Domain (CC0 1.0)</citetitle></ulink>. Users may copy, modify, distribute and use the work, including for commercial purposes, without restriction.</para>
+      </intellectualRights>
+      <distribution scope="document">
+          <online>
+              <url function="information">http://www.emporia.edu/smnh/</url>
+          </online>
+      </distribution>
+      <coverage>
+            <geographicCoverage>
+                  <geographicDescription>Western hemisphere</geographicDescription>
+                  <boundingCoordinates>
+                      <westBoundingCoordinate>-172.42</westBoundingCoordinate>
+                      <eastBoundingCoordinate>-28.67</eastBoundingCoordinate>
+                      <northBoundingCoordinate>73.88</northBoundingCoordinate>
+                      <southBoundingCoordinate>-59.99</southBoundingCoordinate>
+                  </boundingCoordinates>
+            </geographicCoverage>
+      </coverage>
+      <maintenance>
+          <description>
+              <para></para>
+          </description>
+          <maintenanceUpdateFrequency>unkown</maintenanceUpdateFrequency>
+      </maintenance>
+      <contact>
+    <individualName>
+<givenName>Bill</givenName>          <surName>Jensen</surName>
+    </individualName>
+<organizationName>Schmidt Museum of Natural History, Emporia State University</organizationName><positionName>Museum Director</positionName>    <address>
+<deliveryPoint>Breukelman Science Hall Room 43</deliveryPoint><city>Emporia</city><administrativeArea>KS</administrativeArea><postalCode>66801</postalCode><country>UNITED_STATES</country>    </address>
+<phone>+01 620-341-5339</phone><electronicMailAddress>wjensen1@emporia.edu</electronicMailAddress><onlineUrl>http://www.emporia.edu/smnh/</onlineUrl>      </contact>
+
+</dataset>
+
+<additionalMetadata>
+    <metadata>
+      <gbif>
+        <dateStamp>2020-04-01T19:17:46Z</dateStamp>
+      <citation>Jensen B (2016). Schmidt Museum of Natural History_Mammals. Version 6.1. Emporia State University. Occurrence dataset https://doi.org/10.15468/lcmhaq accessed via GBIF.org on 2020-04-01.</citation>
+              <collection>
+                <parentCollectionIdentifier>Schmidt Museum of Natural History (KSTC)</parentCollectionIdentifier>
+                <collectionIdentifier>Schmidt Museum of Natural History (KSTC)</collectionIdentifier>
+                <collectionName>Schmidt Museum of Natural History (KSTC)</collectionName>
+              </collection>
+        </gbif>
+    </metadata>
+</additionalMetadata>
+
+</eml:eml>

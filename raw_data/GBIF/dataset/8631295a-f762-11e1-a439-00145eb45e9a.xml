@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.1/eml.xsd"
+        packageId="8631295a-f762-11e1-a439-00145eb45e9a"  system="http://gbif.org" scope="system"
+  xml:lang="en">
+
+<dataset>
+      <alternateIdentifier>10.15468/qv6cxl</alternateIdentifier>
+        <alternateIdentifier>http://ipt.vertnet.org:8080/ipt/resource?r=ucla_birds_mammals</alternateIdentifier>
+        <alternateIdentifier>http://ipt.vertnet.org:8080/ipt/resource.do?r=ucla_birds_mammals</alternateIdentifier>
+        <alternateIdentifier>8631295a-f762-11e1-a439-00145eb45e9a</alternateIdentifier>
+        <alternateIdentifier>1846</alternateIdentifier>
+    <title>UCLA Donald R. Dickey Bird and Mammal Collection</title>
+    <creator>
+    <individualName>
+<givenName>Kathy</givenName>          <surName>Molina</surName>
+    </individualName>
+<organizationName>University of California, Los Angeles</organizationName><positionName>Collection Manager</positionName>    <address>
+<deliveryPoint>Department of Ecology &amp; Evolutionary Biology, Hershey Hall, 612 Charles Young Dr. East</deliveryPoint><city>Los Angeles</city><administrativeArea>CA</administrativeArea><postalCode>90095</postalCode><country>UNITED_STATES</country>    </address>
+<phone>+01 310-825-1282</phone><electronicMailAddress>kmolina@obee.ucla.edu</electronicMailAddress><onlineUrl>http://www.eeb.ucla.edu/dickey/</onlineUrl>    </creator>
+    <metadataProvider>
+    <individualName>
+<givenName>Kathy</givenName>          <surName>Molina</surName>
+    </individualName>
+<organizationName>University of California, Los Angeles</organizationName><positionName>Collection Manager</positionName>    <address>
+<deliveryPoint>Department of Ecology &amp; Evolutionary Biology, Hershey Hall, 612 Charles Young Dr. East</deliveryPoint><city>Los Angeles</city><administrativeArea>CA</administrativeArea><postalCode>90095</postalCode><country>UNITED_STATES</country>    </address>
+<phone>+01 310-825-1282</phone><electronicMailAddress>kmolina@obee.ucla.edu</electronicMailAddress><onlineUrl>http://www.eeb.ucla.edu/dickey/</onlineUrl>    </metadataProvider>
+    <associatedParty>
+    <individualName>
+<givenName>David</givenName>          <surName>Bloom</surName>
+    </individualName>
+<organizationName>VertNet</organizationName><positionName>Programmer</positionName><electronicMailAddress>dbloom@vertnet.org</electronicMailAddress><onlineUrl>http://www.vertnet.org</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+    <associatedParty>
+    <individualName>
+<givenName>David</givenName>          <surName>Bloom</surName>
+    </individualName>
+<organizationName>VertNet</organizationName><positionName>Coordinator</positionName><electronicMailAddress>dbloom@vertnet.org</electronicMailAddress><onlineUrl>http://www.vertnet.org</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+    <associatedParty>
+    <individualName>
+<givenName>John</givenName>          <surName>Wieczorek</surName>
+    </individualName>
+<organizationName>Museum of Vertebrate Zoology, UC Berkeley</organizationName><positionName>Information Architect</positionName><electronicMailAddress>tuco@berkeley.edu</electronicMailAddress>    <role>PROGRAMMER</role>
+    </associatedParty>
+      <pubDate>
+      2016-12-22
+      </pubDate>
+    <language>ENGLISH</language>
+    <abstract>
+        <para>The UCLA Donald R. Dickey Bird and Mammal Collection consists of over 50,000 skins and skeletons of birds and mammals from the United States, Canada, Mexico, Central America, and islands in the Pacific. The collection was developed by Donald R. Dickey of Pasadena between 1910 and1932. Donated to UCLA in 1940 by his widow, Florence Van Vechten Dickey, it is one of the world&amp;#39;s best collections of birds and mammals of the American southwest and Central America. It is used for teaching and research by faculty, students, and visiting scientists.</para>
+    </abstract>
+        <keywordSet>
+              <keyword>Occurrence</keyword>
+              <keywordThesaurus>GBIF Dataset Type Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_type.xml</keywordThesaurus>
+        </keywordSet>
+        <keywordSet>
+              <keyword>Specimen</keyword>
+              <keywordThesaurus>GBIF Dataset Subtype Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_subtype.xml</keywordThesaurus>
+        </keywordSet>
+      <additionalInfo>
+          <para>http://vertnet.org/resources/norms.html</para>
+      </additionalInfo>
+      <intellectualRights>
+        <para>To the extent possible under law, the publisher has waived all rights to these data and has dedicated them to the <ulink url="http://creativecommons.org/publicdomain/zero/1.0/legalcode"><citetitle>Public Domain (CC0 1.0)</citetitle></ulink>. Users may copy, modify, distribute and use the work, including for commercial purposes, without restriction.</para>
+      </intellectualRights>
+      <distribution scope="document">
+          <online>
+              <url function="information">https://www.eeb.ucla.edu/dickey/</url>
+          </online>
+      </distribution>
+      <coverage>
+            <geographicCoverage>
+                  <geographicDescription>Our geographic strengths include western North America and Middle America, with major series from Mexico, Nicaragua, El Salvador, and Costa Rica.</geographicDescription>
+                  <boundingCoordinates>
+                      <westBoundingCoordinate>-180</westBoundingCoordinate>
+                      <eastBoundingCoordinate>180</eastBoundingCoordinate>
+                      <northBoundingCoordinate>90</northBoundingCoordinate>
+                      <southBoundingCoordinate>-90</southBoundingCoordinate>
+                  </boundingCoordinates>
+            </geographicCoverage>
+              <taxonomicCoverage>
+                    <generalTaxonomicCoverage>The avian collection includes representatives of every order and 75% of the families; the mammal collection is less comprehensive, spanning 35% of the orders and 40% of all families. The collection has significant systematic and taxonomic value in that it contains over 200 holotypes, including 183 bird and 48 mammal taxa, respectively.</generalTaxonomicCoverage>
+                    <taxonomicClassification>
+                          <taxonRankName>Class</taxonRankName>
+                        <taxonRankValue>Aves</taxonRankValue>
+                          <commonName>birds</commonName>
+                    </taxonomicClassification>
+                    <taxonomicClassification>
+                          <taxonRankName>Class</taxonRankName>
+                        <taxonRankValue>Mammalia</taxonRankValue>
+                          <commonName>mammals</commonName>
+                    </taxonomicClassification>
+              </taxonomicCoverage>
+      </coverage>
+      <maintenance>
+          <description>
+              <para></para>
+          </description>
+          <maintenanceUpdateFrequency>unkown</maintenanceUpdateFrequency>
+      </maintenance>
+      <contact>
+    <individualName>
+<givenName>Kathy</givenName>          <surName>Molina</surName>
+    </individualName>
+<organizationName>University of California, Los Angeles</organizationName><positionName>Collection Manager</positionName>    <address>
+<deliveryPoint>Department of Ecology &amp; Evolutionary Biology, Hershey Hall,  612 Charles Young Dr. East</deliveryPoint><city>Los Angeles</city><administrativeArea>CA</administrativeArea><postalCode>90095</postalCode><country>UNITED_STATES</country>    </address>
+<phone>+01 310-825-1282</phone><electronicMailAddress>kmolina@obee.ucla.edu</electronicMailAddress><onlineUrl>http://www.eeb.ucla.edu/dickey/</onlineUrl>      </contact>
+
+</dataset>
+
+<additionalMetadata>
+    <metadata>
+      <gbif>
+        <dateStamp>2020-04-01T19:17:48Z</dateStamp>
+      <citation>Molina K (2016). UCLA Donald R. Dickey Bird and Mammal Collection. UCLA-Dickey Collection (UCLA-Dickey). Occurrence dataset https://doi.org/10.15468/qv6cxl accessed via GBIF.org on 2020-04-01.</citation>
+        </gbif>
+    </metadata>
+</additionalMetadata>
+
+</eml:eml>

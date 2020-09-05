@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.1/eml.xsd"
+        packageId="ff2e788b-963a-4be8-8f96-d432d397ecbd"  system="http://gbif.org" scope="system"
+  xml:lang="en">
+
+<dataset>
+      <alternateIdentifier>10.15468/dqtfhy</alternateIdentifier>
+        <alternateIdentifier>http://ipt.vertnet.org:8080/ipt/resource?r=emu_mammals</alternateIdentifier>
+    <title>T. L. Hankinson Vertebrate Museum (EMU) Mammal Collection</title>
+    <creator>
+    <individualName>
+<givenName>Allen</givenName>          <surName>Kurta</surName>
+    </individualName>
+<organizationName>T. L. Hankinson Vertebrate Museum, Eastern Michigan University</organizationName><positionName>Curator</positionName>    <address>
+<deliveryPoint>Biology Department, 441 Mark Jefferson Science Complex</deliveryPoint><city>Ypsilanti</city><administrativeArea>Michigan</administrativeArea><postalCode>48197</postalCode><country>UNITED_STATES</country>    </address>
+<phone>734-487-1174</phone><electronicMailAddress>akurta@emich.edu</electronicMailAddress><onlineUrl>http://www.emich.edu/biology/faculty/kutra.php</onlineUrl>    </creator>
+    <metadataProvider>
+    <individualName>
+<givenName>Allen</givenName>          <surName>Kurta</surName>
+    </individualName>
+<organizationName>T. L. Hankinson Vertebrate Museum, Eastern Michigan University</organizationName><positionName>Curator</positionName>    <address>
+<deliveryPoint>Biology Department, 441 Mark Jefferson Science Complex</deliveryPoint><city>Ypsilanti</city><administrativeArea>Michigan</administrativeArea><postalCode>48197</postalCode><country>UNITED_STATES</country>    </address>
+<phone>734-487-1174</phone><electronicMailAddress>akurta@emich.edu</electronicMailAddress><onlineUrl>http://www.emich.edu/biology/faculty/kutra.php</onlineUrl>    </metadataProvider>
+    <associatedParty>
+    <individualName>
+<givenName>David</givenName>          <surName>Bloom</surName>
+    </individualName>
+<organizationName>VertNet</organizationName><positionName>VertNet Coordinator</positionName><electronicMailAddress>dbloom@vertnet.org</electronicMailAddress><onlineUrl>http://www.vertnet.org</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+    <associatedParty>
+    <individualName>
+<givenName>John</givenName>          <surName>Wieczorek</surName>
+    </individualName>
+<organizationName>VertNet</organizationName><positionName>Information Architect</positionName><electronicMailAddress>tuco@berkeley.edu</electronicMailAddress><onlineUrl>http://www.vertnet.org</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+      <pubDate>
+      2018-03-19
+      </pubDate>
+    <language>ENGLISH</language>
+    <abstract>
+        <para>The museum is named after Thomas Leroy Hankinson (1876–1935). Mr. Hankinson received a B. S. from Michigan Agricultural College (now Michigan State University) in 1898 and another B.S. from Cornell University in 1900. He was a professor of zoology and physiology at Eastern Illinois State Normal College (now Eastern Illinois University), from 1902 to 1919; an ichthyologist for the Roosevelt Wildlife Experimental Station in New York, from 1919 to 1921; and a professor of zoology at Michigan State Normal College (now Eastern Michigan University), from 1921 until his death in 1935. Mr. Hankinson was a keen naturalist and an avid collector, with an emphasis on fish. The T. L. Hankinson Vertebrate Museum houses collections of fish (more than 5,000 specimens), amphibians (200), reptiles (275), birds (1,100) and mammals (1,300 specimens). Most specimens are from Michigan and the surrounding Great Lakes area, although other states, countries, and continents are represented. The museum provides research facilities to the university and broader scientific community, as well as educational support for local schools.</para>
+    </abstract>
+        <keywordSet>
+              <keyword>Occurrence</keyword>
+              <keywordThesaurus>GBIF Dataset Type Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_type.xml</keywordThesaurus>
+        </keywordSet>
+        <keywordSet>
+              <keyword>Specimen</keyword>
+              <keywordThesaurus>GBIF Dataset Subtype Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_subtype.xml</keywordThesaurus>
+        </keywordSet>
+      <additionalInfo>
+          <para>http://vertnet.org/resources/norms.html</para>
+      </additionalInfo>
+      <intellectualRights>
+        <para>To the extent possible under law, the publisher has waived all rights to these data and has dedicated them to the <ulink url="http://creativecommons.org/publicdomain/zero/1.0/legalcode"><citetitle>Public Domain (CC0 1.0)</citetitle></ulink>. Users may copy, modify, distribute and use the work, including for commercial purposes, without restriction.</para>
+      </intellectualRights>
+      <distribution scope="document">
+          <online>
+              <url function="information">http://www.emich.edu/biology/facilities/animal_museum.php</url>
+          </online>
+      </distribution>
+      <coverage>
+            <geographicCoverage>
+                  <geographicDescription>Global coverage with emphasis in Michigan and the Great Lakes Region.</geographicDescription>
+                  <boundingCoordinates>
+                      <westBoundingCoordinate>-180</westBoundingCoordinate>
+                      <eastBoundingCoordinate>180</eastBoundingCoordinate>
+                      <northBoundingCoordinate>90</northBoundingCoordinate>
+                      <southBoundingCoordinate>-90</southBoundingCoordinate>
+                  </boundingCoordinates>
+            </geographicCoverage>
+              <taxonomicCoverage>
+                    <taxonomicClassification>
+                          <taxonRankName>Class</taxonRankName>
+                        <taxonRankValue>Mammalia</taxonRankValue>
+                    </taxonomicClassification>
+              </taxonomicCoverage>
+      </coverage>
+      <maintenance>
+          <description>
+              <para></para>
+          </description>
+          <maintenanceUpdateFrequency>asNeeded</maintenanceUpdateFrequency>
+      </maintenance>
+      <contact>
+    <individualName>
+<givenName>Allen</givenName>          <surName>Kurta</surName>
+    </individualName>
+<organizationName>T. L. Hankinson Vertebrate Museum, Eastern Michigan University</organizationName><positionName>Curator</positionName>    <address>
+<deliveryPoint>Biology Department, 441 Mark Jefferson Science Complex</deliveryPoint><city>Ypsilanti</city><administrativeArea>Michigan</administrativeArea><postalCode>48197</postalCode><country>UNITED_STATES</country>    </address>
+<phone>734-487-1174</phone><electronicMailAddress>akurta@emich.edu</electronicMailAddress><onlineUrl>http://www.emich.edu/biology/faculty/kutra.php</onlineUrl>      </contact>
+
+</dataset>
+
+<additionalMetadata>
+    <metadata>
+      <gbif>
+        <dateStamp>2020-04-01T19:17:45Z</dateStamp>
+      <citation>Kurta A (2018). T. L. Hankinson Vertebrate Museum (EMU) Mammal Collection. T. L. Hankinson Vertebrate Museum, Eastern Michigan University. Occurrence dataset https://doi.org/10.15468/dqtfhy accessed via GBIF.org on 2020-04-01.</citation>
+              <formationPeriod>1890-current</formationPeriod>
+        </gbif>
+    </metadata>
+</additionalMetadata>
+
+</eml:eml>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.1/eml.xsd"
+        packageId="0b33986b-9b62-451e-ba7a-9c2e777e5580"  system="http://gbif.org" scope="system"
+  xml:lang="en">
+
+<dataset>
+      <alternateIdentifier>10.15468/dbs8w7</alternateIdentifier>
+        <alternateIdentifier>http://ipt.vertnet.org:8080/ipt/resource?r=uconn-mammals</alternateIdentifier>
+        <alternateIdentifier>0b33986b-9b62-451e-ba7a-9c2e777e5580</alternateIdentifier>
+    <title>UConn Mammals</title>
+    <creator>
+    <individualName>
+<givenName>Erin</givenName>          <surName>Kuprewicz</surName>
+    </individualName>
+<organizationName>University of Connecticut Biodiversity Research Collections</organizationName><positionName>Vertebrate Collections Manager</positionName>    <address>
+<deliveryPoint>75 North Eagleville Road</deliveryPoint><city>Storrs</city><administrativeArea>CT</administrativeArea><postalCode>06269-3043</postalCode><country>UNITED_STATES</country>    </address>
+<phone>860-486-8945</phone><electronicMailAddress>erin.kuprewicz@uconn.edu</electronicMailAddress><onlineUrl>http://biodiversity.uconn.edu/mammals/</onlineUrl>    </creator>
+    <metadataProvider>
+    <individualName>
+<givenName>Erin</givenName>          <surName>Kuprewicz</surName>
+    </individualName>
+<organizationName>University of Connecticut Biodiversity Research Collections</organizationName><positionName>Vertebrate Collections Manager</positionName>    <address>
+<deliveryPoint>75 North Eagleville Road</deliveryPoint><city>Storrs</city><administrativeArea>CT</administrativeArea><postalCode>06269-3043</postalCode><country>UNITED_STATES</country>    </address>
+<phone>860-486-8945</phone><electronicMailAddress>erin.kuprewicz@uconn.edu</electronicMailAddress><onlineUrl>http://biodiversity.uconn.edu/mammals/</onlineUrl>    </metadataProvider>
+    <associatedParty>
+    <individualName>
+<givenName>Eric</givenName>          <surName>Schultz</surName>
+    </individualName>
+<organizationName>University of Connecticut Dept. of Ecology and Evolutionary Biology</organizationName><positionName>Faculty</positionName>    <address>
+<deliveryPoint>75 North Eagleville Road</deliveryPoint><city>Storrs</city><administrativeArea>CT</administrativeArea><postalCode>06269-3043</postalCode><country>UNITED_STATES</country>    </address>
+<phone>860-486-4692</phone><electronicMailAddress>eric.schultz@uconn.edu</electronicMailAddress><onlineUrl>http://biodiversity.uconn.edu</onlineUrl>    <role>POINT_OF_CONTACT</role>
+    </associatedParty>
+    <associatedParty>
+    <individualName>
+<givenName>David</givenName>          <surName>Bloom</surName>
+    </individualName>
+<organizationName>VertNet</organizationName><positionName>Coordinator</positionName><electronicMailAddress>dbloom@vertnet.org</electronicMailAddress><onlineUrl>http://www.vertnet.org/</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+    <associatedParty>
+    <individualName>
+<givenName>John</givenName>          <surName>Wieczorek</surName>
+    </individualName>
+<organizationName>Museum of Vertebrate Zoology at UC Berkeley</organizationName><positionName>Information Architect</positionName><electronicMailAddress>tuco@berkeley.edu</electronicMailAddress><onlineUrl>http://www.vertnet.org/</onlineUrl>    <role>PROGRAMMER</role>
+    </associatedParty>
+      <pubDate>
+      2020-02-12
+      </pubDate>
+    <language>ENGLISH</language>
+    <abstract>
+        <para>The diversity and size of this collection is primarily creditable to the late Ralph Wetzel. The collection grew as a consequence of Dr. Wetzel&amp;#96;s NSF-supported program on the mammals of Paraguay. One particularly exciting and notable result of this project was the rediscovery of the Chacoan peccary (Catagonus wagneri), once thought to be extinct. Wetzel later extended his collections to several other South American countries. As a result, our collection includes many South American marsupials, canids, and rodents. We believe that this collection ranks among the top 5 in the world with respect to South American cats (many of the species included are now considered to be endangered or at risk), and among the top 10 in its coverage of South American mammals.
+
+The second most important geographic emphasis of this collection is North America with extensive series of a wide diversity of North American mammal species. Of particular note are 200 bobcat skulls, 503 domesticated and feral pig skulls, 752 river otter skulls, and 1600 fisher skulls. Taxonomic coverage of the New England fauna is very good. The collection includes moderate representation of mammals from other regions of the world, most notably from Lebanon, Iraq, Turkistan, England, and Germany (reflecting the interests of previous students).</para>
+    </abstract>
+        <keywordSet>
+              <keyword>Occurrence</keyword>
+              <keywordThesaurus>GBIF Dataset Type Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_type.xml</keywordThesaurus>
+        </keywordSet>
+        <keywordSet>
+              <keyword>Specimen</keyword>
+              <keywordThesaurus>GBIF Dataset Subtype Vocabulary: http://rs.gbif.org/vocabulary/gbif/dataset_subtype.xml</keywordThesaurus>
+        </keywordSet>
+      <additionalInfo>
+          <para>http://vertnet.org/resources/norms.html</para>
+      </additionalInfo>
+      <intellectualRights>
+        <para>To the extent possible under law, the publisher has waived all rights to these data and has dedicated them to the <ulink url="http://creativecommons.org/publicdomain/zero/1.0/legalcode"><citetitle>Public Domain (CC0 1.0)</citetitle></ulink>. Users may copy, modify, distribute and use the work, including for commercial purposes, without restriction.</para>
+      </intellectualRights>
+      <distribution scope="document">
+          <online>
+              <url function="information">http://biodiversity.uconn.edu/</url>
+          </online>
+      </distribution>
+      <coverage>
+            <geographicCoverage>
+                  <geographicDescription>This collection includes a special emphasis in North and South America.</geographicDescription>
+                  <boundingCoordinates>
+                      <westBoundingCoordinate>-180</westBoundingCoordinate>
+                      <eastBoundingCoordinate>180</eastBoundingCoordinate>
+                      <northBoundingCoordinate>90</northBoundingCoordinate>
+                      <southBoundingCoordinate>-90</southBoundingCoordinate>
+                  </boundingCoordinates>
+            </geographicCoverage>
+              <taxonomicCoverage>
+                    <taxonomicClassification>
+                          <taxonRankName>Class</taxonRankName>
+                        <taxonRankValue>Mammalia</taxonRankValue>
+                    </taxonomicClassification>
+              </taxonomicCoverage>
+      </coverage>
+      <maintenance>
+          <description>
+              <para></para>
+          </description>
+          <maintenanceUpdateFrequency>unkown</maintenanceUpdateFrequency>
+      </maintenance>
+      <contact>
+    <individualName>
+<givenName>Erin</givenName>          <surName>Kuprewicz</surName>
+    </individualName>
+<organizationName>University of Connecticut Biodiversity Research Collections</organizationName><positionName>Vertebrate Collections Manager</positionName>    <address>
+<deliveryPoint>75 North Eagleville Road</deliveryPoint><city>Storrs</city><administrativeArea>CT</administrativeArea><postalCode>06269-3043</postalCode><country>UNITED_STATES</country>    </address>
+<phone>860-486-8945</phone><electronicMailAddress>erin.kuprewicz@uconn.edu</electronicMailAddress><onlineUrl>http://biodiversity.uconn.edu/mammals/</onlineUrl>      </contact>
+      <methods>
+            <methodStep>
+                <description>
+                    <para></para>
+                </description>
+            </methodStep>
+      </methods>
+
+</dataset>
+
+<additionalMetadata>
+    <metadata>
+      <gbif>
+        <dateStamp>2020-04-01T19:17:45Z</dateStamp>
+      <citation>Kuprewicz E (2020). UConn Mammals. Version 3.3. University of Connecticut. Occurrence dataset https://doi.org/10.15468/dbs8w7 accessed via GBIF.org on 2020-04-01.</citation>
+        </gbif>
+    </metadata>
+</additionalMetadata>
+
+</eml:eml>

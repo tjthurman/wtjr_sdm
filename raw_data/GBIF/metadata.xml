@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<eml:eml xmlns:eml="eml://ecoinformatics.org/eml-2.1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/1.1/eml.xsd"
+        packageId="10.15468/dl.5rne5a"  system="http://gbif.org" scope="system"
+  xml:lang="en">
+
+<dataset>
+        <alternateIdentifier>0033907-200221144449610</alternateIdentifier>
+    <title>GBIF Occurrence Download 10.15468/dl.5rne5a</title>
+    <creator>
+    <individualName>
+          <surName>GBIF Download Service</surName>
+    </individualName>
+<electronicMailAddress>support@gbif.org</electronicMailAddress>    </creator>
+    <metadataProvider>
+    <individualName>
+          <surName>GBIF Download Service</surName>
+    </individualName>
+<electronicMailAddress>support@gbif.org</electronicMailAddress>    </metadataProvider>
+      <pubDate>
+      2020-04-01
+      </pubDate>
+    <language>ENGLISH</language>
+    <abstract>
+        <para>A dataset containing all occurrences available in GBIF matching the query:
+{
+  &quot;TaxonKey&quot; : [ &quot;is Lepus townsendii Bachman, 1839&quot; ]
+}
+The dataset includes records from the following constituent datasets. The full metadata for each constituent is also included in this archive:
+1 records from Ibaraki Nature Museum, Mammals collection
+1 records from RBINS DaRWIN
+1 records from ISU Mammals
+1 records from (UTC) University of Tennessee Mammals Collection
+1 records from UAZ Mammals
+1 records from UTEP Mammals (Arctos)
+1 records from Palaeobiology - Vertebrate Fossils Collection - Mammalia - Royal Ontario Museum
+1 records from Anymals+plants - Citizen Science Data
+1 records from T. L. Hankinson Vertebrate Museum (EMU) Mammal Collection
+1 records from UConn Mammals
+1 records from University of Florida Vertebrate Paleontology
+1 records from Naturalis Biodiversity Center (NL) - Museum collection digitized at storage unit level
+1 records from Natural History Museum (London) Collection Specimens
+2 records from WNMU Mammal Collection (Arctos)
+2 records from Schmidt Museum of Natural History_Mammals
+2 records from Biodiversity Research and Teaching Collections - TCWC Vertebrates
+2 records from UNR Mammalogy
+2 records from Palaeobiology - Vertebrate Comparative Osteology Collection - Royal Ontario Museum
+2 records from Angelo State Natural History Collections (ASNHC) - Mammalogy Collection
+2 records from International Barcode of Life project (iBOL)
+2 records from CUMV Mammal Collection
+2 records from UAM Mammal Collection (Arctos)
+2 records from HSU Wildlife Mammals
+2 records from NHMO Mammal collection
+2 records from Ohio State University Tetrapod Division - Mammal Collection (OSUM)
+2 records from Macaulay Library Audio and Video Collection
+3 records from Mammal specimens
+3 records from SDNHM Mammology Collection
+3 records from CHAS Mammalogy Collection (Arctos)
+3 records from SBMNH Vertebrate Zoology
+4 records from HSU Vertebrate Museum Mammals Collection
+5 records from Mammals Specimens
+5 records from TTU Mammals Collection
+5 records from NCSM Mammals Collection
+6 records from California State University, Long Beach Mammals
+6 records from LACM Vertebrate Collection
+7 records from SUI Vertebrate Collection
+8 records from MSU Mammalogy, Ornithology and Vertebrate Paleontology Collections
+10 records from Paleobiology Database
+12 records from KUBI Vertebrate Paleontology Collection
+15 records from UCLA Donald R. Dickey Bird and Mammal Collection
+15 records from University of Alberta Museum of Zoology Mammalogy Collection (UAMZ)
+18 records from CAS Mammalogy (MAM)
+19 records from Cowan Tetrapod Collection - Mammals
+20 records from PSM Vertebrates Collection
+21 records from FHSM Mammals Collection
+23 records from Vertebrate Zoology Division - Mammalogy, Yale Peabody Museum
+24 records from CRCM Vertebrate Collection
+25 records from University of California Museum of Paleontology
+26 records from Mammalogy Collection - Royal Ontario Museum
+28 records from UWBM Mammalogy Collection (Arctos)
+28 records from Field Museum of Natural History (Zoology) Mammal Collection
+32 records from Canadian Museum of Nature Mammal Collection
+36 records from ISM Mammalogy Collection
+44 records from MSB Mammal Collection (Arctos)
+45 records from Museum of Comparative Zoology, Harvard University
+52 records from UTEP Fossils (Arctos)
+61 records from MVZ Mammal Collection (Arctos)
+62 records from UWYMV Mammal Collection (Arctos)
+65 records from AMNH Mammal Collections
+95 records from UMNH Mammals Collection (Arctos)
+98 records from UCM Mammal Collection (Arctos)
+106 records from DMNS Mammal Collection (Arctos)
+213 records from NatureServe Network Species Occurrence Data
+227 records from NMNH Extant Specimen Records
+235 records from KUBI Mammalogy Collection
+692 records from iNaturalist Research-grade Observations
+</para>
+    </abstract>
+      <contact>
+    <individualName>
+          <surName>GBIF Download Service</surName>
+    </individualName>
+<electronicMailAddress>support@gbif.org</electronicMailAddress>      </contact>
+
+</dataset>
+
+<additionalMetadata>
+    <metadata>
+      <gbif>
+        <dateStamp>2020-04-01T19:17:51Z</dateStamp>
+      <citation identifier="10.15468/dl.5rne5a">GBIF Occurrence Download 10.15468/dl.5rne5a</citation>
+              <physical>
+                  <objectName>Darwin Core Archive</objectName>
+                  <characterEncoding>UTF-8</characterEncoding>
+                  <dataFormat>
+                      <externallyDefinedFormat>
+                          <formatName>Darwin Core Archive</formatName>
+                      </externallyDefinedFormat>
+                  </dataFormat>
+                  <distribution>
+                      <online>
+                          <url function="download">http://api.gbif.org/v1/occurrence/download/request/0033907-200221144449610.zip</url>
+                      </online>
+                  </distribution>
+              </physical>
+        </gbif>
+    </metadata>
+</additionalMetadata>
+
+</eml:eml>
