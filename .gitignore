@@ -12,4 +12,8 @@
 *.html
 
 
-filegraph.png
+
+
+raw_data/wc0.5/
+
+processed_data/bioclim_30arcsec_for_WTJR_SDM.tif

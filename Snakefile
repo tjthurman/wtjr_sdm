@@ -3,7 +3,8 @@
 
 rule all:
     input:
-        "processed_data/leptown_db_occurrences.csv"
+        "processed_data/leptown_db_occurrences.csv",
+        "processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
 
 
 ## curate_occur_data   : process WTJR occurrence data
@@ -16,6 +17,15 @@ rule curate_occur_data:
         "processed_data/leptown_db_occurrences.csv"
     shell:
         "Rscript -e \"rmarkdown::render('src/data_curation.Rmd', knit_root_dir = '../', output_dir = 'docs/')\""
+
+
+## process_bioclim_data: process bioclim data
+rule process_bioclim_data:
+    output:
+        "processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
+    shell:
+        "Rscript src/prep_bioclim_data.R"
+
 
 # --- Misc --- #
 ## dag               : makes a DAG graph for this pipeline

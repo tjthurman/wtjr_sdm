@@ -1,7 +1,5 @@
 The raw data files in this folder include:
 
-# Current things
-
 `ArctosData_43FA2173A0.csv`- Arctos records search results, searching for "Lepus townsendii" on April 2, 2020. I added a large number of columns beyond the defaults (see file), but could not add ALL the possible columns or the results would not load). 
 
 `GBIF/`- Records form GBIF search for WTJR records. Helpfully, GBIF creates a reproducible DOI with all the details: https://doi.org/10.15468/dl.5rne5a.
@@ -9,6 +7,8 @@ The raw data files in this folder include:
 `Ltownsendii_database_FINAL.xlsx`- Excel spreadsheet of all the WTJR occurrence records used for phenotypic modelling of winter white vs. winter brown.
 
 `vertnet_leptownsendii_allrecords_apr2_2020.txt`- A list of Lepus townsendii records, downloaded from VertNet on April 2, 2020. Contains 1551 records. Used the following query to get them: specificepithet:townsendii genus:lepus. Basically, just differs from the above in that I don't care which type of record they come from, just want them all. 
+
+`wc0.5`- This folder is not tracked in Git, but is generated in the `prep_bioclim_data.R` script. It contains enivronmental data downloaded from the BioClim database. 
 
 
 
