@@ -804,4 +804,16 @@ points(x = final.clean$decimallongitude,
 box()
 ```
 
+
+Finally, for the SDM analysis, we want to only keep one record per unique GPS location:
+
+```{r save unique gps}
+wtjr.occ.unique.gps <- final.clean %>% 
+  mutate(roundlat = round(decimallatitude, digits = 5),
+         roundlon = round(decimallongitude, digits = 5)) %>% 
+  distinct(roundlat, roundlon, .keep_all = T)
+
+write.csv("processed_data/leptown_db_occurrences_unique_gps.csv", x = wtjr.occ.unique.gps, row.names = F)
+```
+
 # References
