@@ -10,8 +10,7 @@ The raw data files in this folder include:
 
 `wc0.5`- This folder is not tracked in Git, but is generated in the `prep_bioclim_data.R` script. It contains enivronmental data downloaded from the BioClim database. 
 
-
-
+`worldclim_projections`- This folder is not tracked in Git, as the files were too large. It contains future projection data of Bioclim variables for the 2080s from 5 climate models from the CMIP5 set of climate projections.  Try to make them available on dryad. Downloaded from HERE: http://ccafs-climate.org/data_spatial_downscaling/, filenames as listed. 
 
 # OLD
 

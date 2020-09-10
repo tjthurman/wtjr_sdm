@@ -19,36 +19,26 @@ args = commandArgs(trailingOnly=TRUE)
 # 2 thinning distance
 # 3 reps
 # 4 out directory
+# 5 seed
 
 
 # Load Data ---------------------------------------------------------------
 wtjr.occ.unique.gps <- read.csv(args[1], stringsAsFactors = F)
 
 # Do thinning -------------------------------------------------------------
-set.seed(496)
+set.seed(args[5])
 wtjr.occ.unique.gps %>% 
   mutate(SPEC = "Leptown") %>% 
-  thin(., thin.par = 1,
+  thin(., thin.par = as.numeric(args[2]),
        lat.col = "roundlat", long.col = "roundlon", 
-       reps = 3*dim(.)[1], out.dir = "processed_data/thin/1km/",
-       out.base = "wtjr_occ", log.file = "processed_data/thin/1km/thin_log.txt")
-wtjr.occ.unique.gps %>% 
-  mutate(SPEC = "Leptown") %>% 
-  thin(., thin.par = 5,
-       lat.col = "roundlat", long.col = "roundlon", 
-       reps = 3*dim(.)[1], out.dir = "processed_data/thin/5km/",
-       out.base = "wtjr_occ", log.file = "processed_data/thin/5km/thin_log.txt")
-wtjr.occ.unique.gps %>% 
-  mutate(SPEC = "Leptown") %>% 
-  thin(., thin.par = 10,
-       lat.col = "roundlat", long.col = "roundlon", 
-       reps = 3*dim(.)[1], out.dir = "processed_data/thin/10km/",
-       out.base = "wtjr_occ", log.file = "processed_data/thin/10km/thin_log.txt")
-wtjr.occ.unique.gps %>% 
-  mutate(SPEC = "Leptown") %>% 
-  thin(., thin.par = 50,
-       lat.col = "roundlat", long.col = "roundlon", 
-       reps = 3*dim(.)[1], out.dir = "processed_data/thin/50km/",
-       out.base = "wtjr_occ", log.file = "processed_data/thin/50km/thin_log.txt")
+       reps = as.numeric(args[3]), out.dir = args[4],
+       out.base = paste0("wtjr_occ_", args[2], "km"), log.file = file.path(args[4], paste0("thin_log_", args[2], "km.txt")))
+
+
+
+
+
+
+
 
 
