@@ -4,16 +4,22 @@
 # Set up some wildcards for various aspects of the analysis
 # Spatial thinning
 thin_dists=[1,5,10,50]
+thin_dists_test=[50]
 thin_res_pattern= "processed_data/thin/{thin_dist}km/"
-#thin_res_pattern="processed_data/thin/wtjr_occ_{thin_dists}km_thin{set}.csv"
+current_bioclim="processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
+# ENMeval
+feature_class=["L", "LQ"]
+
 
 
 rule all:
     input:
         "processed_data/leptown_db_occurrences_unique_gps.csv",
-        "processed_data/bioclim_30arcsec_for_WTJR_SDM.tif",
+        current_bioclim,
         expand(thin_res_pattern, thin_dist=thin_dists),
-        "processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd"
+        "processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd",
+        expand("results/enmeval_res_{thin_dist}km_thin1_{fc}.RData", fc=feature_class, thin_dist=thin_dists_test), 
+        
 
 
 ## curate_occur_data   : process WTJR occurrence data
@@ -32,7 +38,7 @@ rule curate_occur_data:
 # 5 arguments
 # input file, thinning distance, number of reps, output directory, and random seed
 # for number of reps, did 3*number of unique gps records
-rule thin_occur_data:
+checkpoint thin_occur_data:
     input:
         "processed_data/leptown_db_occurrences_unique_gps.csv"
     output:
@@ -54,7 +60,7 @@ rule check_thin_data:
 ## process_bioclim_data: process current bioclim data
 rule process_bioclim_data:
     output:
-        "processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
+        current_bioclim
     shell:
         "Rscript src/prep_bioclim_data.R"
 
@@ -65,13 +71,40 @@ rule process_bioclim_data:
 rule process_future_bioclim:
     input:
         cmip5_dir="raw_data/worldclim_projections",
-        current="processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
+        current=current_bioclim
     output:
         "processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd"
     shell:
         """
         Rscript src/prep_future_bioclim_data.R {input.cmip5_dir} {input.current} {output}
         """
+
+## make_bg_points
+rule make_bg_points:
+    input:
+        envir=current_bioclim,
+    output:
+        "processed_data/bg_points_for_sdm.RData"
+    shell:
+        """
+        Rscript src/bg_points.R {input.envir} 782
+        """
+## run_ENMeval: create SDM with ENMeval
+
+rule run_ENMeval:
+    input:
+       occur="processed_data/thin/{dataset}/wtjr_occ_{dataset}_thin1.csv",
+       envir=current_bioclim,
+       bg= "processed_data/bg_points_for_sdm.RData"
+    output:
+        "results/enmeval_res_{dataset}_thin1_{feature_class}.RData"
+    resources:
+        cpus=1
+    shell:
+        """
+        Rscript src/run_ENMeval.R {input.occur} {input.envir} {input.bg} {wildcards.feature_class} 782 {resources.cpus}
+        """
+
 
 # --- Misc --- #
 ## dag               : makes a DAG graph for this pipeline
