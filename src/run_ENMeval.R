@@ -81,13 +81,13 @@ while (attempt <= (attempt_limit)) {
                                    bg.coords = background,
                                    algorithm = "maxnet",
                                    method = "checkerboard2",
-                                   parallel = F, rasterPreds = T, 
+                                   parallel = T, rasterPreds = T, 
                                    numCores = cores,
                                    fc = fc))
     save(enmeval_res, file = target.file)
     
     # Then check to see if the result file is big enough
-    if (file.size(target.file) < 1e2) { # if not
+    if (file.size(target.file) < 1e6) { # if not
       # remove it and increment the attempt counter
       file.remove(target.file)
     } else {

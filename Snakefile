@@ -8,8 +8,9 @@ thin_dists_test=[50]
 thin_res_pattern= "processed_data/thin/{thin_dist}km/"
 current_bioclim="processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
 # ENMeval
-feature_class=["L", "LQ"]
+feature_class=["L", "LQ", "H", "LQH"]
 
+localrules: all
 
 
 rule all:
@@ -18,7 +19,7 @@ rule all:
         current_bioclim,
         expand(thin_res_pattern, thin_dist=thin_dists),
         "processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd",
-        expand("results/enmeval_res_{thin_dist}km_thin1_{fc}.RData", fc=feature_class, thin_dist=thin_dists_test), 
+        expand("results/enmeval_res_{thin_dist}km_thin1_{fc}.RData", fc=feature_class, thin_dist=thin_dists)
         
 
 

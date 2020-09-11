@@ -19,3 +19,6 @@ raw_data/worldclim_projections/*
 
 # Processed data that is too large
 processed_data/bioclim_30arcsec_for_WTJR_SDM.tif
+
+# Results that are too large
+results/enmeval_res_*_thin1_*.RData

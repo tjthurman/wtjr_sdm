@@ -1,4 +1,4 @@
-jobs: 8
+jobs: 12
 cluster: "sbatch --partition={resources.partition} --cpus-per-task={resources.cpus} --output=/home/tt164677e/tim_beegfs/wtjr_sdm/logs/snakemake_slurm/%x_%j.out --mail-type=ALL --mail-user=timothy.j.thurman@gmail.com"
 default-resources: [cpus=1, partition="good_lab_cpu"]
 jobname: sm_wtjr_{rulename}_{jobid}.sh
