@@ -11,6 +11,9 @@
 # Doc outputs
 *.html
 
+# Snakemake logs
+logs/snakemake_slurm/*.out
+
 
 
 # Raw data that is too large or code-generated
@@ -21,4 +24,4 @@ raw_data/worldclim_projections/*
 processed_data/bioclim_30arcsec_for_WTJR_SDM.tif
 
 # Results that are too large
-results/enmeval_res_*_thin1_*.RData
+results/enmeval_res_*_thin*_*.RData

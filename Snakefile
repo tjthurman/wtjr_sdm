@@ -4,25 +4,27 @@
 # Set up some wildcards for various aspects of the analysis
 # Spatial thinning
 thin_dists=[1,5,10,50]
+dataset_dists=[0,1,5,10,50]
 thin_dists_test=[50]
 thin_res_pattern= "processed_data/thin/{thin_dist}km/"
 current_bioclim="processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
 # ENMeval
-feature_class=["L", "LQ", "H", "LQH"]
+feature_class=["L", "LQ", "H", "LQH", "LQHP", "LQHPT"]
 
-localrules: all
+
+localrules: all, rename_ENMeval_res, dag, filegraph, help
 
 
 rule all:
     input:
         "processed_data/leptown_db_occurrences_unique_gps.csv",
         current_bioclim,
-        expand(thin_res_pattern, thin_dist=thin_dists),
+        # expand(thin_res_pattern, thin_dist=thin_dists),
         "processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd",
-        expand("results/enmeval_res_{thin_dist}km_thin1_{fc}.RData", fc=feature_class, thin_dist=thin_dists)
+        expand("results/enmeval_res_{thin_dist}km_thin1_{fc}.RData", fc=feature_class, thin_dist=["0", "10", "50"]),
+        expand("results/enmeval_res_1km_thin3_{fc}.RData", fc=feature_class),
+        expand("results/enmeval_res_5km_thin2_{fc}.RData", fc=feature_class)
         
-
-
 ## curate_occur_data   : process WTJR occurrence data
 rule curate_occur_data:
     input:
@@ -32,6 +34,8 @@ rule curate_occur_data:
     output: 
         "processed_data/leptown_db_occurrences.csv",
         "processed_data/leptown_db_occurrences_unique_gps.csv"
+    resources:
+        cpus=1
     shell:
         "Rscript -e \"rmarkdown::render('src/data_curation.Rmd', knit_root_dir = '../', output_dir = 'docs/')\""
         
@@ -39,7 +43,7 @@ rule curate_occur_data:
 # 5 arguments
 # input file, thinning distance, number of reps, output directory, and random seed
 # for number of reps, did 3*number of unique gps records
-checkpoint thin_occur_data:
+rule thin_occur_data:
     input:
         "processed_data/leptown_db_occurrences_unique_gps.csv"
     output:
@@ -56,6 +60,17 @@ rule check_thin_data:
     shell:
         """
         Rscript src/check_thinned_records.R {input}
+        """
+
+## prep_unthinned_data:
+rule prep_unthinned_data:
+    input:
+        "processed_data/leptown_db_occurrences_unique_gps.csv"
+    output:
+        "processed_data/thin/0km/wtjr_occ_0km_thin1.csv"
+    shell:
+        """
+        Rscript src/prep_unthinned_occur.R {input} {output}
         """
     
 ## process_bioclim_data: process current bioclim data
@@ -104,6 +119,20 @@ rule run_ENMeval:
     shell:
         """
         Rscript src/run_ENMeval.R {input.occur} {input.envir} {input.bg} {wildcards.feature_class} 782 {resources.cpus}
+
+        """
+## rename_ENMeval_res: rename files for 1m and 5km results
+## Didn't use thin1 for the, used thin3 and thin2
+rule rename_ENMeval_res:
+    input: 
+        expand("results/enmeval_res_{km}km_thin1_{fc}.RData", km=["1", "5"], fc=feature_class)
+    output:
+        expand("results/enmeval_res_1km_thin3_{fc}.Rdata", fc=feature_class),
+        expand("results/enmeval_res_5km_thin2_{fc}.Rdata", fc=feature_class)
+    shell: 
+        """
+        rename thin1 thin3 results/enmeval_res_1km_*
+        rename thin1 thin2 results/enmeval_res_5km_*
         """
 
 
@@ -111,6 +140,8 @@ rule run_ENMeval:
 ## dag               : makes a DAG graph for this pipeline
 rule dag:
     input: "Snakefile"
+    resources:
+        cpus=1
     shell:
         "snakemake --dag | dot -Tpng > DAG.png"
         

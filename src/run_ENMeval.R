@@ -36,7 +36,7 @@ fc <- args[4]
 seed <- args[5]
 cores <- args[6]
 
-# in_csv <- "processed_data/thin/50km/wtjr_occ_50km_thin1.csv"
+# in_csv <- "processed_data/thin/5km/wtjr_occ_5km_thin1.csv"
 # in_bioclim <- "processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
 # fc <- "L"
 # seed <- 782
@@ -62,35 +62,69 @@ dataset <- str_remove(in_csv, pattern = ".csv") %>%
   .[4:5] %>% 
   paste(., sep = "", collapse = "_")
   
-
-
 # Loop to allow multiple running attempts ---------------------------------
 set.seed(seed)
-attempt_limit <- 1
+
+# Some datasets get consistent convergence errors in GLMNET,
+# which runs the model fitting in ENMeval. 
+
+# I'll try using a different thinned dataset:
+# I used the first thinned dataset by default. Snakemake is bad for this,
+# so instead I'll just do the switch in here.
+
+# For the two thinning distances that are having convergence troubles in some 
+# feature classes (1km and 5km), I'll use the second
+# .csv output in the thinning, instead of the first. 
+if (dataset %in% c("5km_thin1")) {
+  in_csv2 <- str_replace(in_csv, pattern = "thin1", "thin2")
+  
+  set.seed(245)
+  wtjr.occ <- read.csv(in_csv2, stringsAsFactors = F) %>%
+    dplyr::select(roundlon, roundlat) 
+  print("Using csv file:")
+  print(in_csv2)
+}
+
+if (dataset %in% c("1km_thin1")) {
+  in_csv2 <- str_replace(in_csv, pattern = "thin1", "thin3")
+  
+  set.seed(245)
+  wtjr.occ <- read.csv(in_csv2, stringsAsFactors = F) %>%
+    dplyr::select(roundlon, roundlat) 
+  print("Using csv file:")
+  print(in_csv2)
+}
+
+attempt_limit <- 5
 target.file <- paste("results/enmeval_res_", dataset, "_", fc, ".RData", sep = "")
 
-
 attempt <- 1
-while (attempt <= (attempt_limit)) {
+while (attempt <= attempt_limit) {
   # move the attempt counter up
   attempt <- attempt + 1
   if (!file.exists(target.file)) { # If the results file doesn't exist
     # Run the model within a try statement and save the results
+    print(paste0("Starting ENM eval attempt ", attempt - 1))
     enmeval_res <- try(ENMevaluate(occ = wtjr.occ,
                                    env = bioclim,
                                    bg.coords = background,
                                    algorithm = "maxnet",
                                    method = "checkerboard2",
-                                   parallel = T, rasterPreds = T, 
-                                   numCores = cores,
+                                   parallel = F, rasterPreds = T, 
+                                   numCores = NULL, updateProgress = T,
                                    fc = fc))
+    print(paste0("Finished ENM eval attempt ", attempt - 1))
+    print("start saving")
     save(enmeval_res, file = target.file)
+    print("end saving")
     
     # Then check to see if the result file is big enough
     if (file.size(target.file) < 1e6) { # if not
       # remove it and increment the attempt counter
+      print(paste0("ENM eval attempt ", attempt - 1, " failed, retrying"))
       file.remove(target.file)
     } else {
+      print(paste0("ENM eval attempt ", attempt - 1, " worked"))
       break
     }
   } else {
