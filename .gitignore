@@ -24,4 +24,6 @@ raw_data/worldclim_projections/*
 processed_data/bioclim_30arcsec_for_WTJR_SDM.tif
 
 # Results that are too large
-results/enmeval_res_*_thin*_*.RData
+results/enmeval/enmeval_res_*_thin*_*.RData
+Rplots.pdf
+results/sdm/sdm_rangemap_best_*.gr*

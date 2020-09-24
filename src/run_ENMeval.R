@@ -8,18 +8,10 @@
 
 # Load packages -----------------------------------------------------------
 library(tidyverse)
-# library(maptools)
-# library(rgdal)
-# library(maps)
 library(raster)
 library(dismo)
-# library(maxnet)
 library(ENMeval)
-# library(stringr)
-# # library(cowplot)
-#library(rnaturalearth)
-# source("src/misc_fxns.R")
-# state_prov <- ne_states(c("united states of america", "canada"))
+
 
 # Get arguments -----------------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
@@ -36,12 +28,6 @@ fc <- args[4]
 seed <- args[5]
 cores <- args[6]
 
-# in_csv <- "processed_data/thin/5km/wtjr_occ_5km_thin1.csv"
-# in_bioclim <- "processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
-# fc <- "L"
-# seed <- 782
-# cores <- 1
-# bg <- "processed_data/bg_points_for_sdm.RData"
 # Load occurence data -----------------------------------------------------
 wtjr.occ <- read.csv(in_csv, stringsAsFactors = F) %>%
   dplyr::select(roundlon, roundlat)
@@ -131,43 +117,3 @@ while (attempt <= attempt_limit) {
     break
   }
 }
-
-
-
-# # SDM from all data -------------------------------------------------------
-# load("results/enmeval_round2_same_bg/enmeval_res_wtjr_all_LQHPT_check2.RData")
-# 
-# # Extract predictions from best model
-# best.preds <- subset(enmeval_res@predictions, "LQHPT_1")
-# 
-# # evaluate the best model
-# eval.best.mod <- dismo::evaluate(p = raster::extract(x = best.preds, y = enmeval_res@occ.pts), 
-#                                  a = raster::extract(x = best.preds, y = enmeval_res@bg.pts))
-# # Use evaluation to get a threshold
-# spec_sens_thresh <- dismo::threshold(eval.best.mod, stat = "spec_sens")
-# # Get sensitivity at spec_sens thresh
-# eval.best.mod@TPR[eval.best.mod@t == spec_sens_thresh]
-# # Get specificity at spec_sens thresh
-# eval.best.mod@TNR[eval.best.mod@t == spec_sens_thresh]
-# 
-# eval.best.mod@TNR[eval.best.mod@t == sens_95_thresh]
-# 
-# 
-# 
-# sens_95_thresh <- dismo::threshold(eval.best.mod, stat = "sensitivity", sensitivity = 0.95)
-# sens_99_thresh <- dismo::threshold(eval.best.mod, stat = "sensitivity", sensitivity = 0.99)
-# 
-# 
-# # Make the range raster and plot it, saving as both a png and a pdf
-# range.raster.spec_sens <- best.preds > spec_sens_thresh
-# range.raster.sens95 <- best.preds > sens_95_thresh
-# range.raster.sens99 <- best.preds > sens_99_thresh
-# 
-# # Save as a binary pres/absence file --------------------------------------
-# values(range.raster.spec_sens) <- ifelse(values(range.raster.spec_sens) < 0.5, NA, 1)
-# values(range.raster.sens95) <- ifelse(values(range.raster.sens95) < 0.5, NA, 1)
-# values(range.raster.sens99) <- ifelse(values(range.raster.sens99) < 0.5, NA, 1)
-# 
-# writeRaster(range.raster.spec_sens, filename = "results/enmeval_round2_same_bg/range_alldata_best_specsens", overwrite = T)
-# writeRaster(range.raster.sens95, filename = "results/enmeval_round2_same_bg/range_alldata_best_sens95", overwrite = T)
-# # writeRaster(range.raster.sens99, filename = "results/enmeval_round2_same_bg/range_alldata_best_specsens", overwrite = T)

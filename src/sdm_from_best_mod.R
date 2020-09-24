@@ -1,17 +1,38 @@
+####################
+# Project: WTJR
+# Author: Timothy Thurman
+# Purpose: Get SDM range rasters from the best model
+# Date Created: Thu Sept 24 12:17:58 2020
+####################
 
+
+# Load packages -----------------------------------------------------------
 library(tidyverse)
-# library(maptools)
-# library(rgdal)
-# library(maps)
 library(raster)
 library(dismo)
-# library(maxnet)
 library(ENMeval)
 
-load("results/enmeval_res_0km_thin1_LQHPT.RData")
+
+
+# Get arguments -----------------------------------------------------------
+args = commandArgs(trailingOnly=TRUE)
+# 1 csv of occurrence records for analysis
+# 2 bioclim data
+# 3 bg points
+# 3 feature class
+# 4 seed
+# 5 cores
+best_mod_file <- args[1]
+best_mod_name <- args[2]
+
+
+
+# "LQHPT_1"
+# Load best model -----------------------------------------------------------
+load(best_mod_file)
  
 # Extract predictions from best model
-best.preds <- subset(enmeval_res@predictions, "LQHPT_1")
+best.preds <- subset(enmeval_res@predictions, args[2])
 
 # evaluate the best model
 eval.best.mod <- dismo::evaluate(p = raster::extract(x = best.preds, y = enmeval_res@occ.pts),
@@ -21,12 +42,12 @@ spec_sens_thresh <- dismo::threshold(eval.best.mod, stat = "spec_sens")
 sens_95_thresh <- dismo::threshold(eval.best.mod, stat = "sensitivity", sensitivity = 0.95)
 sens_99_thresh <- dismo::threshold(eval.best.mod, stat = "sensitivity", sensitivity = 0.99)
 
-# Get sensitivity at spec_sens thresh
-eval.best.mod@TPR[eval.best.mod@t == spec_sens_thresh]
-# Get specificity at spec_sens thresh
-eval.best.mod@TNR[eval.best.mod@t == spec_sens_thresh]
-eval.best.mod@TNR[eval.best.mod@t == sens_95_thresh]
-eval.best.mod@TNR[eval.best.mod@t == sens_99_thresh]
+# # Get sensitivity at spec_sens thresh
+# eval.best.mod@TPR[eval.best.mod@t == spec_sens_thresh]
+# # Get specificity at spec_sens thresh
+# eval.best.mod@TNR[eval.best.mod@t == spec_sens_thresh]
+# eval.best.mod@TNR[eval.best.mod@t == sens_95_thresh]
+# eval.best.mod@TNR[eval.best.mod@t == sens_99_thresh]
 
 
 
@@ -40,11 +61,6 @@ values(range.raster.spec_sens) <- ifelse(values(range.raster.spec_sens) < 0.5, N
 values(range.raster.sens95) <- ifelse(values(range.raster.sens95) < 0.5, NA, 1)
 values(range.raster.sens99) <- ifelse(values(range.raster.sens99) < 0.5, NA, 1)
 
-plot(range.raster.spec_sens)
-plot(range.raster.sens95)
-plot(range.raster.sens99)
-
-
-writeRaster(range.raster.spec_sens, filename = "results/sdm_rangemap_best_specsens", overwrite = T)
-writeRaster(range.raster.sens95, filename = "results/sdm_rangemap_best_sens95", overwrite = T)
-writeRaster(range.raster.sens99, filename = "results/sdm_rangemap_best_sens99", overwrite = T)
+writeRaster(range.raster.spec_sens, filename = "results/sdm/sdm_rangemap_best_specsens", overwrite = T)
+writeRaster(range.raster.sens95, filename = "results/sdm/sdm_rangemap_best_sens95", overwrite = T)
+writeRaster(range.raster.sens99, filename = "results/sdm/sdm_rangemap_best_sens99", overwrite = T)

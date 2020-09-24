@@ -21,9 +21,13 @@ rule all:
         current_bioclim,
         # expand(thin_res_pattern, thin_dist=thin_dists),
         "processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd",
-        expand("results/enmeval_res_{thin_dist}km_thin1_{fc}.RData", fc=feature_class, thin_dist=["0", "10", "50"]),
-        expand("results/enmeval_res_1km_thin3_{fc}.RData", fc=feature_class),
-        expand("results/enmeval_res_5km_thin2_{fc}.RData", fc=feature_class)
+        expand("results/enmeval/enmeval_res_{thin_dist}km_thin1_{fc}.RData", fc=feature_class, thin_dist=["0", "10", "50"]),
+        expand("results/enmeval/enmeval_res_1km_thin3_{fc}.RData", fc=feature_class),
+        expand("results/enmeval/enmeval_res_5km_thin2_{fc}.RData", fc=feature_class),
+        "results/enmeval/enmeval_metrics.csv",
+        expand("results/sdm/sdm_rangemap_best_{thresh}.{ext}", 
+               thresh = ["specsens", "sens95", "sens99"],
+               ext=["grd", "gri"])
         
 ## curate_occur_data   : process WTJR occurrence data
 rule curate_occur_data:
@@ -48,6 +52,8 @@ rule thin_occur_data:
         "processed_data/leptown_db_occurrences_unique_gps.csv"
     output:
         directory(thin_res_pattern)
+    resources:
+        cpus=1
     shell:
       """
       Rscript src/thin_records.R {input} {wildcards.thin_dist} 3000 {output} 462
@@ -57,6 +63,8 @@ rule thin_occur_data:
 rule check_thin_data:
     input:
         "processed_data/thin/"
+    resources:
+        cpus=1
     shell:
         """
         Rscript src/check_thinned_records.R {input}
@@ -68,6 +76,8 @@ rule prep_unthinned_data:
         "processed_data/leptown_db_occurrences_unique_gps.csv"
     output:
         "processed_data/thin/0km/wtjr_occ_0km_thin1.csv"
+    resources:
+        cpus=1
     shell:
         """
         Rscript src/prep_unthinned_occur.R {input} {output}
@@ -77,6 +87,8 @@ rule prep_unthinned_data:
 rule process_bioclim_data:
     output:
         current_bioclim
+    resources:
+        cpus=1
     shell:
         "Rscript src/prep_bioclim_data.R"
 
@@ -90,6 +102,8 @@ rule process_future_bioclim:
         current=current_bioclim
     output:
         "processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd"
+    resources:
+        cpus=1
     shell:
         """
         Rscript src/prep_future_bioclim_data.R {input.cmip5_dir} {input.current} {output}
@@ -101,6 +115,8 @@ rule make_bg_points:
         envir=current_bioclim,
     output:
         "processed_data/bg_points_for_sdm.RData"
+    resources:
+        cpus=1
     shell:
         """
         Rscript src/bg_points.R {input.envir} 782
@@ -113,7 +129,7 @@ rule run_ENMeval:
        envir=current_bioclim,
        bg= "processed_data/bg_points_for_sdm.RData"
     output:
-        "results/enmeval_res_{dataset}_thin1_{feature_class}.RData"
+        "results/enmeval/enmeval_res_{dataset}_thin1_{feature_class}.RData"
     resources:
         cpus=1
     shell:
@@ -125,15 +141,52 @@ rule run_ENMeval:
 ## Didn't use thin1 for the, used thin3 and thin2
 rule rename_ENMeval_res:
     input: 
-        expand("results/enmeval_res_{km}km_thin1_{fc}.RData", km=["1", "5"], fc=feature_class)
+        expand("results/enmeval/enmeval_res_{km}km_thin1_{fc}.RData", km=["1", "5"], fc=feature_class)
     output:
-        expand("results/enmeval_res_1km_thin3_{fc}.Rdata", fc=feature_class),
-        expand("results/enmeval_res_5km_thin2_{fc}.Rdata", fc=feature_class)
+        expand("results/enmeval/enmeval_res_1km_thin3_{fc}.Rdata", fc=feature_class),
+        expand("results/enmeval/enmeval_res_5km_thin2_{fc}.Rdata", fc=feature_class)
     shell: 
         """
-        rename thin1 thin3 results/enmeval_res_1km_*
-        rename thin1 thin2 results/enmeval_res_5km_*
+        rename thin1 thin3 results/enmeval/enmeval_res_1km_*
+        rename thin1 thin2 results/enmeval/enmeval_res_5km_*
         """
+
+## process_ENMeval_res: process results from ENMeval, use to decide best model
+rule process_ENMeval_res:
+    input:
+        expand("results/enmeval/enmeval_res_{thin_dist}km_thin1_{fc}.RData", fc=feature_class, thin_dist=["0", "10", "50"]),
+        expand("results/enmeval/enmeval_res_1km_thin3_{fc}.RData", fc=feature_class),
+        expand("results/enmeval/enmeval_res_5km_thin2_{fc}.RData", fc=feature_class),
+        res_dir="results/enmeval/"
+    output:
+        "results/enmeval/enmeval_metrics.csv",
+        "results/enmeval/enmeval_best_model_per_thin_AIC.csv",
+        expand("results/enmeval/performance_plot_{dist}km.pdf", dist = dataset_dists)
+    resources:
+        cpus=1
+    shell:
+        """
+        Rscript src/process_ENMeval_results.R {input.res_dir}
+        """
+
+## sdm_range_raster: make rasters of the SDM rangemaps from the best model
+rule sdm_range_raster: 
+    input:
+        "results/enmeval/enmeval_best_model_per_thin_AIC.csv",
+        enm_res="results/enmeval/enmeval_res_0km_thin1_LQHPT.RData"
+    output:
+        expand("results/sdm/sdm_rangemap_best_{thresh}.{ext}", 
+               thresh = ["specsens", "sens95", "sens99"],
+               ext=["grd", "gri"])
+    resources:
+        cpus=1
+    params:
+        best_params="LQHPT_1"
+    shell:
+        """
+        Rscript src/sdm_from_best_mod.R {input.enm_res} {params.best_params}
+        """
+
 
 
 # --- Misc --- #

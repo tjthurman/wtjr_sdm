@@ -1,29 +1,21 @@
+####################
+# Project: WTJR
+# Author: Timothy Thurman
+# Purpose: Processing ENMeval results
+# Date Created: Thu Spet 24 11:22:58 2020
+####################
 
 
-
-
+# Load packages -----------------------------------------------------------
 library(tidyverse)
-# library(maptools)
-# library(rgdal)
-# library(maps)
 library(raster)
 library(dismo)
-# library(maxnet)
 library(ENMeval)
-# library(stringr)
-# # library(cowplot)
-#library(rnaturalearth)
-# source("src/misc_fxns.R")
-# state_prov <- ne_states(c("united states of america", "canada"))
+
 
 # Get arguments -----------------------------------------------------------
-# args = commandArgs(trailingOnly=TRUE)
-# # 1 csv of occurrence records for analysis
-# # 2 bioclim data
-# # 3 bg points
-# # 3 feature class
-# # 4 seed
-# # 5 cores
+args = commandArgs(trailingOnly=TRUE)
+# # 1 folder of enmeval results
 # in_csv <- args[1]
 # in_bioclim <- args[2]
 # bg <- args[3]
@@ -31,13 +23,14 @@ library(ENMeval)
 # seed <- args[5]
 # cores <- args[6]
 
+res.folder <- args[1]
 
 
 # Load results and plot them ----------------------------------------------
 # thin_dists <- paste0(c(0,1, 5,10,50), "km")
 
 results <- NULL
-for (file in list.files("results", full.names = T)) {
+for (file in list.files(res.folder, full.names = T)) {
   # Load all enmeval results objects, collate their metrics into one data frame
   if (str_detect(string = file, pattern = "enmeval_res_")) {
     dataset <- str_extract(string = file, pattern = "\\d+km")
@@ -55,7 +48,7 @@ sorted <- results %>%
   arrange(match(thin_dist, c("0km", "1km", "5km", "10km", "50km")), 
           match(features, c("L", "LQ", "H", "LQH", "LQHP", "LQHPT")), rm) 
 
-write.csv(x = sorted, file = "results/enmeval_metrics.csv", row.names = F)
+write.csv(x = sorted, file = "results/enmeval/enmeval_metrics.csv", row.names = F)
 
 # Make a plot for each dataset
 for (dist in unique(sorted$thin_dist)) {
@@ -70,7 +63,7 @@ for (dist in unique(sorted$thin_dist)) {
     xlab("Regularization multiplier") +
     ylab("performance metric value") +
     facet_wrap(facets = vars(metric), scale = "free_y") +
-    ggsave(filename = paste0("results/performance_plot_", dist, ".pdf"),
+    ggsave(filename = paste0("results/enmeval/performance_plot_", dist, ".pdf"),
            width = 12, height = 9, units = "in")
 }
   
@@ -78,7 +71,7 @@ for (dist in unique(sorted$thin_dist)) {
 best_mods <- sorted %>% 
   group_by(thin_dist) %>% 
   filter(AICc == min(AICc))
-write.csv(x = best_mods, file = "results/enmeval_best_model_per_thin_AIC.csv", row.names = F)
+write.csv(x = best_mods, file = "results/enmeval/enmeval_best_model_per_thin_AIC.csv", row.names = F)
 
 
 # Performance plot of best model in each dataset
@@ -105,9 +98,5 @@ means %>%
   xlab("Thinning distance of dataset") +
   ylab("value, +/- approx. 95% CI when possible") +
   facet_wrap(facets = vars(metric), scale = "free_y") +
-  ggsave(filename = "results/performance_plot_best_models.pdf",
+  ggsave(filename = "results/enmeval/performance_plot_best_models.pdf",
          width = 12, height = 7, units = "in")
-
-
-  
-}
