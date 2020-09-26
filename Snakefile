@@ -10,6 +10,8 @@ thin_res_pattern= "processed_data/thin/{thin_dist}km/"
 current_bioclim="processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
 # ENMeval
 feature_class=["L", "LQ", "H", "LQH", "LQHP", "LQHPT"]
+# Conservation
+CON_STATUSES=["extirpated","broad_extirp","local_extirp","poss_decline","pres_stable"]
 
 
 localrules: all, rename_ENMeval_res, dag, filegraph, help
@@ -17,17 +19,14 @@ localrules: all, rename_ENMeval_res, dag, filegraph, help
 
 rule all:
     input:
-        "processed_data/leptown_db_occurrences_unique_gps.csv",
-        current_bioclim,
-        # expand(thin_res_pattern, thin_dist=thin_dists),
         "processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd",
-        expand("results/enmeval/enmeval_res_{thin_dist}km_thin1_{fc}.RData", fc=feature_class, thin_dist=["0", "10", "50"]),
-        expand("results/enmeval/enmeval_res_1km_thin3_{fc}.RData", fc=feature_class),
-        expand("results/enmeval/enmeval_res_5km_thin2_{fc}.RData", fc=feature_class),
-        "results/enmeval/enmeval_metrics.csv",
         expand("results/sdm/sdm_rangemap_best_{thresh}.{ext}", 
                thresh = ["specsens", "sens95", "sens99"],
-               ext=["grd", "gri"])
+               ext=["grd", "gri"]),
+        "results/pheno/current_pheno_glm.RData",
+        "results/pheno/current_predicted_probWhite.tif",
+        "results/pheno/current_predicted_probWhite_SDMrange.tif",
+        expand("processed_data/conservation_rasters/{cons_status}.tif", cons_status=CON_STATUSES)
         
 ## curate_occur_data   : process WTJR occurrence data
 rule curate_occur_data:
@@ -82,6 +81,18 @@ rule prep_unthinned_data:
         """
         Rscript src/prep_unthinned_occur.R {input} {output}
         """
+# prep_conservation_rasters
+rule prep_conservation_rasters:
+    input:
+        "processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
+    output:
+        expand("processed_data/conservation_rasters/{cons_status}.tif", cons_status=CON_STATUSES)
+    resources:
+        cpus=1
+    shell:
+        """
+        Rscript src/prep_conservation_rasters.R  {input}
+        """
     
 ## process_bioclim_data: process current bioclim data
 rule process_bioclim_data:
@@ -91,6 +102,20 @@ rule process_bioclim_data:
         cpus=1
     shell:
         "Rscript src/prep_bioclim_data.R"
+
+## process_current_pheno_predictors
+rule process_current_pheno_predictors:
+    input:
+        snow="raw_data/rasterstack4cov.tif",
+        bc=current_bioclim
+    output:
+        "processed_data/pheno_predictors_millsetal2018.tif"
+    resources:
+        cpus=1
+    shell:
+        """
+        Rscript src/process_current_pheno_predictors.R {input.snow} {input.bc} {output}
+        """
 
 ## process_future_bioclim: process future bioclim data
 # inputs: dirctory containing the raw data
@@ -121,8 +146,8 @@ rule make_bg_points:
         """
         Rscript src/bg_points.R {input.envir} 782
         """
-## run_ENMeval: create SDM with ENMeval
 
+## run_ENMeval: create SDM with ENMeval
 rule run_ENMeval:
     input:
        occur="processed_data/thin/{dataset}/wtjr_occ_{dataset}_thin1.csv",
@@ -186,6 +211,28 @@ rule sdm_range_raster:
         """
         Rscript src/sdm_from_best_mod.R {input.enm_res} {params.best_params}
         """
+
+## predict_current_phenotypes
+rule predict_current_phenotypes:
+    input:
+        environment="processed_data/pheno_predictors_millsetal2018.tif",
+        pheno_data="raw_data/Ltowsendii_database_FINAL.xlsx",
+        gbif="raw_data/GBIF/verbatim.txt",
+        range="results/sdm/sdm_rangemap_best_sens95.gri"
+    output:
+        "results/pheno/current_pheno_glm.RData",
+        "results/pheno/current_predicted_probWhite.tif",
+        "results/pheno/current_predicted_probWhite_SDMrange.tif"
+    resources:
+        cpus=1
+    shell:
+        """
+        Rscript src/predict_current_pheno.R {input.pheno_data} {input.environment} {input.gbif} {input.range}
+        """
+
+
+
+
 
 
 

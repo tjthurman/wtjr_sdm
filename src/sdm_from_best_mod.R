@@ -16,12 +16,8 @@ library(ENMeval)
 
 # Get arguments -----------------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-# 1 csv of occurrence records for analysis
-# 2 bioclim data
-# 3 bg points
-# 3 feature class
-# 4 seed
-# 5 cores
+# 1 filename of .RData of model data
+# 2 name of best model, from params
 best_mod_file <- args[1]
 best_mod_name <- args[2]
 

@@ -94,7 +94,6 @@ final.layer <- do.call(merge, cropped.tiles)
 
 
 # Fix names ---------------------------------------------------------------
-names(final.layer)
 layer.names <- str_remove(names(tile.01.crop), pattern = "\\_01")
 names(final.layer) <- layer.names
 

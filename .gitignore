@@ -4,6 +4,7 @@
 .RData
 .Ruserdata
 *.DS_Store
+Rplots.pdf
 
 # Snakemake files
 .snakemake/
@@ -19,11 +20,14 @@ logs/snakemake_slurm/*.out
 # Raw data that is too large or code-generated
 raw_data/wc0.5/
 raw_data/worldclim_projections/*
+raw_data/rasterstack4cov.tif
 
 # Processed data that is too large
 processed_data/bioclim_30arcsec_for_WTJR_SDM.tif
+processed_data/conservation_rasters/*.tif
+processed_data/pheno_predictors_millsetal2018.tif
 
 # Results that are too large
 results/enmeval/enmeval_res_*_thin*_*.RData
-Rplots.pdf
 results/sdm/sdm_rangemap_best_*.gr*
+results/pheno/current_predicted_probWhite*.tif

@@ -38,7 +38,7 @@ for (bioclim_var in paste0("bio_", 2:3)) { # For each bioclim variable
   assign(x = eval(bioclim_var), value = model_avg) # and assign it to an object named according to the bioclim variable
 } 
 
-# COmbine into rasterstack
+# Combine into rasterstack
 stacked <- stack(bio_2, bio_3)
 
 # And save
