@@ -230,6 +230,12 @@ rule predict_current_phenotypes:
         Rscript src/predict_current_pheno.R {input.pheno_data} {input.environment} {input.gbif} {input.range}
         """
 
+## figure_1_maps
+# make map of US and colorado for Figure 1
+rule figure_1_maps:
+    input:
+        "results/pheno/current_predicted_probWhite_SDMrange.tif",
+        "raw_data/DMNS_spectrometry_PCs.txt"
 
 
 

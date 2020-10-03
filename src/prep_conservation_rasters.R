@@ -14,10 +14,8 @@ library(raster)
 
 # Get arguments -----------------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-# 1 phenotype data
-# 2 environment data
-# 3 gbif data
-# 4 SDM range
+# 1 bioclim data
+
 
 bioclim <- args[1]
 
