@@ -31,3 +31,9 @@ processed_data/pheno_predictors_millsetal2018.tif
 results/enmeval/enmeval_res_*_thin*_*.RData
 results/sdm/sdm_rangemap_best_*.gr*
 results/pheno/current_predicted_probWhite*.tif
+
+results/figures/current_pheno_map.png
+
+*.ai
+
+results/figures/figure_1_mock.png
