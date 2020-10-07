@@ -23,7 +23,7 @@ map_file <- args[1]
 
 
 # Load data -----------------------------------------------------------
-map_file <- "results/pheno/current_predicted_probWhite_SDMrange.tif"
+#map_file <- "results/pheno/current_predicted_probWhite_SDMrange.tif"
 pred.new <- raster(map_file)
 
 

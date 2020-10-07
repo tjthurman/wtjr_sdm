@@ -23,10 +23,10 @@ rule all:
         expand("results/sdm/sdm_rangemap_best_{thresh}.{ext}", 
                thresh = ["specsens", "sens95", "sens99"],
                ext=["grd", "gri"]),
-        "results/pheno/current_pheno_glm.RData",
-        "results/pheno/current_predicted_probWhite.tif",
-        "results/pheno/current_predicted_probWhite_SDMrange.tif",
-        expand("processed_data/conservation_rasters/{cons_status}.tif", cons_status=CON_STATUSES)
+        expand("processed_data/conservation_rasters/{cons_status}.tif", cons_status=CON_STATUSES),
+        "results/figures/colorado.pdf",
+        "results/figures/current_pheno_map.pdf",
+        "results/conservation/cons_by_current_color.RData"
         
 ## curate_occur_data   : process WTJR occurrence data
 rule curate_occur_data:
@@ -231,11 +231,45 @@ rule predict_current_phenotypes:
         """
 
 ## figure_1_maps
-# make map of US and colorado for Figure 1
+# make base maps of US and Colorado for Figure 1
 rule figure_1_maps:
     input:
         "results/pheno/current_predicted_probWhite_SDMrange.tif",
         "raw_data/DMNS_spectrometry_PCs.txt"
+    output:
+        "results/figures/colorado.pdf",
+        "results/figures/current_pheno_map.pdf"
+    resources:
+        cpus=1
+    shell:
+        """
+        Rscript src/figure_1_maps.R {input.0}
+        """
+
+## conserve_by_pheno
+## calculate overlap between phenotypic categories and conservation categories
+rule conserve_by_pheno:
+    input:
+        "results/pheno/current_predicted_probWhite_SDMrange.tif",
+        expand("processed_data/conservation_rasters/{cons_status}.tif", cons_status=CON_STATUSES)
+    output:
+        "results/conservation/cons_by_current_color.RData"
+    resources:
+        cpus=1
+    shell:
+        """
+        Rscript src/conservation_by_pheno.R 
+        """
+
+## predict_future_pheno
+rule predict_future_phenotypes:
+    input:
+
+    output:
+        "results/pheno/current_pheno_glm_SRT.RData",
+        "results/pheno/future_pheno_glm_SRT.RData",
+        "results/pheno/future_predicted_probWhite.tif",
+        "results/pheno/future_predicted_probWhite_SDMrange.tif"
 
 
 
