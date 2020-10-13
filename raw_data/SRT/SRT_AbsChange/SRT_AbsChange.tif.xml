@@ -1,0 +1,404 @@
+<MD_Metadata xmlns="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:gml="http://www.opengis.net/gml" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<fileIdentifier>
+		<gco:CharacterString>23AEB2AD-E016-485A-8C74-6FE35BE89064</gco:CharacterString>
+	</fileIdentifier>
+	<language>
+		<LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng" codeSpace="ISO639-2">eng</LanguageCode>
+	</language>
+	<characterSet>
+		<MD_CharacterSetCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8" codeSpace="ISOTC211/19115">utf8</MD_CharacterSetCode>
+	</characterSet>
+	<hierarchyLevel>
+		<MD_ScopeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset" codeSpace="ISOTC211/19115">dataset</MD_ScopeCode>
+	</hierarchyLevel>
+	<contact>
+		<CI_ResponsibleParty>
+			<individualName>
+				<gco:CharacterString>Charles Luce</gco:CharacterString>
+			</individualName>
+			<organisationName>
+				<gco:CharacterString>US Forest Service, Rocky Mountain Research Station</gco:CharacterString>
+			</organisationName>
+			<positionName>
+				<gco:CharacterString>Research Hydrologist</gco:CharacterString>
+			</positionName>
+			<contactInfo gco:nilReason="missing"/>
+			<role>
+				<CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="principalInvestigator" codeSpace="ISOTC211/19115">principalInvestigator</CI_RoleCode>
+			</role>
+		</CI_ResponsibleParty>
+	</contact>
+	<dateStamp>
+		<gco:Date>2017-04-21</gco:Date>
+	</dateStamp>
+	<metadataStandardName>
+		<gco:CharacterString>NAP - Metadata</gco:CharacterString>
+	</metadataStandardName>
+	<metadataStandardVersion>
+		<gco:CharacterString>1.2</gco:CharacterString>
+	</metadataStandardVersion>
+	<spatialRepresentationInfo>
+		<MD_GridSpatialRepresentation>
+			<numberOfDimensions>
+				<gco:Integer>2</gco:Integer>
+			</numberOfDimensions>
+			<axisDimensionProperties>
+				<MD_Dimension>
+					<dimensionName>
+						<MD_DimensionNameTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_DimensionNameTypeCode" codeListValue="row" codeSpace="ISOTC211/19115">row</MD_DimensionNameTypeCode>
+					</dimensionName>
+					<dimensionSize>
+						<gco:Integer>585</gco:Integer>
+					</dimensionSize>
+					<resolution>
+						<gco:Measure>1/24 degree</gco:Measure>
+					</resolution>
+				</MD_Dimension>
+			</axisDimensionProperties>
+			<axisDimensionProperties>
+				<MD_Dimension>
+					<dimensionName>
+						<MD_DimensionNameTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_DimensionNameTypeCode" codeListValue="column" codeSpace="ISOTC211/19115">column</MD_DimensionNameTypeCode>
+					</dimensionName>
+					<dimensionSize>
+						<gco:Integer>1386</gco:Integer>
+					</dimensionSize>
+					<resolution>
+						<gco:Measure>1/24 degree</gco:Measure>
+					</resolution>
+				</MD_Dimension>
+			</axisDimensionProperties>
+			<cellGeometry>
+				<MD_CellGeometryCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CellGeometryCode" codeListValue="area" codeSpace="ISOTC211/19115">area</MD_CellGeometryCode>
+			</cellGeometry>
+			<transformationParameterAvailability>
+				<gco:Boolean>false</gco:Boolean>
+			</transformationParameterAvailability>
+		</MD_GridSpatialRepresentation>
+	</spatialRepresentationInfo>
+	<spatialRepresentationInfo>
+		<MD_Georectified>
+			<numberOfDimensions>
+				<gco:Integer>2</gco:Integer>
+			</numberOfDimensions>
+			<axisDimensionProperties>
+				<MD_Dimension>
+					<dimensionName>
+						<MD_DimensionNameTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_DimensionNameTypeCode" codeListValue="column" codeSpace="ISOTC211/19115">column</MD_DimensionNameTypeCode>
+					</dimensionName>
+					<dimensionSize>
+						<gco:Integer>1386</gco:Integer>
+					</dimensionSize>
+					<resolution>
+						<gco:Measure uom="Degree">0.041667</gco:Measure>
+					</resolution>
+				</MD_Dimension>
+			</axisDimensionProperties>
+			<axisDimensionProperties>
+				<MD_Dimension>
+					<dimensionName>
+						<MD_DimensionNameTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_DimensionNameTypeCode" codeListValue="row" codeSpace="ISOTC211/19115">row</MD_DimensionNameTypeCode>
+					</dimensionName>
+					<dimensionSize>
+						<gco:Integer>585</gco:Integer>
+					</dimensionSize>
+					<resolution>
+						<gco:Measure uom="Degree">0.041667</gco:Measure>
+					</resolution>
+				</MD_Dimension>
+			</axisDimensionProperties>
+			<cellGeometry>
+				<MD_CellGeometryCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CellGeometryCode" codeListValue="area" codeSpace="ISOTC211/19115">area</MD_CellGeometryCode>
+			</cellGeometry>
+			<transformationParameterAvailability>
+				<gco:Boolean>true</gco:Boolean>
+			</transformationParameterAvailability>
+			<checkPointAvailability>
+				<gco:Boolean>false</gco:Boolean>
+			</checkPointAvailability>
+			<cornerPoints>
+				<gml:Point gml:id="ID0EQFAC">
+					<gml:pos>-124.792997 25.041856</gml:pos>
+				</gml:Point>
+			</cornerPoints>
+			<cornerPoints>
+				<gml:Point gml:id="ID0EWFAC">
+					<gml:pos>-124.792997 49.416856</gml:pos>
+				</gml:Point>
+			</cornerPoints>
+			<cornerPoints>
+				<gml:Point gml:id="ID0E3FAC">
+					<gml:pos>-67.042997 49.416856</gml:pos>
+				</gml:Point>
+			</cornerPoints>
+			<cornerPoints>
+				<gml:Point gml:id="ID0ECGAC">
+					<gml:pos>-67.042997 25.041856</gml:pos>
+				</gml:Point>
+			</cornerPoints>
+			<centerPoint>
+				<gml:Point gml:id="ID0EIGAC">
+					<gml:pos>-95.917997 37.229356</gml:pos>
+				</gml:Point>
+			</centerPoint>
+			<pointInPixel>
+				<MD_PixelOrientationCode>center</MD_PixelOrientationCode>
+			</pointInPixel>
+		</MD_Georectified>
+	</spatialRepresentationInfo>
+	<referenceSystemInfo>
+		<MD_ReferenceSystem>
+			<referenceSystemIdentifier>
+				<RS_Identifier>
+					<code>
+						<gco:CharacterString>WGS84</gco:CharacterString>
+					</code>
+					<codeSpace>
+						<gco:CharacterString>EPSG</gco:CharacterString>
+					</codeSpace>
+					<version>
+						<gco:CharacterString>8.2.6</gco:CharacterString>
+					</version>
+				</RS_Identifier>
+			</referenceSystemIdentifier>
+		</MD_ReferenceSystem>
+	</referenceSystemInfo>
+	<identificationInfo>
+		<MD_DataIdentification>
+			<citation>
+				<CI_Citation>
+					<title>
+						<gco:CharacterString>Absolute change in snow residence time</gco:CharacterString>
+					</title>
+					<date>
+						<CI_Date>
+							<date>
+								<gco:DateTime>2017-04-21T01:00:00</gco:DateTime>
+							</date>
+							<dateType>
+								<CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" codeSpace="ISOTC211/19115">publication</CI_DateTypeCode>
+							</dateType>
+						</CI_Date>
+					</date>
+					<citedResponsibleParty>
+						<CI_ResponsibleParty>
+							<individualName>
+								<gco:CharacterString>Charles Luce</gco:CharacterString>
+							</individualName>
+							<organisationName>
+								<gco:CharacterString>US Forest Service, Rocky Mountain Research Station</gco:CharacterString>
+							</organisationName>
+							<positionName>
+								<gco:CharacterString>Research Hydrologist</gco:CharacterString>
+							</positionName>
+							<contactInfo gco:nilReason="missing"/>
+							<role>
+								<CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="principalInvestigator" codeSpace="ISOTC211/19115">principalInvestigator</CI_RoleCode>
+							</role>
+						</CI_ResponsibleParty>
+					</citedResponsibleParty>
+					<presentationForm>
+						<CI_PresentationFormCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode" codeListValue="mapDigital" codeSpace="ISOTC211/19115">mapDigital</CI_PresentationFormCode>
+					</presentationForm>
+				</CI_Citation>
+			</citation>
+			<abstract>
+				<gco:CharacterString>This raster contains modeled absolute changes in snow residence time (SRT) calculated using a spatial analog model. The model ingests mean winter average temperature and precipitation. For more information about the model, please see Luce et al., [2014] and Lute and Luce [in review]. Absolute changes in snow residence time are in units of days.The temperature and precipitation data are ensemble mean values across 20 global climate models from the CMIP5 experiment [Taylor et al., 2012], downscaled to a 4km grid. For more information on the downscaling method and to access the raw data, please see Abatzoglou and Brown, [2012] and http://maca.northwestknowledge.net. We used the MACAv2-metdata monthly precipitation and minimum and maximum temperature datasets for the period 1975-2005 (historical) and 2071-2090 (RCP8.5, future). Average temperature was calculated as the arithmetic mean of minimum and maximum temperature datasets. Average temperature was averaged over the winter months (November through March) and precipitation was summed over the winter months. More information on the project associated with this dataset can be found at https://www.fs.fed.us/rm/boise/AWAE/projects/national-forest-climate-change-maps.html.</gco:CharacterString>
+			</abstract>
+			<purpose>
+				<gco:CharacterString>This raster contains modeled absolute changes insnow residence time for the contiguous United States.</gco:CharacterString>
+			</purpose>
+			<credit>
+				<gco:CharacterString>U.S. Forest Service; Rocky Mountain Research Station; Air, Water, and Aquatic Environments Program (AWAE).
+http://www.fs.fed.us/rm/boise/awae_home.shtml
+</gco:CharacterString>
+			</credit>
+			<status gco:nilReason="missing"/>
+			<pointOfContact>
+				<CI_ResponsibleParty>
+					<individualName>
+						<gco:CharacterString>Charles Luce</gco:CharacterString>
+					</individualName>
+					<organisationName>
+						<gco:CharacterString>US Forest Service, Rocky Mountain Research Station</gco:CharacterString>
+					</organisationName>
+					<positionName>
+						<gco:CharacterString>Research Hydrologist</gco:CharacterString>
+					</positionName>
+					<contactInfo gco:nilReason="missing"/>
+					<role>
+						<CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="principalInvestigator" codeSpace="ISOTC211/19115">principalInvestigator</CI_RoleCode>
+					</role>
+				</CI_ResponsibleParty>
+			</pointOfContact>
+			<resourceMaintenance>
+				<MD_MaintenanceInformation>
+					<maintenanceAndUpdateFrequency>
+						<MD_MaintenanceFrequencyCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="notPlanned" codeSpace="ISOTC211/19115">notPlanned</MD_MaintenanceFrequencyCode>
+					</maintenanceAndUpdateFrequency>
+					<contact>
+						<CI_ResponsibleParty>
+							<individualName>
+								<gco:CharacterString>Charles Luce</gco:CharacterString>
+							</individualName>
+							<organisationName>
+								<gco:CharacterString>US Forest Service, Rocky Mountain Research Station</gco:CharacterString>
+							</organisationName>
+							<positionName>
+								<gco:CharacterString>Research Hydrologist</gco:CharacterString>
+							</positionName>
+							<contactInfo gco:nilReason="missing"/>
+							<role>
+								<CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="principalInvestigator" codeSpace="ISOTC211/19115">principalInvestigator</CI_RoleCode>
+							</role>
+						</CI_ResponsibleParty>
+					</contact>
+				</MD_MaintenanceInformation>
+			</resourceMaintenance>
+			<descriptiveKeywords>
+				<MD_Keywords>
+					<keyword>
+						<gco:CharacterString>climate change</gco:CharacterString>
+					</keyword>
+					<keyword>
+						<gco:CharacterString>National Forests</gco:CharacterString>
+					</keyword>
+					<keyword>
+						<gco:CharacterString>snow</gco:CharacterString>
+					</keyword>
+					<keyword>
+						<gco:CharacterString>snow residence time</gco:CharacterString>
+					</keyword>
+				</MD_Keywords>
+			</descriptiveKeywords>
+			<resourceConstraints>
+				<MD_Constraints>
+					<useLimitation>
+						<gco:CharacterString>These data should be used with the understanding that the values contained herein are modeled, not actual values, and are subject error. The USDA Forest Service makes no warranty, expressed or implied, including the warranties of merchantability and fitness for a particular purpose, nor assumes any legal liability or responsibility for the accuracy, reliability, completeness or utility of these geospatial data, or for the improper or incorrect use of these geospatial data. These geospatial data and related maps or graphics are not legal documents and are not intended to be used as such. The data and maps may not be used to determine title, ownership, legal descriptions or boundaries, legal jurisdiction, or restrictions that may be in place on either public or private land. Natural hazards may or may not be depicted on the data and maps, and land users should exercise due caution. The data are dynamic and may change over time. The user is responsible to verify the limitations of the geospatial data and to use the data accordingly.</gco:CharacterString>
+					</useLimitation>
+				</MD_Constraints>
+			</resourceConstraints>
+			<spatialRepresentationType>
+				<MD_SpatialRepresentationTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="grid" codeSpace="ISOTC211/19115">grid</MD_SpatialRepresentationTypeCode>
+			</spatialRepresentationType>
+			<language>
+				<LanguageCode codeList="http://www.loc.gov/standards/iso639-2/php/code_list.php" codeListValue="eng" codeSpace="ISO639-2">eng</LanguageCode>
+			</language>
+			<characterSet>
+				<MD_CharacterSetCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8" codeSpace="ISOTC211/19115">utf8</MD_CharacterSetCode>
+			</characterSet>
+			<topicCategory>
+				<MD_TopicCategoryCode>climatologyMeteorologyAtmosphere</MD_TopicCategoryCode>
+			</topicCategory>
+			<topicCategory>
+				<MD_TopicCategoryCode>environment</MD_TopicCategoryCode>
+			</topicCategory>
+			<topicCategory>
+				<MD_TopicCategoryCode>geoscientificInformation</MD_TopicCategoryCode>
+			</topicCategory>
+			<environmentDescription>
+				<gco:CharacterString>Microsoft Windows 7 Version 6.1 (Build 7601) Service Pack 1; Esri ArcGIS 10.2.2.3552</gco:CharacterString>
+			</environmentDescription>
+			<extent>
+				<EX_Extent>
+					<description>
+						<gco:CharacterString>Contiguous United States</gco:CharacterString>
+					</description>
+					<geographicElement>
+						<EX_GeographicBoundingBox>
+							<westBoundLongitude>
+								<gco:Decimal>-125</gco:Decimal>
+							</westBoundLongitude>
+							<eastBoundLongitude>
+								<gco:Decimal>-66.3</gco:Decimal>
+							</eastBoundLongitude>
+							<southBoundLatitude>
+								<gco:Decimal>24.7</gco:Decimal>
+							</southBoundLatitude>
+							<northBoundLatitude>
+								<gco:Decimal>49.4</gco:Decimal>
+							</northBoundLatitude>
+						</EX_GeographicBoundingBox>
+					</geographicElement>
+				</EX_Extent>
+			</extent>
+		</MD_DataIdentification>
+	</identificationInfo>
+	<contentInfo>
+		<MD_CoverageDescription>
+			<attributeDescription>
+				<gco:RecordType>Absolute change in snow residence time (days)</gco:RecordType>
+			</attributeDescription>
+			<contentType>
+				<MD_CoverageContentTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="image" codeSpace="ISOTC211/19115">image</MD_CoverageContentTypeCode>
+			</contentType>
+		</MD_CoverageDescription>
+	</contentInfo>
+	<distributionInfo>
+		<MD_Distribution>
+			<distributionFormat>
+				<MD_Format>
+					<name>
+						<gco:CharacterString>Raster Dataset</gco:CharacterString>
+					</name>
+					<version gco:nilReason="missing"/>
+				</MD_Format>
+			</distributionFormat>
+		</MD_Distribution>
+	</distributionInfo>
+	<dataQualityInfo>
+		<DQ_DataQuality>
+			<scope>
+				<DQ_Scope>
+					<level>
+						<MD_ScopeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="tile" codeSpace="ISOTC211/19115">tile</MD_ScopeCode>
+					</level>
+				</DQ_Scope>
+			</scope>
+			<lineage>
+				<LI_Lineage>
+					<statement>
+						<gco:CharacterString>We created a spatial analog model of snow residence time (SRT) calibrated on mean winter average temperature from TopoWx [Oyler et al., 2014] and cumulative winter precipitation and April 1 SWE from Snowpack Telemetry sites in the western US.  See Luce et al., [2014] and Lute and Luce [in review] for more details about the model.
+
+We then input downscaled global climate model mean winter temperatures and cumulative winter precipitation values to the model to calculate gridded historical and future SRT. The downscaled temperature and precipitation data was obtained from the MACAv2-Metdata dataset for years 1975-2005 (historical) and 2071-2090 (RCP8.5, future).  We found the arithmetic mean of minimum and maximum temperature values and averaged the calculated mean temperature over winter months (November through March) and  across all years in each period and all models available from the CMIP5 experiment.  For precipitation, we summed over winter months and averaged across all years in each period and all models available from the CMIP5 experiment. More information about the MACA downscaling method can be found in Abatzoglou and Brown [2012].   This data can be accessed at http://maca.northwestknowledge.net/. More information about the CMIP5 global climate model experiments can be found in Taylor et al., [2012].  Absolute changes in SRT were calculated as the difference between the modeled historical and future SRT values and are in units of days.
+
+Oyler, J.W., A. Ballantyne, K. Jencso, M. Sweet, and S.W. Running (2014), Creating a topoclimatic daily air temperature dataset for the conterminous United States using homogenized station data and remotely sensed land skin temperature, International Journal of Climatology, 35, 2258-2279, doi:10.1002/joc.4127.
+
+Luce, C.H., V. Lopez-Burgos, and Z. Holden (2014), Sensitivity of snowpack storage to precipitation and temperature using spatial and temporal analog models, Water Resources Research, 50, 9447-9462, doi: 10.1002/2013WR014844.
+
+Lute and Luce, in review
+
+Abatzoglou, J.T. and T.J. Brown, (2012), A comparison of statistical downscaling methods suited for wildfire applications, International Journal of Climatology, 32:772-780. doi: 10.1002/joc.2312.
+
+Taylor, K.E., R.J. Stouffer, and G.A. Meehl (2012), An overview of CMIP5 and the experiment design, Bulletin of the American Meteorological Society, 93:485:498. doi: 10.1175/BAMS-D-11-00094.1.
+</gco:CharacterString>
+					</statement>
+				</LI_Lineage>
+			</lineage>
+		</DQ_DataQuality>
+	</dataQualityInfo>
+	<metadataMaintenance>
+		<MD_MaintenanceInformation>
+			<maintenanceAndUpdateFrequency>
+				<MD_MaintenanceFrequencyCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="notPlanned" codeSpace="ISOTC211/19115">notPlanned</MD_MaintenanceFrequencyCode>
+			</maintenanceAndUpdateFrequency>
+			<contact>
+				<CI_ResponsibleParty>
+					<individualName>
+						<gco:CharacterString>Charles Luce</gco:CharacterString>
+					</individualName>
+					<organisationName>
+						<gco:CharacterString>US Forest Service, Rocky Mountain Research Station</gco:CharacterString>
+					</organisationName>
+					<positionName>
+						<gco:CharacterString>Research Hydrologist</gco:CharacterString>
+					</positionName>
+					<contactInfo gco:nilReason="missing"/>
+					<role>
+						<CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="principalInvestigator" codeSpace="ISOTC211/19115">principalInvestigator</CI_RoleCode>
+					</role>
+				</CI_ResponsibleParty>
+			</contact>
+		</MD_MaintenanceInformation>
+	</metadataMaintenance>
+	<dataIdInfo xmlns=""><envirDesc Sync="TRUE">Microsoft Windows 7 Version 6.1 (Build 7601) Service Pack 1; Esri ArcGIS 10.2.1.3497</envirDesc><dataLang><languageCode value="eng" Sync="TRUE"></languageCode><countryCode value="USA" Sync="TRUE"></countryCode></dataLang><idCitation><resTitle Sync="TRUE">SRT_AbsChange.tif</resTitle><presForm><PresFormCd value="005" Sync="TRUE"></PresFormCd></presForm></idCitation><spatRpType><SpatRepTypCd value="002" Sync="TRUE"></SpatRepTypCd></spatRpType><dataExt><geoEle><GeoBndBox esriExtentType="search"><exTypeCode Sync="TRUE">1</exTypeCode><westBL Sync="TRUE">-124.792997</westBL><eastBL Sync="TRUE">-67.042997</eastBL><northBL Sync="TRUE">49.416856</northBL><southBL Sync="TRUE">25.041856</southBL></GeoBndBox></geoEle></dataExt></dataIdInfo><mdLang xmlns=""><languageCode value="eng" Sync="TRUE"></languageCode><countryCode value="USA" Sync="TRUE"></countryCode></mdLang><Esri xmlns=""><DataProperties><itemProps><itemName Sync="TRUE">SRT_AbsChange.tif</itemName><itemLocation><linkage Sync="TRUE">file://R:\Workspace\NationalForestClimateChangeMaps\Snow\GIS_Layers\SRT_AbsChange.tif</linkage><protocol Sync="TRUE">Local Area Network</protocol></itemLocation><imsContentType Sync="TRUE">002</imsContentType><nativeExtBox><westBL Sync="TRUE">-124.792997</westBL><eastBL Sync="TRUE">-67.042997</eastBL><southBL Sync="TRUE">25.041856</southBL><northBL Sync="TRUE">49.416856</northBL><exTypeCode Sync="TRUE">1</exTypeCode></nativeExtBox></itemProps><coordRef><type Sync="TRUE">Geographic</type><geogcsn Sync="TRUE">GCS_WGS_1984</geogcsn><csUnits Sync="TRUE">Angular Unit: Degree (0.017453)</csUnits><peXml Sync="TRUE">&lt;GeographicCoordinateSystem xsi:type='typens:GeographicCoordinateSystem' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xs='http://www.w3.org/2001/XMLSchema' xmlns:typens='http://www.esri.com/schemas/ArcGIS/10.1'&gt;&lt;WKT&gt;GEOGCS[&amp;quot;GCS_WGS_1984&amp;quot;,DATUM[&amp;quot;D_WGS_1984&amp;quot;,SPHEROID[&amp;quot;WGS_1984&amp;quot;,6378137.0,298.257223563]],PRIMEM[&amp;quot;Greenwich&amp;quot;,0.0],UNIT[&amp;quot;Degree&amp;quot;,0.0174532925199433],AUTHORITY[&amp;quot;EPSG&amp;quot;,4326]]&lt;/WKT&gt;&lt;XOrigin&gt;-400&lt;/XOrigin&gt;&lt;YOrigin&gt;-400&lt;/YOrigin&gt;&lt;XYScale&gt;11258999068426.238&lt;/XYScale&gt;&lt;ZOrigin&gt;-100000&lt;/ZOrigin&gt;&lt;ZScale&gt;10000&lt;/ZScale&gt;&lt;MOrigin&gt;-100000&lt;/MOrigin&gt;&lt;MScale&gt;10000&lt;/MScale&gt;&lt;XYTolerance&gt;8.983152841195215e-009&lt;/XYTolerance&gt;&lt;ZTolerance&gt;0.001&lt;/ZTolerance&gt;&lt;MTolerance&gt;0.001&lt;/MTolerance&gt;&lt;HighPrecision&gt;true&lt;/HighPrecision&gt;&lt;LeftLongitude&gt;-180&lt;/LeftLongitude&gt;&lt;WKID&gt;4326&lt;/WKID&gt;&lt;LatestWKID&gt;4326&lt;/LatestWKID&gt;&lt;/GeographicCoordinateSystem&gt;</peXml></coordRef><RasterProperties><General><PixelDepth Sync="TRUE">64</PixelDepth><HasColormap Sync="TRUE">FALSE</HasColormap><CompressionType Sync="TRUE">LZW</CompressionType><NumBands Sync="TRUE">1</NumBands><Format Sync="TRUE">TIFF</Format><HasPyramids Sync="TRUE">FALSE</HasPyramids><SourceType Sync="TRUE">continuous</SourceType><PixelType Sync="TRUE">double precision</PixelType><NoDataValue Sync="TRUE">-1.7e+308</NoDataValue></General></RasterProperties></DataProperties><SyncDate>20170421</SyncDate><SyncTime>16010100</SyncTime><ModDate>20170421</ModDate><ModTime>16010100</ModTime></Esri><distInfo xmlns=""><distFormat><formatName Sync="TRUE">Raster Dataset</formatName></distFormat></distInfo><mdHrLv xmlns=""><ScopeCd value="005" Sync="TRUE"></ScopeCd></mdHrLv><mdHrLvName xmlns="" Sync="TRUE">dataset</mdHrLvName><refSysInfo xmlns=""><RefSystem><refSysID><identCode code="4326" Sync="TRUE"></identCode><idCodeSpace Sync="TRUE">EPSG</idCodeSpace><idVersion Sync="TRUE">8.2.6</idVersion></refSysID></RefSystem></refSysInfo><spatRepInfo xmlns=""><Georect><cellGeo><CellGeoCd Sync="TRUE" value="002"></CellGeoCd></cellGeo><numDims Sync="TRUE">2</numDims><tranParaAv Sync="TRUE">1</tranParaAv><chkPtAv Sync="TRUE">0</chkPtAv><cornerPts><pos Sync="TRUE">-124.792997 25.041856</pos></cornerPts><cornerPts><pos Sync="TRUE">-124.792997 49.416856</pos></cornerPts><cornerPts><pos Sync="TRUE">-67.042997 49.416856</pos></cornerPts><cornerPts><pos Sync="TRUE">-67.042997 25.041856</pos></cornerPts><centerPt><pos Sync="TRUE">-95.917997 37.229356</pos></centerPt><axisDimension type="002"><dimSize Sync="TRUE">1386</dimSize><dimResol><value Sync="TRUE" uom="Degree">0.041667</value></dimResol></axisDimension><axisDimension type="001"><dimSize Sync="TRUE">585</dimSize><dimResol><value Sync="TRUE" uom="Degree">0.041667</value></dimResol></axisDimension><ptInPixel><PixOrientCd Sync="TRUE" value="001"></PixOrientCd></ptInPixel></Georect></spatRepInfo><contInfo xmlns=""><ImgDesc><contentTyp><ContentTypCd Sync="TRUE" value="001"></ContentTypCd></contentTyp><covDim><Band><dimDescrp Sync="TRUE">Band_1</dimDescrp><maxVal Sync="TRUE">0.000000</maxVal><minVal Sync="TRUE">-115.495954</minVal><bitsPerVal Sync="TRUE">64</bitsPerVal><valUnit><UOM type="length"></UOM></valUnit></Band></covDim></ImgDesc></contInfo><mdDateSt xmlns="" Sync="TRUE">20170421</mdDateSt></MD_Metadata>

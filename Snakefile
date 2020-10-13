@@ -26,7 +26,10 @@ rule all:
         expand("processed_data/conservation_rasters/{cons_status}.tif", cons_status=CON_STATUSES),
         "results/figures/colorado.pdf",
         "results/figures/current_pheno_map.pdf",
-        "results/conservation/cons_by_current_color.RData"
+        "results/conservation/cons_by_current_color.RData",
+        "results/pheno/current_pheno_glm_SRT.RData",
+        "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif",
+        "results/pheno/future_predicted_probWhite_SDMrange.tif"
         
 ## curate_occur_data   : process WTJR occurrence data
 rule curate_occur_data:
@@ -123,7 +126,7 @@ rule process_current_pheno_predictors:
 # output file
 rule process_future_bioclim:
     input:
-        cmip5_dir="raw_data/worldclim_projections",
+        cmip5_dir="raw_data/worldclim_projections_2080s",
         current=current_bioclim
     output:
         "processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd"
@@ -218,7 +221,7 @@ rule predict_current_phenotypes:
         environment="processed_data/pheno_predictors_millsetal2018.tif",
         pheno_data="raw_data/Ltowsendii_database_FINAL.xlsx",
         gbif="raw_data/GBIF/verbatim.txt",
-        range="results/sdm/sdm_rangemap_best_sens95.gri"
+        range="results/sdm/sdm_rangemap_best_sens95.grd"
     output:
         "results/pheno/current_pheno_glm.RData",
         "results/pheno/current_predicted_probWhite.tif",
@@ -264,12 +267,24 @@ rule conserve_by_pheno:
 ## predict_future_pheno
 rule predict_future_phenotypes:
     input:
-
+        pheno="raw_data/Ltowsendii_database_FINAL.xlsx",
+        curr_bc="processed_data/bioclim_30arcsec_for_WTJR_SDM.tif",
+        curr_srt="raw_data/SRT/SRT_historical/SRT_historical.tif",
+        fut_bc="processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd",
+        fut_srt="raw_data/SRT/SRT_RCP85_2080s/SRT_RCP85_2080s.tif",
+        range="results/sdm/sdm_rangemap_best_sens95.grd",
+        gbif="raw_data/GBIF/verbatim.txt"
     output:
         "results/pheno/current_pheno_glm_SRT.RData",
-        "results/pheno/future_pheno_glm_SRT.RData",
-        "results/pheno/future_predicted_probWhite.tif",
+        "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif",
         "results/pheno/future_predicted_probWhite_SDMrange.tif"
+    resources:
+        cpus=1
+    shell:
+        """
+        Rscript src/predict_future_pheno.R {input.pheno} {input.cur_bc} {input.cur_srt} {input.fut_bc} {input.fut_srt} {input.range} {input.gbif}
+        """
+     
 
 
 

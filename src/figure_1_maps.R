@@ -23,56 +23,62 @@ map_file <- args[1]
 
 
 # Load data -----------------------------------------------------------
-#map_file <- "results/pheno/current_predicted_probWhite_SDMrange.tif"
+map_file <- "results/pheno/current_predicted_probWhite_SDMrange.tif"
 pred.new <- raster(map_file)
 
 
-state_prov <- ne_states(c("united states of america", "canada"))
-countries <- ne_countries(continent = "north america", scale = 10)
+state_prov <- ne_states(c("united states of america", "canada"), returnclass = "sf")
+countries <- ne_countries(continent = "north america", scale = 10, returnclass = "sf")
+coast <- ne_coastline(scale = 10, returnclass = "sf")
 
 # Plot US map -----------------------------------------------------------
 pal <- colorRampPalette(colors = c("#69431A", "floralwhite")) # Colors from Mafalda's figs
 
-pdf(file = "results/figures/current_pheno_map.pdf", width = 9.5, height = 7)
-plot(
-  state_prov,
-  xlim = c(-131,-87.5),
-  ylim = c(32, 56),
-  axes = TRUE,
-  col = rgb(133,141,147, maxColorValue = 255),
-  border = NA
-)
 
-# Plot predicted SDM
-plot(pred.new, 
-     add = TRUE, 
-     legend = F, 
-     col = pal(100))
-addRasterLegend(pred.new, ramp = pal(100), side = 2,  
-                location = c(-127.5, -125.75, 37, 43.5), 
-                ncolors = 100, minmax = c(0,1), nTicks = 1)
+pred.pheno.df <- as(pred.new, "SpatialPixelsDataFrame") %>% 
+  as.data.frame(.) %>%
+  dplyr::filter(!is.na(.[1]))
+names(pred.pheno.df) <- c("probWhite", "Long", "Lat")
 
-
-# Add the state lines back on, but faintly
-plot(state_prov, add = T, col = NA, border = "grey61")
-# Add countries and coastlines in black
-plot(countries, add = T, col = NA, border = "grey10")
-plot(coastline10, add = T, col = "grey10", border = "grey10")
-box()
-maps::map.scale(x = -131, y = 33, ratio = F, cex = .8, relwidth = .11)
-dev.off()
-
+us <- ggplot() +
+  geom_sf(data = state_prov, color = "grey61", fill = rgb(133,141,147, maxColorValue = 255)) +
+  geom_tile(data = pred.pheno.df, aes(fill = probWhite, color = probWhite, x = Long, y = Lat)) +
+  geom_sf(data = state_prov, color = "grey61", fill = NA, ) +
+  geom_sf(data = countries, color = "grey10", fill = NA) +
+  geom_sf(data= coast, color = "grey10", fill = NA) +
+  coord_sf(
+    xlim = c(-132, -80.5),
+    ylim = c(32, 56.5),
+    clip = "on", 
+    expand = F) +
+  scale_fill_gradientn(colors = pal(100), guide = F) +
+  scale_color_gradientn(colors = pal(100), name = NULL, breaks = c(0, 0.5, 1)) +
+  guides(color = guide_colorbar(label.position = "left", ticks = T, ticks.colour = "black", frame.colour = "black", frame.linewidth = 1.3, barwidth = 1.5, barheight = 7)) +
+  xlab("") +
+  ylab("") +
+  scale_y_continuous(breaks = seq(35, 55, by = 5)) + 
+  scale_x_continuous(breaks = seq(-130, -100, by = 10)) +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        legend.position = c(0.105, 0.36),
+        legend.box.background = element_blank(),
+        legend.background = element_blank(),
+        legend.key = element_blank(),
+        axis.ticks = element_line(size = 1.5),
+        axis.ticks.length = unit(0.25, "cm"),
+        axis.text = element_text(size = 14, color = "black"),
+        panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(fill = NA, color = "black", size = 1.5),
+        plot.margin = unit(c(0.1, 0.5, 0.1, 0.1), "cm")) +
+  ggsn::scalebar(x.min = -132, x.max = -80.5,
+           y.min = 32, y.max = 56.5, 
+           dist  = 300, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -122.48, y = 35))
+us +
+  ggsave(filename = "results/figures/current_pheno_map.pdf", width = 9.7, height = 7)
+us +
+  ggsave(filename = "results/figures/current_pheno_map.png", width = 9.7, height = 7, dpi = 72)
 
 # Colorado Insert ---------------------------------------------------------
-# Convert raster to df for plotting, subset just to Colorado
-pred.new.df <- as(pred.new, "SpatialPixelsDataFrame") %>% 
-  as.data.frame(.) %>% 
-  dplyr::filter(x < -102 & x > -109) %>% 
-  dplyr::filter(y < 41 & y > 37) %>% 
-  dplyr::filter(!is.na(.[1]))
-names(pred.new.df) <- c("probWhite", "Long", "Lat")
-
-
 # Get locations of genomics samples
 spec.colo <- read.delim("raw_data/DMNS_spectrometry_PCs.txt", sep = "\t", stringsAsFactors = F) %>% 
   separate(Sample, into = c("museum", "collection", "ID"), remove = F) %>% 
@@ -122,14 +128,14 @@ cluster_plots <- unique_gps %>%
             samples = sum(n))
 
 # Then, plot. Will use ggplot so I can scale circles by sample size
-ggplot() +
+colorado <- ggplot() +
   aes(x = Long, y = Lat) +
   coord_quickmap(
     xlim = c(-109, -102),
     ylim = c(37, 41),
     clip = "on", 
     expand = F) +
-  geom_tile(data = pred.new.df, aes(fill = probWhite, color = probWhite)) +
+  geom_tile(data = pred.pheno.df, aes(fill = probWhite, color = probWhite)) +
   theme(panel.background = element_rect(fill = rgb(133,141,147, maxColorValue = 255), colour = rgb(133,141,147, maxColorValue = 255)),
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
@@ -142,15 +148,20 @@ ggplot() +
   scale_color_gradient(low = "#69431A", high  = "floralwhite", breaks = seq(0, 1, length.out = 100), guide = F) +
   geom_point(data  = cluster_plots, aes(size = samples), color = "black", fill = "#F4742A", shape = 21, stroke = 1) +
   scale_size_continuous(range= c(3, 10)) +
+  ggsn::scalebar(x.min = -109, x.max = -102,
+           y.min = 37, y.max = 41, 
+           dist  = 50, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -102.6, y = 37.25), st.color = "white") 
+
+colorado +
   ggsave(filename = "results/figures/colorado.pdf", width = 7, height = 6)
 
+colorado +
+  ggsave(filename = "results/figures/colorado.png", width = 7, height = 6, dpi = 72)
 
   
 
 
 
-
-# Old colorado plotting ---------------------------------------------------
 # Can delete this stuff eventually
 
 # background colors tried
@@ -173,65 +184,33 @@ ggplot() +
 
 
 
-
-
-pdf(file = "results/figures/colorado.pdf", width = 7, height = 6)
-# Start off plot with colorado only
-# location only
-plot(colorado,
-  xlim = c(-109,-102),
-  ylim = c(37, 41),
-  axes = F,
+pdf(file = "results/figures/current_pheno_map_text.pdf", width = 9.5, height = 7)
+plot(
+  state_prov,
+  xlim = c(-131,-87.5),
+  ylim = c(32, 56),
+  axes = TRUE,
   col = rgb(133,141,147, maxColorValue = 255),
   border = NA
 )
-plot(
-  state_prov,
-  col = rgb(133,141,147, maxColorValue = 255),
-  add = T
-)
-plot(
-  colorado,
-  col = rgb(133,141,147, maxColorValue = 255),
-  add = T
-)
-plot(pred.new, # or pheno.colorado for colorado only
-     add = T,
-     col = pal(100),
-     legend = F
-)
-plot(state_prov, add = T, col = NA, border = "grey10")
 
-# Add specc'ed points
-# points(x = spec.colo$Long,
-#        y = spec.colo$Lat, 
-#        pch = 21, col = "black" , bg = spec.colo$color, cex = 3) # colored by PC1
-# points(x = spec.colo$Long,
-#        y = spec.colo$Lat, 
-#        pch = 21, col = "black" , bg = "#F4742A", cex = 2) # or by a different color
+difference <- future.pred.pheno.range - current.pred.pheno.srt.range
+# Plot predicted SDM
+plot(pred.new, 
+     add = TRUE, 
+     legend = F, 
+     col = pal(100))
+addRasterLegend(pred.new, ramp = pal(100), side = 2,  
+                location = c(-127.5, -125.75, 37, 43.5), 
+                ncolors = 100, minmax = c(0,1), nTicks = 1)
 
-points(x = cluster_plots$Long,
-       y = cluster_plots$Lat,
-       pch = 21, col = "black" , bg = "#F4742A", cex = cluster_plots$samples)
-symbols(x = cluster_plots$Long,
-       y = cluster_plots$Lat,
-       circles = cluster_plots$samples/2, fg = "black" , bg = "#F4742A", add = T)
-text(x = cluster_plots$Long,
-     y = cluster_plots$Lat,
-     labels = cluster_plots$samples)
-maps::map.scale(x = -104.5, y = 37.5, ratio = F, col = "black", cex = 1)
+
+# Add the state lines back on, but faintly
+plot(state_prov, add = T, col = NA, border = "grey61")
+# Add countries and coastlines in black
+plot(countries, add = T, col = NA, border = "grey10")
+plot(coastline10, add = T, col = "grey10", border = "grey10")
 box()
+maps::map.scale(x = -131, y = 33, ratio = F, cex = .8, relwidth = .11)
 dev.off()
 
-
-
-# # Get a raster of just colorado
-# colorado <- state_prov[state_prov$name == "Colorado",]
-# temp <- brick("processed_data/bioclim_30arcsec_for_WTJR_SDM.tif")
-# colorado.raster <- rasterize(colorado, temp, field = 1)
-# 
-# 
-# 
-# 
-# # Mask phenotype predictions down to colorado
-# pheno.colorado <- mask(pred.new, colorado.raster)

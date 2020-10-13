@@ -25,6 +25,12 @@ environ <- args[2]
 gbif_dat <- args[3]
 range_file <- args[4]
 
+pheno_dat <- "raw_data/Ltowsendii_database_FINAL.xlsx"
+environ <- "processed_data/pheno_predictors_millsetal2018.tif"
+gbif_dat <- "raw_data/GBIF/verbatim.txt"
+range_file <- "results/sdm/sdm_rangemap_best_sens95.grd"
+
+
 # Load data -----------------------------------------------------------
 # Pheno data
 pheno <- read_excel(pheno_dat)  %>% 
@@ -62,8 +68,10 @@ lepto.mod.pred <- predict(predictors, lepto.mod, type='response')
 # Mask predictions to range
 pheno.range <- mask(lepto.mod.pred, rangemap)
 
+plot(lepto.mod.pred)
+plot(pheno.range)
 # Save results ------------------------------------------------------------
 save(lepto.mod, file = "results/pheno/current_pheno_glm.RData")
-writeRaster(lepto.mod.pred, filename = "results/pheno/current_predicted_probWhite", format='GTiff')
+writeRaster(lepto.mod.pred, filename = "results/pheno/current_predicted_probWhite", format='GTiff', overwrite = T)
 
-writeRaster(pheno.range, filename = "results/pheno/current_predicted_probWhite_SDMrange", format='GTiff')
+writeRaster(pheno.range, filename = "results/pheno/current_predicted_probWhite_SDMrange", format='GTiff', overwrite = T)

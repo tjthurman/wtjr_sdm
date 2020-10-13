@@ -21,19 +21,24 @@ logs/snakemake_slurm/*.out
 raw_data/wc0.5/
 raw_data/worldclim_projections/*
 raw_data/rasterstack4cov.tif
+raw_data/projections_25arcmin/
+raw_data/worldclim_projections_2070s/
+raw_data/worldclim_projections_2080s/
 
 # Processed data that is too large
 processed_data/bioclim_30arcsec_for_WTJR_SDM.tif
 processed_data/conservation_rasters/*.tif
 processed_data/pheno_predictors_millsetal2018.tif
+processed_data/bc23_CMIP5_RCP85_2080s_5modavg.gr*
 
 # Results that are too large
 results/enmeval/enmeval_res_*_thin*_*.RData
 results/sdm/sdm_rangemap_best_*.gr*
 results/pheno/current_predicted_probWhite*.tif
 
-results/figures/current_pheno_map.png
 
+# Figure files that are code-generated
 *.ai
+results/figures/*.png
+results/figures/*.pdf
 
-results/figures/figure_1_mock.png
