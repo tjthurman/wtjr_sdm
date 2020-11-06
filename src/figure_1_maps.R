@@ -10,20 +10,17 @@ library(tidyverse)
 library(rnaturalearth)
 library(rnaturalearthhires)
 library(raster)
-library(rangeBuilder)
-library(maptools)
+library(ggsn)
 library(geosphere)
-library(mapproj)
 
 # Get arguments -----------------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
 # 1 predicted phenos in rangemap raster
 
 map_file <- args[1]
-
+map_file <- "results/pheno/current_predicted_probWhite_SDMrange.tif"
 
 # Load data -----------------------------------------------------------
-map_file <- "results/pheno/current_predicted_probWhite_SDMrange.tif"
 pred.new <- raster(map_file)
 
 
@@ -32,17 +29,18 @@ countries <- ne_countries(continent = "north america", scale = 10, returnclass =
 coast <- ne_coastline(scale = 10, returnclass = "sf")
 
 # Plot US map -----------------------------------------------------------
-pal <- colorRampPalette(colors = c("#69431A", "floralwhite")) # Colors from Mafalda's figs
+pal <- colorRampPalette(colors = rev(c("#69431A", "floralwhite"))) # Colors from Mafalda's figs
 
 
 pred.pheno.df <- as(pred.new, "SpatialPixelsDataFrame") %>% 
   as.data.frame(.) %>%
-  dplyr::filter(!is.na(.[1]))
-names(pred.pheno.df) <- c("probWhite", "Long", "Lat")
+  dplyr::filter(!is.na(.[1])) %>% 
+  mutate(probBrown = 1 - current_predicted_probWhite_SDMrange)
+names(pred.pheno.df) <- c("probWhite", "Long", "Lat", "probBrown")
 
 us <- ggplot() +
   geom_sf(data = state_prov, color = "grey61", fill = rgb(133,141,147, maxColorValue = 255)) +
-  geom_tile(data = pred.pheno.df, aes(fill = probWhite, color = probWhite, x = Long, y = Lat)) +
+  geom_tile(data = pred.pheno.df, aes(fill = probBrown, color = probBrown, x = Long, y = Lat)) +
   geom_sf(data = state_prov, color = "grey61", fill = NA, ) +
   geom_sf(data = countries, color = "grey10", fill = NA) +
   geom_sf(data= coast, color = "grey10", fill = NA) +
@@ -73,21 +71,17 @@ us <- ggplot() +
   ggsn::scalebar(x.min = -132, x.max = -80.5,
            y.min = 32, y.max = 56.5, 
            dist  = 300, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -122.48, y = 35))
-us +
-  ggsave(filename = "results/figures/current_pheno_map.pdf", width = 9.7, height = 7)
-us +
-  ggsave(filename = "results/figures/current_pheno_map.png", width = 9.7, height = 7, dpi = 72)
+
+ggsave(us, filename = "results/figures/current_pheno_map.pdf", width = 9.7, height = 7)
+
+ggsave(us, filename = "results/figures/current_pheno_map.png", width = 9.7, height = 7, dpi = 72)
 
 # Colorado Insert ---------------------------------------------------------
 # Get locations of genomics samples
-spec.colo <- read.delim("raw_data/DMNS_spectrometry_PCs.txt", sep = "\t", stringsAsFactors = F) %>% 
-  separate(Sample, into = c("museum", "collection", "ID"), remove = F) %>% 
-  mutate(colorgroups = cut(PC1, 100)) %>% 
-  mutate(colorindex = as.numeric(colorgroups)) %>% 
-  mutate(color = pal(100)[colorindex]) 
+colo.samples <- read.delim("raw_data/sample_coordinates_74individuals.txt")
 
 # Narrow down to unique GPS points, tallying # of samples per GPS
-unique_gps <- spec.colo %>% 
+unique_gps <- colo.samples %>% 
   mutate(roundLat = round(Lat, digits = 5),
          roundLong = round(Long, digits = 5)) %>% 
   group_by(roundLat, roundLong) %>% 
@@ -135,7 +129,7 @@ colorado <- ggplot() +
     ylim = c(37, 41),
     clip = "on", 
     expand = F) +
-  geom_tile(data = pred.pheno.df, aes(fill = probWhite, color = probWhite)) +
+  geom_tile(data = pred.pheno.df, aes(fill = probBrown, color = probBrown)) +
   theme(panel.background = element_rect(fill = rgb(133,141,147, maxColorValue = 255), colour = rgb(133,141,147, maxColorValue = 255)),
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
@@ -144,73 +138,19 @@ colorado <- ggplot() +
         legend.key = element_blank(),
         legend.text = element_text(color = "white", size = 12, face = "bold"),
         legend.title = element_text(color = "white", size = 14, face = "bold")) +
-  scale_fill_gradient(low = "#69431A", high  = "floralwhite", breaks = seq(0, 1, length.out = 100), guide = F) +
-  scale_color_gradient(low = "#69431A", high  = "floralwhite", breaks = seq(0, 1, length.out = 100), guide = F) +
+  scale_fill_gradientn(colors = pal(100), guide = F) +
+  scale_color_gradientn(colors = pal(100), guide = F) +
   geom_point(data  = cluster_plots, aes(size = samples), color = "black", fill = "#F4742A", shape = 21, stroke = 1) +
   scale_size_continuous(range= c(3, 10)) +
   ggsn::scalebar(x.min = -109, x.max = -102,
            y.min = 37, y.max = 41, 
            dist  = 50, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -102.6, y = 37.25), st.color = "white") 
 
-colorado +
-  ggsave(filename = "results/figures/colorado.pdf", width = 7, height = 6)
 
-colorado +
-  ggsave(filename = "results/figures/colorado.png", width = 7, height = 6, dpi = 72)
+ggsave(colorado, filename = "results/figures/colorado.pdf", width = 7, height = 6)
+
+ggsave(colorado, filename = "results/figures/colorado.png", width = 7, height = 6, dpi = 72)
 
   
 
-
-
-# Can delete this stuff eventually
-
-# background colors tried
-# tomato1 - no good
-# slategray1- pretty good, maybe too blue?
-# slategray2- pretty good, candidate. But maybe a touch too blue?
-# slategray3- pretty good, candidate. But maybe a touch too blue?
-# slategray4- pretty good, candidate. Like that a lot
-# slategray- pretty good, candidate. Like this a lot too. Think it is the top candidate
-# rgb(133,141,147, maxColorValue = 255) A lightened, slightly desautrated slategray. THe new top candidate
-# steelblue2 - too blue
-# "#82AAD6"- this light blue from Mafalda's figures. I think a little too blue.
-# #2F4C9E- the dark blue from Mafalda's figures. I think too blue. 
-#F4742A - The orange from Mafalda's figs
-# plum2- OK, but i expect it will clash with other figs. 
-# plum1- OK, but i expect it will clash with other figs. 
-# lightcoral- OK, but I think it would clash. 
-# bisque2- Too tan/neutral, I think
-# bisque1- Too tan/neutral, I think
-
-
-
-pdf(file = "results/figures/current_pheno_map_text.pdf", width = 9.5, height = 7)
-plot(
-  state_prov,
-  xlim = c(-131,-87.5),
-  ylim = c(32, 56),
-  axes = TRUE,
-  col = rgb(133,141,147, maxColorValue = 255),
-  border = NA
-)
-
-difference <- future.pred.pheno.range - current.pred.pheno.srt.range
-# Plot predicted SDM
-plot(pred.new, 
-     add = TRUE, 
-     legend = F, 
-     col = pal(100))
-addRasterLegend(pred.new, ramp = pal(100), side = 2,  
-                location = c(-127.5, -125.75, 37, 43.5), 
-                ncolors = 100, minmax = c(0,1), nTicks = 1)
-
-
-# Add the state lines back on, but faintly
-plot(state_prov, add = T, col = NA, border = "grey61")
-# Add countries and coastlines in black
-plot(countries, add = T, col = NA, border = "grey10")
-plot(coastline10, add = T, col = "grey10", border = "grey10")
-box()
-maps::map.scale(x = -131, y = 33, ratio = F, cex = .8, relwidth = .11)
-dev.off()
 

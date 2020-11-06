@@ -11,20 +11,16 @@ library(tidyverse)
 library(raster)
 library(dismo)
 library(ENMeval)
-
+library(cowplot)
+library(lemon)
 
 # Get arguments -----------------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
 # # 1 folder of enmeval results
-# in_csv <- args[1]
-# in_bioclim <- args[2]
-# bg <- args[3]
-# fc <- args[4]
-# seed <- args[5]
-# cores <- args[6]
+
 
 res.folder <- args[1]
-
+res.folder <- "results/enmeval/"
 
 # Load results and plot them ----------------------------------------------
 # thin_dists <- paste0(c(0,1, 5,10,50), "km")
@@ -92,11 +88,12 @@ means %>%
   mutate(metric = fct_relevel(metric, "train.AUC", "test.AUC",
                               "diff.AUC", "test.or10pct", "parameters")) %>% 
   separate(thin_dist, into = c("thin_dist", "extra"), sep = -2, convert = T) %>%
-  ggplot(aes(x = as.factor(thin_dist), y = mean, ymin = mean - 1.96*se, ymax = mean + 1.96*se, color = as.factor(thin_dist))) +
+  ggplot(aes(x = as.factor(thin_dist), y = mean, ymin = mean - 1.96*se, ymax = mean + 1.96*se)) +
   geom_pointrange() +
   ggtitle(paste0("Performance metrics across datasets")) +
   xlab("Thinning distance of dataset") +
   ylab("value, +/- approx. 95% CI when possible") +
-  facet_wrap(facets = vars(metric), scale = "free_y") +
+  facet_rep_wrap(facets = vars(metric), scales = "free_y", nrow = 2, ncol = 3) +
+  theme_cowplot() +
   ggsave(filename = "results/enmeval/performance_plot_best_models.pdf",
          width = 12, height = 7, units = "in")

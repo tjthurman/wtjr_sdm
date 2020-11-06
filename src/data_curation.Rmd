@@ -209,7 +209,7 @@ Indeed, these all have the same number of unique catalog numbers within each dat
 
 Next, we check records where the access rights are from Vertnet:
 
-Now, what about the rest of them (access rights empty or from vertnet)? Let's start with ones where the access rights are from Vertnet for each, as I expect the overlap there is particularly high. The following (much, much longer code) is to figure this out. Check it out if you want, or just skip to the conclusions. 
+Now, what about the rest of them (access rights empty or from vertnet)? Let's start with ones where the access rights are from Vertnet for each, as I expect the overlap there is particularly high. 
 
 ```{r check vertnet, eval = T, results = "hide"}
 vertaccess <- gbif.loc.museum %>% 

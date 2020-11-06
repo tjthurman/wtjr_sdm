@@ -42,3 +42,7 @@ results/pheno/current_predicted_probWhite*.tif
 results/figures/*.png
 results/figures/*.pdf
 
+
+docs/methods_for_mafalda.docx
+
+results/figures/supplemental/

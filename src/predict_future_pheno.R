@@ -100,7 +100,6 @@ names(current.env) <- c("srt", "bio_2", "bio_3")
 current.pred.pheno.srt <- predict(current.env, srt.mod, type = "response")
 current.pred.pheno.srt.range <- mask(current.pred.pheno.srt, crop(range, current.pred.pheno.srt))
 
-plot(current.pred.pheno.srt.range)
 
 # Predict future probWhite with SRT ------------------------------------------------
 tmp3 <- raster::intersect(future.srt.disagg, future.bc23)
