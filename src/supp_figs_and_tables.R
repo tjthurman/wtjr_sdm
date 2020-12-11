@@ -17,6 +17,63 @@ library(gridExtra)
 
 
 
+# # for running in a pipline
+args = commandArgs(trailingOnly=TRUE)
+# 1 snow cover glm rdata
+# 2 srt glm rdata
+# 3 conservation pheno overlap
+# 4 current SRT predicted phenos
+# 5 future SRT predicted phenos
+# 6 current snow cover predicted phenos
+
+# 7 snow cover table out
+# 8 snow cover metrics out
+# 9 srt table out
+# 10 srt metrics out
+# 11 broad chisq out
+# 12 pheno comparison map out
+# 13 glm method compare map out
+# 14 percent brown change map out
+# 15 discrete current pheno map out
+
+# Inputs
+snow_cover_glm <- args[1]
+srt_glm <- args[2]
+conservation_overlap <- args[3]
+current_file <- args[4]
+future_file <- args[5]
+current_cover_file <- args[6]
+
+# Outputs
+snow_cover_table <- args[7]
+snow_cover_metrics <- args[8]
+srt_table <- args[9]
+srt_metrics  <- args[10]
+broad_chisq_out <- args[11]
+pheno_compare_maps <- args[12]
+glm_method_compare_map <- args[13]
+percent_brown_change <- args[14]
+discrete_current_pheno_map <- args[15]
+
+# For running as a script
+# Inputs
+# snow_cover_glm <- "results/pheno/current_pheno_glm.RData"
+# srt_glm <- "results/pheno/current_pheno_glm_SRT.RData"
+# conservation_overlap <- "results/conservation/cons_by_current_color.RData"
+# current_file <- "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif"
+# future_file <- "results/pheno/future_predicted_probWhite_SDMrange.tif"
+# current_cover_file <- "results/pheno/current_predicted_probWhite_SDMrange.tif"
+# # outputs
+# snow_cover_table <- "results/pheno/glm_table_current_snow_cover.csv"
+# snow_cover_metrics <- "results/pheno/glm_metrics_current_snow_cover.csv"
+# srt_table <- "results/pheno/glm_table_current_srt.csv"
+# srt_metrics <- "results/pheno/glm_metrics_current_srt.csv"
+# broad_chisq_out <- "results/conservation/broad_chisq_res.csv"
+# pheno_compare_maps <- "results/figures/supplemental/pheno_compare_maps.pdf"
+# glm_method_compare_map <- "results/figures/supplemental/model_difference_map.pdf"
+# percent_brown_change <- "results/figures/supplemental/percent_brown_change.pdf"
+# discrete_current_pheno_map <- "results/figures/supplemental/discrete_current_pheno_map.pdf"
+
 # Load map data -----------------------------------------------------------
 state_prov <- ne_states(c("united states of america", "canada"), returnclass = "sf")
 countries <- ne_countries(continent = "north america", scale = 10, returnclass = "sf")
@@ -25,39 +82,34 @@ coast <- ne_coastline(scale = 10, returnclass = "sf")
 
 # TABLES ------------------------------------------------------------------
 # GLM tables --------------------------------------------------------------
-load("results/pheno/current_pheno_glm.RData")
-load("results/pheno/current_pheno_glm_SRT.RData")
-
-
+load(snow_cover_glm)
+load(srt_glm)
 
 tidy(lepto.mod) %>% 
-  write.csv(., "results/pheno/glm_table_current_snow_cover.csv", row.names = F)
+  write.csv(., snow_cover_table, row.names = F)
 glance(lepto.mod) %>% 
   mutate(pseudo.r2 = 1 - (deviance/null.deviance)) %>% 
-  write.csv(., "results/pheno/glm_metrics_current_snow_cover.csv", row.names = F)
+  write.csv(., snow_cover_metrics, row.names = F)
 
 tidy(srt.mod) %>% 
-  write.csv(., "results/pheno/glm_table_current_srt.csv", row.names = F)
+  write.csv(., srt_table, row.names = F)
 glance(srt.mod) %>% 
   mutate(pseudo.r2 = 1 - (deviance/null.deviance)) %>% 
-  write.csv(., "results/pheno/glm_metrics_current_srt.csv", row.names = F)
+  write.csv(., srt_metrics, row.names = F)
 
 
 # Chi2 and cramers v results ----------------------------------------------
-load("results/conservation/cons_by_current_color.RData")
+load(conservation_overlap)
 
 broad.chisq.res %>% 
   mutate(cramerV = cramerV.broad[[1]]) %>% 
-  write.csv(., "results/conservation/broad_chisq_res.csv", row.names = F)
+  write.csv(., broad_chisq_out, row.names = F)
 
 
 # FIGURES -----------------------------------------------------------------
 # Load predicted phenotypes ----------------------------------------------------
-future_file <- "results/pheno/future_predicted_probWhite_SDMrange.tif"
-current_file <- "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif"
 future_pheno <- raster(future_file)
 current_pheno <- raster(current_file)
-
 
 # Plots of current and future prob(brown) ---------------------------------
 current_probBrown_df <- as(current_pheno, "SpatialPixelsDataFrame") %>% 
@@ -148,15 +200,13 @@ map_pheno_future <- ggplot() +
 combo <- grid.arrange(map_pheno_current,
              map_pheno_future,
              nrow = 2) 
-ggsave(plot = combo, "results/figures/supplemental/pheno_compare_maps.pdf", width = 9.7, height  = 14, units = "in")
+ggsave(plot = combo, pheno_compare_maps, width = 9.7, height  = 14, units = "in")
 
 
 # Difference in SRT vs. snow cover models ---------------------------------
-current_snow_cover <- raster("results/pheno/current_predicted_probWhite_SDMrange.tif")
+current_snow_cover <- raster(current_cover_file)
 current_snow_cover_masked <- mask(crop(current_snow_cover, current_pheno), current_pheno)
   
-
-
 # Get model difference, do it in terms of probBrown
 model_difference <- (1- current_snow_cover_masked) - (1 - current_pheno)
 
@@ -165,8 +215,6 @@ model_difference_current_probBrown <- model_difference %>%
   as.data.frame(.) %>%
   dplyr::filter(!is.na(.[1])) 
 names(model_difference_current_probBrown) <- c("difference", "Long", "Lat")
-
-
 
 diff_pal <- colorRampPalette(colors = c("#762a83", "#f7f7f7", "#1b7837"))
 
@@ -205,8 +253,7 @@ map_model_difference <- ggplot() +
            dist  = 200, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -92.15, y = 33.3)) +
   ggtitle("Difference in current Prob(Brown) between snow cover and SRT models")
 
-ggsave(plot = map_model_difference, "results/figures/supplemental/model_difference_map.pdf", width = 9.7, height  = 7, units = "in")
-
+ggsave(plot = map_model_difference, glm_method_compare_map, width = 9.7, height  = 7, units = "in")
 
 
 # Percent of range that is brown ------------------------------------------
@@ -242,12 +289,11 @@ area_compare %>%
         plot.background = element_rect(fill = "white"),
         panel.border = element_rect(fill = NA, color = "black", size = 1.5),
         plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm")) +
-  ggsave("results/figures/supplemental/percent_brown_change.pdf", height = 4, width = 4, units = "in")
+  ggsave(percent_brown_change, height = 4, width = 4, units = "in")
 
 
 # Map of current, discrete phenos -----------------------------------------
-map_file <- "results/pheno/current_predicted_probWhite_SDMrange.tif"
-pred.new <- raster(map_file)
+pred.new <- raster(current_cover_file)
 
 pred.pheno.df <- as(pred.new, "SpatialPixelsDataFrame") %>% 
   as.data.frame(.) %>%
@@ -299,4 +345,7 @@ discrete_pheno <- ggplot() +
                  dist  = 300, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -122.48, y = 35))
 
 
-ggsave(discrete_pheno, filename = "results/figures/supplemental/discrete_current_pheno_map.pdf", width = 9.7, height = 7)
+ggsave(discrete_pheno, filename = discrete_current_pheno_map, width = 9.7, height = 7)
+
+
+# Misc other analyses for the main text -----------------------------------------

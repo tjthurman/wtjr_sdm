@@ -17,20 +17,35 @@ localrules: all, rename_ENMeval_res, dag, filegraph, help
 
 
 # NEED TO EDIT THESE TO JUST THE FINAL OUTPUTS
-
+# Desired final outputs:
+# Figure 1 stuff
+# Figure 4 stuff
+# Supplemental tables and figures
+# Mini report
 rule all:
     input:
-        "processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd",
-        expand("results/sdm/sdm_rangemap_best_{thresh}.{ext}", 
-               thresh = ["specsens", "sens95", "sens99"],
-               ext=["grd", "gri"]),
-        expand("processed_data/conservation_rasters/{cons_status}.tif", cons_status=CON_STATUSES),
+        # Figure 1 elements
         "results/figures/colorado.pdf",
+        "results/figures/colorado.png",
         "results/figures/current_pheno_map.pdf",
-        "results/conservation/cons_by_current_color.RData",
-        "results/pheno/current_pheno_glm_SRT.RData",
-        "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif",
-        "results/pheno/future_predicted_probWhite_SDMrange.tif"
+        "results/figures/current_pheno_map.png",
+        # Figure 4 elements
+        "results/figures/pheno_change_map.pdf",
+        "results/figures/pheno_change_map.png",
+        "results/figures/horizontal_consv.pdf",
+        "results/figures/density_probBrown_insert.pdf",
+        # Supplementary figures, tables, and analysis
+        "results/pheno/glm_table_current_snow_cover.csv",
+        "results/pheno/glm_metrics_current_snow_cover.csv",
+        "results/pheno/glm_table_current_srt.csv",
+        "results/pheno/glm_metrics_current_srt.csv",
+        "results/conservation/broad_chisq_res.csv",
+        "results/figures/supplemental/pheno_compare_maps.pdf",
+        "results/figures/supplemental/model_difference_map.pdf",
+        "results/figures/supplemental/percent_brown_change.pdf",
+        "results/figures/supplemental/discrete_current_pheno_map.pdf"
+
+
         
 ## curate_occur_data   : process WTJR occurrence data
 # Renders an Rmarkdown report on the data curation process
@@ -319,9 +334,56 @@ rule predict_future_phenotypes:
         """
      
 
-## MAKE A FIGURE 4 RULE
+## figure_4_elements: make panels for Fig. 4
+# Create panels for figure 4: map of phenotypic change as pdf and png
+# conservation status by phenotype
+# and density insert
+rule figure_4_elements:
+    input:
+        current_srt_pheno = "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif",
+        future_srt_pheno = "results/pheno/future_predicted_probWhite_SDMrange.tif",
+        consv_pheno_overlap = "results/conservation/cons_by_current_color.RData"
+    output:
+        change_map_pdf= "results/figures/pheno_change_map.pdf",
+        change_map_png= "results/figures/pheno_change_map.png",
+        cons_plot = "results/figures/horizontal_consv.pdf",
+        density_insert = "results/figures/density_probBrown_insert.pdf"
+    resources:
+        cpus=1
+    shell:
+        """
+        Rscript src/figure_4_elements.R {input.current_srt_pheno} {input.future_srt_pheno} {input.consv_pheno_overlap} {output.change_map_pdf} {output.change_map_png} {output.cons_plot} {output.density_insert}
+        """
 
 ## Make supplementary figure and table rule
+# Creates all supplemental tables and figures
+# And outputs some bits of analysis for the main text
+# STILL NEED TO DO BITS OF ANALYSIS
+rule supplemental_and_analysis:
+    input: 
+        snowcover_glm_rdata = "results/pheno/current_pheno_glm.RData",
+        srt_glm_rdata = "results/pheno/current_pheno_glm_SRT.RData",
+        consv_pheno_overlap = "results/conservation/cons_by_current_color.RData",
+        current_srt_pheno = "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif",
+        future_srt_pheno = "results/pheno/future_predicted_probWhite_SDMrange.tif",
+        current_cover_pheno = "results/pheno/current_predicted_probWhite_SDMrange.tif"
+    output:
+        snow_cover_table = "results/pheno/glm_table_current_snow_cover.csv",
+        snow_cover_metrics = "results/pheno/glm_metrics_current_snow_cover.csv",
+        srt_table = "results/pheno/glm_table_current_srt.csv",
+        srt_metrics = "results/pheno/glm_metrics_current_srt.csv",
+        broad_chisq_res = "results/conservation/broad_chisq_res.csv",
+        pheno_compare_map = "results/figures/supplemental/pheno_compare_maps.pdf",
+        glm_method_compare_map = "results/figures/supplemental/model_difference_map.pdf",
+        percent_brown_change = "results/figures/supplemental/percent_brown_change.pdf",
+        discrete_current_pheno_map = "results/figures/supplemental/discrete_current_pheno_map.pdf"
+    resources:
+        cpus=1
+    shell:
+        """
+        Rscript src/supp_figs_and_tables.R {input.snowcover_glm_rdata} {input.srt_glm_rdata} {input.consv_pheno_overlap} {input.current_srt_pheno} {input.future_srt_pheno} {input.current_cover_pheno} {output.snow_cover_table} {output.snow_cover_metrics} {output.srt_table} {output.srt_metrics} {output.broad_chisq_res} {output.pheno_compare_map} {output.glm_method_compare_map} {output.percent_brown_change} {output.discrete_current_pheno_map}
+        """
+ 
 
 ## Make miscellaneous report rule
 

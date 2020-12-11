@@ -16,15 +16,32 @@ library(cowplot)
 
 # Get arguments -----------------------------------------------------------
 # # for running in a pipline
-# args = commandArgs(trailingOnly=TRUE)
-# # 1 future predicted phenos
-# # 2 conservation/pheno overlap
-# map_file <- args[1]
-# conservation_file <- args[2]
+args = commandArgs(trailingOnly=TRUE)
+# 1 current SRT predicted phenos
+# 2 future SRT predicted phenos
+# 3 conservation overlap Rdata
+# 4 change map pdf
+# 5 change map png
+# 6 conservation plot pdf
+# 7 insert plot pdf
 
-# 
-future_file <- "results/pheno/future_predicted_probWhite_SDMrange.tif"
-current_file <- "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif"
+current_file <- args[1]
+future_file <- args[2]
+conservation_overlap <- args[3]
+map_out_pdf <- args[4]
+map_out_png <- args[5]
+cons_plot_out <- args[6]
+insert_plot_out <- args[7]
+
+# for running as a script
+# current_file <- "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif"
+# future_file <- "results/pheno/future_predicted_probWhite_SDMrange.tif"
+# conservation_overlap <- "results/conservation/cons_by_current_color.RData"
+# map_out_pdf <- "results/figures/colorado.pdf"
+# map_out_png <- "results/figures/colorado.png"
+# cons_plot_out <- "results/figures/current_pheno_map.pdf"
+# insert_plot_out <- "results/figures/current_pheno_map.png"
+
 
 # Load data ---------------------------------------------------------------
 future_pheno <- raster(future_file)
@@ -33,7 +50,7 @@ state_prov <- ne_states(c("united states of america", "canada"), returnclass = "
 countries <- ne_countries(continent = "north america", scale = 10, returnclass = "sf")
 coast <- ne_coastline(scale = 10, returnclass = "sf")
 
-load("results/conservation/cons_by_current_color.RData")
+load(conservation_overlap)
 
 # Plot US map -----------------------------------------------------------
 pal <- colorRampPalette(colors = c(rgb(41, 57, 113, maxColorValue = 255), # mills 2018  USING THIS AT THE MOMENT
@@ -42,14 +59,6 @@ pal <- colorRampPalette(colors = c(rgb(41, 57, 113, maxColorValue = 255), # mill
 
 
 difference <- (1- future_pheno) - (1 - current_pheno)
-
-diff_larger04 <- difference
-values(diff_larger04) <- ifelse(values(diff_larger04) >= 0.4, 1, NA)
-
-area_diff_larger_04 <- sum(values(area(diff_larger04, na.rm = T)), na.rm = T)
-us_only_range_area <- sum(values(area(current_pheno, na.rm = T)), na.rm = T)
-
-perc_area_diff_larger <- area_diff_larger_04/us_only_range_area
 
 change.df <- as(difference, "SpatialPixelsDataFrame") %>% 
   as.data.frame(.) %>%
@@ -92,13 +101,13 @@ us <- ggplot() +
            y.min = 32, y.max = 49.5, 
            dist  = 250, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -121, y = 33)) 
 
-ggsave(us, filename = "results/figures/pheno_change_map.png", width = 9, height = 5.6, dpi = 72)
+ggsave(us, filename = map_out_png, width = 9, height = 5.6, dpi = 72)
 
-ggsave(us, filename = "results/figures/pheno_change_map.pdf", width = 9, height = 5.6)
+ggsave(us, filename = map_out_pdf, width = 9, height = 5.6)
 
 
 
-# A third, artier option --------------------------------------------------
+# Horizontal conservation panel --------------------------------------------------
 broad$conservation <- factor(broad$conservation, 
                              levels = rev(c("extirpated", "broad.extirp", "local.extirp", "poss.decline", "pres.stable")),
                              labels = rev(c("extirpated", "broad\nextirpations", "local\nextirpations",
@@ -133,36 +142,16 @@ broad %>%
         panel.border = element_blank(),
         plot.margin = unit(c(0, 0, 0, 0), "cm"),
         panel.spacing = unit(c(0, 0, 0, 0), "null")) +
-  ggsave("results/figures/horizontal_consv.pdf", width = 4.25, height = 2, units = "cm")
+  ggsave(cons_plot_out, width = 4.25, height = 2, units = "cm")
 
 
 
 # Insert --------------------------------------------------------
 # Density of Prob white across years:
-current_for_brown_area <- current_pheno
-values(current_for_brown_area) <- ifelse(values(current_for_brown_area) < 0.2, 1, NA)
-
-future_for_brown_area <- future_pheno
-values(future_for_brown_area) <- ifelse(values(future_for_brown_area) < 0.2, 1, NA)
-
-
-area_brown_current <- sum(values(area(current_for_brown_area, na.rm = T)), na.rm = T)
-area_brown_future <- sum(values(area(future_for_brown_area, na.rm = T)), na.rm = T)
-
-us_only_range_area <- sum(values(area(current_pheno, na.rm = T)), na.rm = T)
-
-current_perc_brown <- area_brown_current/us_only_range_area
-future_perc_brown <- area_brown_future/us_only_range_area
-
 cur_pheno_vec <- values(current_pheno) %>% 
   .[!is.na(.)]
 future_pheno_vec <- values(future_pheno) %>% 
   .[!is.na(.)]
-
-# Dark blue
-#2F4C9E
-# Light blue
-#82AAD6
 
 probBrown_df <- data.frame(time = c(rep("current", times = length(cur_pheno_vec)),
                                     rep("future", times = length(future_pheno_vec))),
@@ -190,7 +179,7 @@ probBrown_df %>%
         legend.text = element_text(size = 36, color = "black"),
         legend.key.size = unit(1.5, "cm"),
         plot.margin = unit(c(0.5, 0.5, 0.1, 0.25), "cm")) +
-  ggsave("results/figures/density_probBrown_insert.pdf", height = 4, width = 5, units = "in")
+  ggsave(insert_plot_out, height = 4, width = 5, units = "in")
 
 
 

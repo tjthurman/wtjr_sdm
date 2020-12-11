@@ -24,6 +24,7 @@ raw_data/rasterstack4cov.tif
 raw_data/projections_25arcmin/
 raw_data/worldclim_projections_2070s/
 raw_data/worldclim_projections_2080s/
+raw_data/tmp/
 
 # Processed data that is too large
 processed_data/bioclim_30arcsec_for_WTJR_SDM.tif
@@ -41,14 +42,9 @@ results/pheno/current_predicted_probWhite*.tif
 *.ai
 results/figures/*.png
 results/figures/*.pdf
-
-
-docs/methods_for_mafalda.docx
-
 results/figures/supplemental/
 
-raw_data/tmp/
-
+# Diversions and other things not for publication
+docs/methods_for_mafalda.docx
 src/tmp_comparison.R
-
 src/maps_for_jeff.R
