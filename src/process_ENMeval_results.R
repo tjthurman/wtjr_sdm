@@ -16,14 +16,24 @@ library(lemon)
 
 # Get arguments -----------------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
-# # 1 folder of enmeval results
-
+# 1 folder of enmeval results
+# 2 filename for all metrics csv
+# 3 filename for best models metrics csv
+# 4 filename for best models pdf plot
 
 res.folder <- args[1]
-res.folder <- "results/enmeval/"
+all_metrics_file <- args[2]
+best_metrics_file <- args[3]
+best_metrics_plot <- args[4]
+
+
+# For running outside snakemake
+# res.folder <- "results/enmeval/"
+# all_metrics_file <- "results/enmeval/enmeval_metrics.csv"
+# best_metrics_file <- "results/enmeval/enmeval_best_model_per_thin_AIC.csv"
+# best_metrics_plot <- "results/enmeval/performance_plot_best_models.pdf"
 
 # Load results and plot them ----------------------------------------------
-# thin_dists <- paste0(c(0,1, 5,10,50), "km")
 
 results <- NULL
 for (file in list.files(res.folder, full.names = T)) {
@@ -44,7 +54,7 @@ sorted <- results %>%
   arrange(match(thin_dist, c("0km", "1km", "5km", "10km", "50km")), 
           match(features, c("L", "LQ", "H", "LQH", "LQHP", "LQHPT")), rm) 
 
-write.csv(x = sorted, file = "results/enmeval/enmeval_metrics.csv", row.names = F)
+write.csv(x = sorted, file = all_metrics_file, row.names = F)
 
 # Make a plot for each dataset
 for (dist in unique(sorted$thin_dist)) {
@@ -67,7 +77,7 @@ for (dist in unique(sorted$thin_dist)) {
 best_mods <- sorted %>% 
   group_by(thin_dist) %>% 
   filter(AICc == min(AICc))
-write.csv(x = best_mods, file = "results/enmeval/enmeval_best_model_per_thin_AIC.csv", row.names = F)
+write.csv(x = best_mods, file = best_metrics_file, row.names = F)
 
 
 # Performance plot of best model in each dataset
@@ -95,5 +105,5 @@ means %>%
   ylab("value, +/- approx. 95% CI when possible") +
   facet_rep_wrap(facets = vars(metric), scales = "free_y", nrow = 2, ncol = 3) +
   theme_cowplot() +
-  ggsave(filename = "results/enmeval/performance_plot_best_models.pdf",
+  ggsave(filename = best_metrics_plot,
          width = 12, height = 7, units = "in")

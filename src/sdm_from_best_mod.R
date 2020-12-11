@@ -38,14 +38,6 @@ spec_sens_thresh <- dismo::threshold(eval.best.mod, stat = "spec_sens")
 sens_95_thresh <- dismo::threshold(eval.best.mod, stat = "sensitivity", sensitivity = 0.95)
 sens_99_thresh <- dismo::threshold(eval.best.mod, stat = "sensitivity", sensitivity = 0.99)
 
-# # Get sensitivity at spec_sens thresh
-# eval.best.mod@TPR[eval.best.mod@t == spec_sens_thresh]
-# # Get specificity at spec_sens thresh
-# eval.best.mod@TNR[eval.best.mod@t == spec_sens_thresh]
-# eval.best.mod@TNR[eval.best.mod@t == sens_95_thresh]
-# eval.best.mod@TNR[eval.best.mod@t == sens_99_thresh]
-
-
 
 # Make the range raster and plot it, saving as both a png and a pdf
 range.raster.spec_sens <- best.preds > spec_sens_thresh

@@ -22,9 +22,9 @@ args = commandArgs(trailingOnly=TRUE)
 # 5 future srt
 # 6 SDM range
 # 7 gbif
-
-
-
+# 8 output glm
+# 9 output current SRT raster
+# 10 output future SRT raster
 pheno_dat <- args[1]
 cur_bc_file <- args[2]
 cur_srt_file <- args[3]
@@ -32,14 +32,21 @@ future_bc_file <- args[4]
 future_srt_file <- args[5]
 range_file <- args[6]
 gbif_dat <- args[7]
+glm_out <- args[8]
+current_SRT <- args[9]
+future_SRT <- args[10]
 
-pheno_dat <- "raw_data/Ltowsendii_database_FINAL.xlsx"
-cur_bc_file <- "processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
-cur_srt_file <- "raw_data/SRT/SRT_historical/SRT_historical.tif"
-future_bc_file <- "processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd"
-future_srt_file <- "raw_data/SRT/SRT_RCP85_2080s/SRT_RCP85_2080s.tif"
-range_file <- "results/sdm/sdm_rangemap_best_sens95.grd"
-gbif_dat <- "raw_data/GBIF/verbatim.txt"
+# For running as script
+# pheno_dat <- "raw_data/Ltowsendii_database_FINAL.xlsx"
+# cur_bc_file <- "processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
+# cur_srt_file <- "raw_data/SRT/SRT_historical/SRT_historical.tif"
+# future_bc_file <- "processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd"
+# future_srt_file <- "raw_data/SRT/SRT_RCP85_2080s/SRT_RCP85_2080s.tif"
+# range_file <- "results/sdm/sdm_rangemap_best_sens95.grd"
+# gbif_dat <- "raw_data/GBIF/verbatim.txt"
+# glm_out <- "results/pheno/current_pheno_glm_SRT.RData"
+# current_SRT <- "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif"
+# future_SRT <- "results/pheno/future_predicted_probWhite_SDMrange.tif"
 
 # Load data -----------------------------------------------------------
 # Pheno data
@@ -115,10 +122,10 @@ future.pred.pheno.range <- mask(future.pred.pheno, crop(range, future.pred.pheno
 
 # Save results ------------------------------------------------------------
 # Save the SRT model
-save(srt.mod, file = "results/pheno/current_pheno_glm_SRT.RData")
+save(srt.mod, file = glm_out)
 
 # Save the current phenotypic predictions using SRT
-writeRaster(current.pred.pheno.srt.range, filename = "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif", format = "GTiff", overwrite = T)
+writeRaster(current.pred.pheno.srt.range, filename = current_SRT, format = "GTiff", overwrite = T)
 
 # Save the future predictions using SRT
-writeRaster(future.pred.pheno.range, filename = "results/pheno/future_predicted_probWhite_SDMrange.tif", format = "GTiff", overwrite = T)
+writeRaster(future.pred.pheno.range, filename = future_SRT, format = "GTiff", overwrite = T)

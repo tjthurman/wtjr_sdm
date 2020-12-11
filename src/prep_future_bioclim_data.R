@@ -20,9 +20,10 @@ template <- brick(args[2])
 # 3 output file
 output_file <- args[3]
 
-base_dir <- "raw_data/worldclim_projections_2080s/"
-template <- brick("processed_data/bioclim_30arcsec_for_WTJR_SDM.tif")
-output_file <- "processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd"
+# For running locally, without snakemake
+# base_dir <- "raw_data/worldclim_projections_2080s/"
+# template <- brick("processed_data/bioclim_30arcsec_for_WTJR_SDM.tif")
+# output_file <- "processed_data/bc23_CMIP5_RCP85_2080s_5modavg.grd"
 
 # Do  processing ------------------------------------------------------------
 # Loop over bioclim variables (need 2 and 3)

@@ -16,9 +16,29 @@ library(geosphere)
 # Get arguments -----------------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
 # 1 predicted phenos in rangemap raster
+# 2 coordinates of samples in colorado
+# 3 US pdf file
+# 4 US png file 
+# 5 colorado pdf file
+# 6 colorago png file
 
 map_file <- args[1]
-map_file <- "results/pheno/current_predicted_probWhite_SDMrange.tif"
+colo_samples <- args[2]
+us_pdf <- args[3]
+us_png <- args[4]
+colo_pdf <- args[5]
+colo_png <- args[6]
+
+
+# For tunning as script
+# map_file <- "results/pheno/current_predicted_probWhite_SDMrange.tif"
+# colo_samples <- "raw_data/sample_coordinates_74individuals.txt"
+# us_pdf <- "results/figures/current_pheno_map.pdf"
+# us_png <- "results/figures/current_pheno_map.png"
+# colo_pdf <- "results/figures/colorado.pdf"
+# colo_png <- "results/figures/colorado.png"
+
+
 
 # Load data -----------------------------------------------------------
 pred.new <- raster(map_file)
@@ -72,13 +92,14 @@ us <- ggplot() +
            y.min = 32, y.max = 56.5, 
            dist  = 300, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -122.48, y = 35))
 
-ggsave(us, filename = "results/figures/current_pheno_map.pdf", width = 9.7, height = 7)
 
-ggsave(us, filename = "results/figures/current_pheno_map.png", width = 9.7, height = 7, dpi = 72)
+
+ggsave(us, filename = us_pdf, width = 9.7, height = 7)
+ggsave(us, filename = us_png, width = 9.7, height = 7, dpi = 72)
 
 # Colorado Insert ---------------------------------------------------------
 # Get locations of genomics samples
-colo.samples <- read.delim("raw_data/sample_coordinates_74individuals.txt")
+colo.samples <- read.delim(colo_samples)
 
 # Narrow down to unique GPS points, tallying # of samples per GPS
 unique_gps <- colo.samples %>% 
@@ -147,9 +168,9 @@ colorado <- ggplot() +
            dist  = 50, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -102.6, y = 37.25), st.color = "white") 
 
 
-ggsave(colorado, filename = "results/figures/colorado.pdf", width = 7, height = 6)
+ggsave(colorado, filename = colo_pdf, width = 7, height = 6)
 
-ggsave(colorado, filename = "results/figures/colorado.png", width = 7, height = 6, dpi = 72)
+ggsave(colorado, filename = colo_png, width = 7, height = 6, dpi = 72)
 
   
 

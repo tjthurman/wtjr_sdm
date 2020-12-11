@@ -12,6 +12,10 @@ library(rgdal)
 library(stringr)
 
 
+# Get arguments -----------------------------------------------------------
+args = commandArgs(trailingOnly=TRUE)
+# 1 output filename
+outfile <- args[1]
 
 # Download worldclim data -------------------------------------------------
 # We'd like to have data for the extent from:
@@ -43,10 +47,6 @@ tile.03 <- getData(name = "worldclim",
                    lat = 64,
                    path = "raw_data/")
 
-extent(tile.01)
-extent(tile.02)
-extent(tile.03)
-
 
 # Southern row, west to east
 tile.11 <- getData(name = "worldclim",
@@ -67,11 +67,6 @@ tile.13 <- getData(name = "worldclim",
                    lon = -85,
                    lat = 46,
                    path = "raw_data/")
-
-
-extent(tile.11)
-extent(tile.12)
-extent(tile.13)
 
 
 # Crop tiles to desired extent --------------------------------------------
@@ -99,5 +94,5 @@ names(final.layer) <- layer.names
 
 
 # Save as multi-band tiff -------------------------------------------------
-writeRaster(final.layer, filename="processed_data/bioclim_30arcsec_for_WTJR_SDM.tif",
+writeRaster(final.layer, filename=outfile,
             format="GTiff", overwrite=TRUE,options=c("INTERLEAVE=BAND","COMPRESS=LZW"))

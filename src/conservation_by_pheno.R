@@ -10,10 +10,20 @@ library(tidyverse)
 library(raster)
 library(broom)
 
+# Get arguments -----------------------------------------------------------
+args = commandArgs(trailingOnly=TRUE)
+# 1 input phenotype data
+# 2 output file
+pheno.file <- args[1]
+outfile <- args[2]
 
-# Load phenotypic predictions ---------------------------------------------
-pheno.range <- raster("results/pheno/current_predicted_probWhite_SDMrange.tif")
+# For running as script
+# pheno.file <- "results/pheno/current_predicted_probWhite_SDMrange.tif"
+# outfile <- "results/conservation/cons_by_current_color.RData"
 
+
+# Load pheno raster -----------------------------------------------
+pheno.range <- raster(pheno.file)
 
 # Load conservation rasters -----------------------------------------------
 extirpated <- raster("processed_data/conservation_rasters/extirpated.tif")
@@ -55,10 +65,10 @@ conserv_status_by_color <- function(pheno.raster, white.thresh, brown.thresh) {
   # "mixed" area, where white thresh < prob(brown) < brown thresh
   # "white" ares, where prob(brown) < white thresh
   brown <- pheno.raster
-  values(brown) <- ifelse(1 - values(brown) >= brown.thresh, 1, NA)
+  values(brown) <- ifelse(1 - values(brown) > brown.thresh, 1, NA)
   
   white <- pheno.raster
-  values(white) <- ifelse(1 - values(white) <= white.thresh, 1, NA)
+  values(white) <- ifelse(1 - values(white) < white.thresh, 1, NA)
   
   # Mixed is just whatever isn't already in brown or white
   mixed <- mask(pheno.raster, brown, inverse = T) %>% 
@@ -127,4 +137,4 @@ cramerV.broad <- sqrt(broad.chisq.res$statistic/(total*2))
 cramerV.narrow <- sqrt(narrow.chisq.res$statistic/(total*2))
 
 # Save results -------------------------------------
-save(null, broad, narrow, broad.chisq.res, narrow.chisq.res, cramerV.broad, cramerV.narrow, file = "results/conservation/cons_by_current_color.RData")
+save(null, broad, narrow, broad.chisq.res, narrow.chisq.res, cramerV.broad, cramerV.narrow, file = outfile)

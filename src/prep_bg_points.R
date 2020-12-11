@@ -8,6 +8,7 @@ args = commandArgs(trailingOnly=TRUE)
 # 2 seed
 in_bioclim <- args[1]
 seed <- args[2]
+outfile <- args[3]
 
 # Load Bioclim data -------------------------------------------------------
 bioclim <- brick(in_bioclim)
@@ -21,4 +22,4 @@ set.seed(seed)
 background <- randomPoints(mask = bioclim,     
                            n = 10000, 
                            extf = 1)
-save(background, file = "processed_data/bg_points_for_sdm.RData")
+save(background, file = outfile)

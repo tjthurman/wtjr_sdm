@@ -1,11 +1,10 @@
 ## Snakemake workflow for WTJR SDM and phenotypic prediction analysis
-## Pipeline order goes from top to bottom.
+## Pipeline order goes from top to bottom, after rule all.
 
 # Set up some wildcards for various aspects of the analysis
 # Spatial thinning
 thin_dists=[1,5,10,50]
 dataset_dists=[0,1,5,10,50]
-thin_dists_test=[50]
 thin_res_pattern= "processed_data/thin/{thin_dist}km/"
 current_bioclim="processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
 # ENMeval
@@ -16,6 +15,8 @@ CON_STATUSES=["extirpated","broad_extirp","local_extirp","poss_decline","pres_st
 
 localrules: all, rename_ENMeval_res, dag, filegraph, help
 
+
+# NEED TO EDIT THESE TO JUST THE FINAL OUTPUTS
 
 rule all:
     input:
@@ -32,6 +33,8 @@ rule all:
         "results/pheno/future_predicted_probWhite_SDMrange.tif"
         
 ## curate_occur_data   : process WTJR occurrence data
+# Renders an Rmarkdown report on the data curation process
+# inputs and outputs are hard-coded into the data_curation.Rmd script
 rule curate_occur_data:
     input:
         arctos="raw_data/ArctosData_43FA2173A0.csv",
@@ -48,7 +51,7 @@ rule curate_occur_data:
 ## thin_occur_data  : spatial thinning of WTJR occurrence data
 # 5 arguments
 # input file, thinning distance, number of reps, output directory, and random seed
-# for number of reps, did 3*number of unique gps records
+# for number of reps, did roughly 3*number of unique gps records
 rule thin_occur_data:
     input:
         "processed_data/leptown_db_occurrences_unique_gps.csv"
@@ -62,6 +65,8 @@ rule thin_occur_data:
       """
 
 ## check_thin_data  : Double-check that thinning worked properly
+# Not officially part of the pipeline, needs to be run
+# by hand if you want to check
 rule check_thin_data:
     input:
         "processed_data/thin/"
@@ -72,7 +77,9 @@ rule check_thin_data:
         Rscript src/check_thinned_records.R {input}
         """
 
-## prep_unthinned_data:
+## prep_unthinned_data: prepare unthinned data
+# Takes unthinned data from data_curation
+# and reformats and renames it to match the thinned data
 rule prep_unthinned_data:
     input:
         "processed_data/leptown_db_occurrences_unique_gps.csv"
@@ -84,10 +91,23 @@ rule prep_unthinned_data:
         """
         Rscript src/prep_unthinned_occur.R {input} {output}
         """
-# prep_conservation_rasters
+
+## prep_bioclim_data: process current bioclim data
+# Download current bioclim data, merge and crop tiles
+# into our study area. 
+rule prep_bioclim_data:
+    output:
+        current_bioclim
+    resources:
+        cpus=1
+    shell:
+        "Rscript src/prep_bioclim_data.R {output}"
+
+# prep_conservation_rasters: make rasters of conservation statuses
+# Output filenames are hard-coded into the R script. 
 rule prep_conservation_rasters:
     input:
-        "processed_data/bioclim_30arcsec_for_WTJR_SDM.tif"
+        current_bioclim
     output:
         expand("processed_data/conservation_rasters/{cons_status}.tif", cons_status=CON_STATUSES)
     resources:
@@ -97,17 +117,9 @@ rule prep_conservation_rasters:
         Rscript src/prep_conservation_rasters.R  {input}
         """
     
-## process_bioclim_data: process current bioclim data
-rule process_bioclim_data:
-    output:
-        current_bioclim
-    resources:
-        cpus=1
-    shell:
-        "Rscript src/prep_bioclim_data.R"
-
-## process_current_pheno_predictors
-rule process_current_pheno_predictors:
+## prep_current_pheno_predictors: process Mills et al. 2018 predictors
+# Crop the Mills et al. 2018 predictors down to area for this study
+rule prep_current_pheno_predictors:
     input:
         snow="raw_data/rasterstack4cov.tif",
         bc=current_bioclim
@@ -117,14 +129,14 @@ rule process_current_pheno_predictors:
         cpus=1
     shell:
         """
-        Rscript src/process_current_pheno_predictors.R {input.snow} {input.bc} {output}
+        Rscript src/prep_current_pheno_predictors.R {input.snow} {input.bc} {output}
         """
 
-## process_future_bioclim: process future bioclim data
+## prep_future_bioclim: process future bioclim data
 # inputs: dirctory containing the raw data
 # current bioclim data to use as a template
-# output file
-rule process_future_bioclim:
+# output: model-averaged BC2 and BC3 for the 2080s
+rule prep_future_bioclim:
     input:
         cmip5_dir="raw_data/worldclim_projections_2080s",
         current=current_bioclim
@@ -137,8 +149,9 @@ rule process_future_bioclim:
         Rscript src/prep_future_bioclim_data.R {input.cmip5_dir} {input.current} {output}
         """
 
-## make_bg_points
-rule make_bg_points:
+## prep_bg_points: generate bg points for sdms
+# Uses dismo R package to generate 10k points, with seed
+rule prep_bg_points:
     input:
         envir=current_bioclim,
     output:
@@ -147,10 +160,14 @@ rule make_bg_points:
         cpus=1
     shell:
         """
-        Rscript src/bg_points.R {input.envir} 782
+        Rscript src/prep_bg_points.R {input.envir} 782 {output}
         """
 
-## run_ENMeval: create SDM with ENMeval
+## run_ENMeval: run SDMs with ENMeval
+# Inputs are occurrence datasets, environmental data, and bg points
+# output is an .RData object for each dataset/featureclass combination
+# same seed for each model
+# Outfile template hard-coded into Rscript
 rule run_ENMeval:
     input:
        occur="processed_data/thin/{dataset}/wtjr_occ_{dataset}_thin1.csv",
@@ -163,10 +180,13 @@ rule run_ENMeval:
     shell:
         """
         Rscript src/run_ENMeval.R {input.occur} {input.envir} {input.bg} {wildcards.feature_class} 782 {resources.cpus}
-
         """
-## rename_ENMeval_res: rename files for 1m and 5km results
-## Didn't use thin1 for the, used thin3 and thin2
+
+## rename_ENMeval_res: rename files for 1km and 5km results
+# Didn't use thin1 for the 1km and 5km datasets
+# See rule run_ENMeval and its associated Rscript for details.
+# For 1km, used thin3 and for 5km used thin2,
+# but template in run_ENMeval automatically outputs thin1. Rename here. 
 rule rename_ENMeval_res:
     input: 
         expand("results/enmeval/enmeval_res_{km}km_thin1_{fc}.RData", km=["1", "5"], fc=feature_class)
@@ -180,6 +200,10 @@ rule rename_ENMeval_res:
         """
 
 ## process_ENMeval_res: process results from ENMeval, use to decide best model
+# Collates per-dataset metrics into a single .csv (output)
+# Gets performance metrics of best model for each thinning distance
+# Makes performance plots of all models for each thinning distance
+
 rule process_ENMeval_res:
     input:
         expand("results/enmeval/enmeval_res_{thin_dist}km_thin1_{fc}.RData", fc=feature_class, thin_dist=["0", "10", "50"]),
@@ -187,17 +211,20 @@ rule process_ENMeval_res:
         expand("results/enmeval/enmeval_res_5km_thin2_{fc}.RData", fc=feature_class),
         res_dir="results/enmeval/"
     output:
-        "results/enmeval/enmeval_metrics.csv",
-        "results/enmeval/enmeval_best_model_per_thin_AIC.csv",
-        expand("results/enmeval/performance_plot_{dist}km.pdf", dist = dataset_dists)
+        expand("results/enmeval/performance_plot_{dist}km.pdf", dist = dataset_dists),
+        all_models_metrics = "results/enmeval/enmeval_metrics.csv",
+        best_models_metrics = "results/enmeval/enmeval_best_model_per_thin_AIC.csv",
+        best_models_plot = "results/enmeval/performance_plot_best_models.pdf"        
     resources:
         cpus=1
     shell:
         """
-        Rscript src/process_ENMeval_results.R {input.res_dir}
+        Rscript src/process_ENMeval_results.R {input.res_dir} {output.all_models_metrics} {output.best_models_metrics} {output.best_models_plot}
         """
 
 ## sdm_range_raster: make rasters of the SDM rangemaps from the best model
+# Output name template hard codes into R script
+# Best model parameter needed to be added here in params. 
 rule sdm_range_raster: 
     input:
         "results/enmeval/enmeval_best_model_per_thin_AIC.csv",
@@ -215,7 +242,8 @@ rule sdm_range_raster:
         Rscript src/sdm_from_best_mod.R {input.enm_res} {params.best_params}
         """
 
-## predict_current_phenotypes
+## predict_current_phenotypes: predict winter white/brown for current times
+# outputs both full predictions, and restricted to sdm range
 rule predict_current_phenotypes:
     input:
         environment="processed_data/pheno_predictors_millsetal2018.tif",
@@ -223,48 +251,53 @@ rule predict_current_phenotypes:
         gbif="raw_data/GBIF/verbatim.txt",
         range="results/sdm/sdm_rangemap_best_sens95.grd"
     output:
-        "results/pheno/current_pheno_glm.RData",
-        "results/pheno/current_predicted_probWhite.tif",
-        "results/pheno/current_predicted_probWhite_SDMrange.tif"
+        glm = "results/pheno/current_pheno_glm.RData",
+        full ="results/pheno/current_predicted_probWhite.tif",
+        SDMrange = "results/pheno/current_predicted_probWhite_SDMrange.tif"
     resources:
         cpus=1
     shell:
         """
-        Rscript src/predict_current_pheno.R {input.pheno_data} {input.environment} {input.gbif} {input.range}
+        Rscript src/predict_current_pheno.R {input.pheno_data} {input.environment} {input.gbif} {input.range} {output.glm} {output.full} {output.SDMrange}
         """
 
-## figure_1_maps
+## figure_1_maps: make maps for panels of Fig. 1
 # make base maps of US and Colorado for Figure 1
+# outputs both pdfs and pngs of the maps for each panel of figure 1. 
 rule figure_1_maps:
     input:
-        "results/pheno/current_predicted_probWhite_SDMrange.tif",
-        "raw_data/DMNS_spectrometry_PCs.txt"
+        pheno_range = "results/pheno/current_predicted_probWhite_SDMrange.tif",
+        sample_coords = "raw_data/sample_coordinates_74individuals.txt"
     output:
-        "results/figures/colorado.pdf",
-        "results/figures/current_pheno_map.pdf"
+        colo_pdf= "results/figures/colorado.pdf",
+        colo_png= "results/figures/colorado.png",
+        us_pdf = "results/figures/current_pheno_map.pdf",
+        us_png = "results/figures/current_pheno_map.png"
     resources:
         cpus=1
     shell:
         """
-        Rscript src/figure_1_maps.R {input.0}
+        Rscript src/figure_1_maps.R {input.pheno_range} {input.sample_coords} {output.us_pdf} {output.us_png} {output.colo_pdf} {output.colo_png}
         """
 
-## conserve_by_pheno
-## calculate overlap between phenotypic categories and conservation categories
+## conserve_by_pheno: analysis of conservation status by phenotype
+# calculate overlap between phenotypic categories and conservation categories
+# conservation status rasters are hard-coded into script
 rule conserve_by_pheno:
     input:
-        "results/pheno/current_predicted_probWhite_SDMrange.tif",
-        expand("processed_data/conservation_rasters/{cons_status}.tif", cons_status=CON_STATUSES)
+        expand("processed_data/conservation_rasters/{cons_status}.tif", cons_status=CON_STATUSES), 
+        pheno_range = "results/pheno/current_predicted_probWhite_SDMrange.tif",
     output:
         "results/conservation/cons_by_current_color.RData"
     resources:
         cpus=1
     shell:
         """
-        Rscript src/conservation_by_pheno.R 
+        Rscript src/conservation_by_pheno.R {input.pheno_range} {output}
         """
 
-## predict_future_pheno
+## predict_future_pheno: predict winter white/brown for future
+# also outputs current pheno estimated using SRT, with associated GLM
 rule predict_future_phenotypes:
     input:
         pheno="raw_data/Ltowsendii_database_FINAL.xlsx",
@@ -275,16 +308,22 @@ rule predict_future_phenotypes:
         range="results/sdm/sdm_rangemap_best_sens95.grd",
         gbif="raw_data/GBIF/verbatim.txt"
     output:
-        "results/pheno/current_pheno_glm_SRT.RData",
-        "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif",
-        "results/pheno/future_predicted_probWhite_SDMrange.tif"
+        glm = "results/pheno/current_pheno_glm_SRT.RData",
+        current_SRT = "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif",
+        future_SRT = "results/pheno/future_predicted_probWhite_SDMrange.tif"
     resources:
         cpus=1
     shell:
         """
-        Rscript src/predict_future_pheno.R {input.pheno} {input.cur_bc} {input.cur_srt} {input.fut_bc} {input.fut_srt} {input.range} {input.gbif}
+        Rscript src/predict_future_pheno.R {input.pheno} {input.curr_bc} {input.curr_srt} {input.fut_bc} {input.fut_srt} {input.range} {input.gbif} {output.glm} {output.current_SRT} {output.future_SRT}
         """
      
+
+## MAKE A FIGURE 4 RULE
+
+## Make supplementary figure and table rule
+
+## Make miscellaneous report rule
 
 
 
