@@ -43,6 +43,13 @@ pal <- colorRampPalette(colors = c(rgb(41, 57, 113, maxColorValue = 255), # mill
 
 difference <- (1- future_pheno) - (1 - current_pheno)
 
+diff_larger04 <- difference
+values(diff_larger04) <- ifelse(values(diff_larger04) >= 0.4, 1, NA)
+
+area_diff_larger_04 <- sum(values(area(diff_larger04, na.rm = T)), na.rm = T)
+us_only_range_area <- sum(values(area(current_pheno, na.rm = T)), na.rm = T)
+
+perc_area_diff_larger <- area_diff_larger_04/us_only_range_area
 
 change.df <- as(difference, "SpatialPixelsDataFrame") %>% 
   as.data.frame(.) %>%
@@ -132,6 +139,20 @@ broad %>%
 
 # Insert --------------------------------------------------------
 # Density of Prob white across years:
+current_for_brown_area <- current_pheno
+values(current_for_brown_area) <- ifelse(values(current_for_brown_area) < 0.2, 1, NA)
+
+future_for_brown_area <- future_pheno
+values(future_for_brown_area) <- ifelse(values(future_for_brown_area) < 0.2, 1, NA)
+
+
+area_brown_current <- sum(values(area(current_for_brown_area, na.rm = T)), na.rm = T)
+area_brown_future <- sum(values(area(future_for_brown_area, na.rm = T)), na.rm = T)
+
+us_only_range_area <- sum(values(area(current_pheno, na.rm = T)), na.rm = T)
+
+current_perc_brown <- area_brown_current/us_only_range_area
+future_perc_brown <- area_brown_future/us_only_range_area
 
 cur_pheno_vec <- values(current_pheno) %>% 
   .[!is.na(.)]

@@ -46,3 +46,9 @@ results/figures/*.pdf
 docs/methods_for_mafalda.docx
 
 results/figures/supplemental/
+
+raw_data/tmp/
+
+src/tmp_comparison.R
+
+src/maps_for_jeff.R
