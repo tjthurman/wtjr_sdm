@@ -154,18 +154,19 @@ colorado <- ggplot() +
   theme(panel.background = element_rect(fill = rgb(133,141,147, maxColorValue = 255), colour = rgb(133,141,147, maxColorValue = 255)),
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
-        legend.position = c(0.92, 0.5),
+        legend.position = c(0.89, 0.27),
         legend.background = element_blank(),
         legend.key = element_blank(),
-        legend.text = element_text(color = "white", size = 12, face = "bold"),
-        legend.title = element_text(color = "white", size = 14, face = "bold")) +
+        legend.text = element_text(color = "white", size = 21, face = "bold"),
+        legend.title = element_text(color = "white", size = 23, face = "bold", vjust = 0, margin = margin(t = 0, r = 0, b = 0, l = 0, unit = "pt")),
+        legend.spacing.y = unit(1.5, "pt")) +
   scale_fill_gradientn(colors = pal(100), guide = F) +
   scale_color_gradientn(colors = pal(100), guide = F) +
   geom_point(data  = cluster_plots, aes(size = samples), color = "black", fill = "#F4742A", shape = 21, stroke = 1) +
-  scale_size_continuous(range= c(3, 10)) +
+  scale_size_continuous(range= c(6, 14)) +
   ggsn::scalebar(x.min = -109, x.max = -102,
            y.min = 37, y.max = 41, 
-           dist  = 50, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -102.6, y = 37.25), st.color = "white") 
+           dist  = 50, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -102.6, y = 37.25), st.color = "white", st.size = 6, st.dist = 0.025) 
 
 
 ggsave(colorado, filename = colo_pdf, width = 7, height = 6)
