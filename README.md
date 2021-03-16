@@ -29,29 +29,23 @@ This repository is set up as an RStudio project. You can open it in RStudio by o
 * `results`- Analysis results, generated from raw data, processed data, and scripts. 
 * `src`- Scripts and functions written for this project. Some script are in `.Rmd` files, which generate corresponding `.html` files upon knitting. 
 
-### Data dependiencies
+### Data dependencies
 
-Some raw data files are too large to be uploaded to Github. See the README file in the `raw_data/` folder for instructions on how to obtain these files. 
+Some raw data files are too large to be uploaded to Github. They muse be obtained through other sources and then copied into the appropriate folder before running the pipeline. See the README file in the `raw_data/` folder for instructions on how to obtain these files. 
 
 ### Run the pipeline
 
-Once all the necessary software is installed and you have downloaded the necessary data, you can use `snakemake` to run our analysis pipeline. To do this, set this project directoy as your working directory, and then execute:
+Once all the necessary software is installed and you have obtained the necessary data, you can use `snakemake` to run our analysis pipeline. To do this, set this project directoy as your working directory, and then execute:
 
 ```
 snakemake --cores 1 
 ```
 
-This should run the full pipeline, though note that it will likely take a long time, and may fail depending on the amount of procesing power and memory available on your computer. We ran our analysis on a HPC cluster, and recommend you do the same. See the `snakemake` documentation on running commands on a [cluster](https://snakemake.readthedocs.io/en/stable/executing/cluster.html) and how to set up a [profile](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles) for specifying HPC options. A sample command for running our pipeline on a cluster, using the `snakemake` profile found in a folder named `sp_wtjr`, is:
+This should run the full pipeline, though note that it will likely take a long time, and may fail depending on the amount of procesing power and memory available on your computer. We ran our analysis on a HPC cluster, and recommend you do the same. See the `snakemake` documentation for guidance on running `snakemake` on a [cluster](https://snakemake.readthedocs.io/en/stable/executing/cluster.html) and how to set up a [profile](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles) for specifying HPC options. A sample command for running our pipeline on a cluster, using the `snakemake` profile found in a folder named `sp_wtjr`, is:
 
 ```
 snakemake --profile sp_wtjr/ 
 ```
 
 but you will need to create your own profile adapted to your own HPC. 
-
-
-
-
-
-
 

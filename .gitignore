@@ -6,6 +6,9 @@
 *.DS_Store
 Rplots.pdf
 
+# Profiles
+wtjr_sdm.code-workspace
+
 # Snakemake files
 .snakemake/
 sp_wtjr/*
