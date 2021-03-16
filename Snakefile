@@ -333,7 +333,6 @@ rule predict_future_phenotypes:
         Rscript src/predict_future_pheno.R {input.pheno} {input.curr_bc} {input.curr_srt} {input.fut_bc} {input.fut_srt} {input.range} {input.gbif} {output.glm} {output.current_SRT} {output.future_SRT}
         """
      
-
 ## figure_4_elements: make panels for Fig. 4
 # Create panels for figure 4: map of phenotypic change as pdf and png
 # conservation status by phenotype
