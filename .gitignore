@@ -8,14 +8,12 @@ Rplots.pdf
 
 # Snakemake files
 .snakemake/
-
-# Doc outputs
-*.html
-
+sp_wtjr/*
 # Snakemake logs
 logs/snakemake_slurm/*.out
 
-
+# Doc outputs
+*.html
 
 # Raw data that is too large or code-generated
 raw_data/wc0.5/
@@ -37,7 +35,6 @@ results/enmeval/enmeval_res_*_thin*_*.RData
 results/sdm/sdm_rangemap_best_*.gr*
 results/pheno/current_predicted_probWhite*.tif
 
-
 # Figure files that are code-generated
 *.ai
 results/figures/*.png
@@ -48,3 +45,5 @@ results/figures/supplemental/
 docs/methods_for_mafalda.docx
 src/tmp_comparison.R
 src/maps_for_jeff.R
+docs/Ferreira_et_al_Coat_color_PhDversion_Main_TJT.docx
+docs/Ferreira_et_al_Coat_color_PhDversion_SM_TJT.docx
