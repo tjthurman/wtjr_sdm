@@ -81,8 +81,10 @@ if (dataset %in% c("1km_thin1")) {
   print(in_csv2)
 }
 
+dataset2 <- str_remove(dataset, "_thin\\d")
+
 attempt_limit <- 5
-target.file <- paste("results/enmeval_res_", dataset, "_", fc, ".RData", sep = "")
+target.file <- paste("results/enmeval/enmeval_res_", dataset2, "_", fc, ".RData", sep = "")
 
 attempt <- 1
 while (attempt <= attempt_limit) {

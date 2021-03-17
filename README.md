@@ -15,7 +15,7 @@ We have used a set of software tools to try to make this analysis pipeline as re
 You will need the following software installed on your system:
 
 1. Python 3. We recommend installing Python 3 through [Anaconda](https://www.anaconda.com) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html). We used Python version 3.8.3. 
-2. Snakemake. We recommend following installing `snakemake` through `conda`, see [these instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html). We used version 5.19.3.
+2. Snakemake. We recommend following installing `snakemake` through `conda`, see [these instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html). We used version 5.14.0.
 3. R. R can be downloaded from the [R Project for Statisical Computing](https://www.r-project.org). We used R version `4.0.2`. 
 4. The R package `renv`. See [here](https://rstudio.github.io/renv/index.html) for instructions on installing `renv`. 5. R package dependencies. These dependencies are managed with the `renv` package. To install the dependencies, open this project in RStudio (easiest) or, in your terminal, set this project as your working directory and then launch `R`. Then, call `renv::restore()` to install the necessary packages (this may take a while). 
 
@@ -31,20 +31,28 @@ This repository is set up as an RStudio project. You can open it in RStudio by o
 
 ### Data dependencies
 
-Some raw data files are too large to be uploaded to Github. They muse be obtained through other sources and then copied into the appropriate folder before running the pipeline. See the README file in the `raw_data/` folder for instructions on how to obtain these files. 
+Some raw data files are too large to be uploaded to Github. They must be obtained through other sources and then copied into the appropriate folder before running the pipeline. See the README file in the `raw_data/` folder for instructions on how to obtain these files. 
 
-### Run the pipeline
+### Running the pipeline
 
-Once all the necessary software is installed and you have obtained the necessary data, you can use `snakemake` to run our analysis pipeline. To do this, set this project directoy as your working directory, and then execute:
-
-```
-snakemake --cores 1 
-```
-
-This should run the full pipeline, though note that it will likely take a long time, and may fail depending on the amount of procesing power and memory available on your computer. We ran our analysis on a HPC cluster, and recommend you do the same. See the `snakemake` documentation for guidance on running `snakemake` on a [cluster](https://snakemake.readthedocs.io/en/stable/executing/cluster.html) and how to set up a [profile](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles) for specifying HPC options. A sample command for running our pipeline on a cluster, using the `snakemake` profile found in a folder named `sp_wtjr`, is:
+Once all the necessary software is installed and you have obtained the necessary data, you can use `snakemake` to run our analysis pipeline. First, set this project directory as your working directory, and then execute:
 
 ```
-snakemake --profile sp_wtjr/ 
+snakemake --cores 1
+```
+
+This will run `snakemake`, but should not run the full pipeline. The final figures and results are saved in this repository, so `snakemake` will determine there is nothing to be done. To force the pipeline to be re-run (and to generate the intermediate files which were too large to be uploaded to GitHub), run:
+
+```
+snakemake --cores 1 -F
+```
+
+This should run the full pipeline, though note that it will likely take a long time, and may fail depending on the amount of processing power and memory available on your computer. Note also that some steps may produce slightly different outputs: the thinning and model-fitting processes are not deterministic, though we have provided random number seeds to mitigate these issues as much as possible.
+
+We ran our analysis on a HPC cluster, and recommend you do the same. See the `snakemake` documentation for guidance on running `snakemake` on a [cluster](https://snakemake.readthedocs.io/en/stable/executing/cluster.html) and how to set up a [profile](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles) for specifying HPC options. A sample command for running our pipeline on a cluster, using the `snakemake` profile found in a folder named `sp_wtjr`, is:
+
+```
+snakemake --profile sp_wtjr/ -F
 ```
 
 but you will need to create your own profile adapted to your own HPC. 

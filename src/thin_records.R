@@ -26,7 +26,7 @@ args = commandArgs(trailingOnly=TRUE)
 wtjr.occ.unique.gps <- read.csv(args[1], stringsAsFactors = F)
 
 # Do thinning -------------------------------------------------------------
-set.seed(args[5])
+set.seed(as.integer(args[5]))
 wtjr.occ.unique.gps %>% 
   mutate(SPEC = "Leptown") %>% 
   thin(., thin.par = as.numeric(args[2]),

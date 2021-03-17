@@ -346,6 +346,3 @@ discrete_pheno <- ggplot() +
 
 
 ggsave(discrete_pheno, filename = discrete_current_pheno_map, width = 9.7, height = 7)
-
-
-# Misc other analyses for the main text -----------------------------------------

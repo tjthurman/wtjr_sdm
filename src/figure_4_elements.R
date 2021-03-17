@@ -24,6 +24,7 @@ args = commandArgs(trailingOnly=TRUE)
 # 5 change map png
 # 6 conservation plot pdf
 # 7 insert plot pdf
+# 8 percent brown out csv
 
 current_file <- args[1]
 future_file <- args[2]
@@ -32,6 +33,7 @@ map_out_pdf <- args[4]
 map_out_png <- args[5]
 cons_plot_out <- args[6]
 insert_plot_out <- args[7]
+perc_brown_csv_out <- args[8]
 
 # for running as a script
 # current_file <- "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif"
@@ -41,7 +43,7 @@ insert_plot_out <- args[7]
 # map_out_png <- "results/figures/colorado.png"
 # cons_plot_out <- "results/figures/current_pheno_map.pdf"
 # insert_plot_out <- "results/figures/current_pheno_map.png"
-
+# perc_brown_csv_out <- "results/pheno/percent_brown_by_time.csv"
 
 # Load data ---------------------------------------------------------------
 future_pheno <- raster(future_file)
@@ -183,3 +185,23 @@ probBrown_df %>%
 
 
 
+# Stats on proportion brown --------------------------------------------------------
+current_for_brown_area <- current_pheno
+values(current_for_brown_area) <- ifelse(values(current_for_brown_area) <= 0.2, 1, NA)
+
+future_for_brown_area <- future_pheno
+values(future_for_brown_area) <- ifelse(values(future_for_brown_area) <= 0.2, 1, NA)
+
+
+area_brown_current <- sum(values(area(current_for_brown_area, na.rm = T)), na.rm = T)
+area_brown_future <- sum(values(area(future_for_brown_area, na.rm = T)), na.rm = T)
+
+us_only_range_area <- sum(values(area(current_pheno, na.rm = T)), na.rm = T)
+
+current_perc_brown <- area_brown_current/us_only_range_area
+future_perc_brown <- area_brown_future/us_only_range_area
+
+data.frame(perc.brown.current = current_perc_brown,
+           perc.brown.future = future_perc_brown) %>%
+    mutate(fold.change = perc.brown.future/perc.brown.current) %>%
+    write.csv(., file = perc_brown_csv_out, row.names = F)

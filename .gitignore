@@ -34,7 +34,7 @@ processed_data/pheno_predictors_millsetal2018.tif
 processed_data/bc23_CMIP5_RCP85_2080s_5modavg.gr*
 
 # Results that are too large
-results/enmeval/enmeval_res_*_thin*_*.RData
+results/enmeval/enmeval_res_*.RData
 results/sdm/sdm_rangemap_best_*.gr*
 results/pheno/current_predicted_probWhite*.tif
 

@@ -13,40 +13,42 @@ feature_class=["L", "LQ", "H", "LQH", "LQHP", "LQHPT"]
 CON_STATUSES=["extirpated","broad_extirp","local_extirp","poss_decline","pres_stable"]
 
 
-localrules: all, rename_ENMeval_res, dag, filegraph, help
+localrules: all, dag, filegraph, help
 
 
-# NEED TO EDIT THESE TO JUST THE FINAL OUTPUTS
-# Desired final outputs:
-# Figure 1 stuff
-# Figure 4 stuff
-# Supplemental tables and figures
-# Mini report
+# Final desired outputs:
+# 1) Performance plots from ENMeval (ensures that all ENMeval stuff runs)
+# 2) the statistics reported in the main text
+# 3) The elements of figure 1
+# 4) The elements of figure 4
+# 5) All the supplemental figures and tables. 
 rule all:
     input:
+        # Performance plots to ensure all thinning and ENMeval runs happen
+        # and not just the final dataset
+        expand("results/enmeval/performance_plot_{dist}km.pdf", dist = dataset_dists),
+        # Stats in main text
+        "results/conservation/broad_chisq_res.csv", # Chisq results as table
+        "results/conservation/cons_by_current_color.RData", # Chisq results as R object
+        "results/pheno/percent_brown_by_time.csv", # Percent brown at different times
         # Figure 1 elements
-        "results/figures/colorado.pdf",
-        "results/figures/colorado.png",
-        "results/figures/current_pheno_map.pdf",
-        "results/figures/current_pheno_map.png",
+        "results/figures/current_pheno_map.pdf", # Figure 1A
+        "results/figures/colorado.pdf", # Figure 1C 
         # Figure 4 elements
-        "results/figures/pheno_change_map.pdf",
-        "results/figures/pheno_change_map.png",
-        "results/figures/horizontal_consv.pdf",
-        "results/figures/density_probBrown_insert.pdf",
+        "results/figures/pheno_change_map.pdf", # Figure 4A
+        "results/figures/horizontal_consv.pdf", # Figure 4B
+        "results/figures/density_probBrown_insert.pdf", # Figure 4A insert
         # Supplementary figures, tables, and analysis
-        "results/pheno/glm_table_current_snow_cover.csv",
-        "results/pheno/glm_metrics_current_snow_cover.csv",
-        "results/pheno/glm_table_current_srt.csv",
-        "results/pheno/glm_metrics_current_srt.csv",
-        "results/conservation/broad_chisq_res.csv",
-        "results/figures/supplemental/pheno_compare_maps.pdf",
-        "results/figures/supplemental/model_difference_map.pdf",
-        "results/figures/supplemental/percent_brown_change.pdf",
-        "results/figures/supplemental/discrete_current_pheno_map.pdf"
-
-
-        
+        "results/enmeval/performance_plot_best_models.pdf", # Figure S1
+        "results/figures/supplemental/pheno_compare_maps.pdf", # Figure S24
+        "results/figures/supplemental/model_difference_map.pdf", # Figure S25
+        "results/figures/supplemental/percent_brown_change.pdf", # Figure S26
+        "results/figures/supplemental/discrete_current_pheno_map.pdf", # Figure S27
+        "results/pheno/glm_table_current_snow_cover.csv", # Table S1A
+        "results/pheno/glm_table_current_srt.csv", # Table S2B
+        "results/pheno/glm_metrics_current_snow_cover.csv", # Table S2A
+        "results/pheno/glm_metrics_current_srt.csv" # Table S2B
+                
 ## curate_occur_data   : process WTJR occurrence data
 # Renders an Rmarkdown report on the data curation process
 # inputs and outputs are hard-coded into the data_curation.Rmd script
@@ -71,12 +73,14 @@ rule thin_occur_data:
     input:
         "processed_data/leptown_db_occurrences_unique_gps.csv"
     output:
-        directory(thin_res_pattern)
+        expand("processed_data/thin/wtjr_occ_{{thin_dist}}km_thin{index}.csv", index = ["1", "2", "3", "4", "5"])
+    params:
+        outdir="processed_data/thin/"
     resources:
         cpus=1
     shell:
       """
-      Rscript src/thin_records.R {input} {wildcards.thin_dist} 3000 {output} 462
+      Rscript src/thin_records.R {input} {wildcards.thin_dist} 3000 {params.outdir} 462
       """
 
 ## check_thin_data  : Double-check that thinning worked properly
@@ -99,7 +103,7 @@ rule prep_unthinned_data:
     input:
         "processed_data/leptown_db_occurrences_unique_gps.csv"
     output:
-        "processed_data/thin/0km/wtjr_occ_0km_thin1.csv"
+        "processed_data/thin/wtjr_occ_0km_thin1.csv"
     resources:
         cpus=1
     shell:
@@ -185,33 +189,16 @@ rule prep_bg_points:
 # Outfile template hard-coded into Rscript
 rule run_ENMeval:
     input:
-       occur="processed_data/thin/{dataset}/wtjr_occ_{dataset}_thin1.csv",
+       occur="processed_data/thin/wtjr_occ_{dataset}_thin1.csv",
        envir=current_bioclim,
        bg= "processed_data/bg_points_for_sdm.RData"
     output:
-        "results/enmeval/enmeval_res_{dataset}_thin1_{feature_class}.RData"
+        "results/enmeval/enmeval_res_{dataset}_{feature_class}.RData"
     resources:
         cpus=1
     shell:
         """
         Rscript src/run_ENMeval.R {input.occur} {input.envir} {input.bg} {wildcards.feature_class} 782 {resources.cpus}
-        """
-
-## rename_ENMeval_res: rename files for 1km and 5km results
-# Didn't use thin1 for the 1km and 5km datasets
-# See rule run_ENMeval and its associated Rscript for details.
-# For 1km, used thin3 and for 5km used thin2,
-# but template in run_ENMeval automatically outputs thin1. Rename here. 
-rule rename_ENMeval_res:
-    input: 
-        expand("results/enmeval/enmeval_res_{km}km_thin1_{fc}.RData", km=["1", "5"], fc=feature_class)
-    output:
-        expand("results/enmeval/enmeval_res_1km_thin3_{fc}.Rdata", fc=feature_class),
-        expand("results/enmeval/enmeval_res_5km_thin2_{fc}.Rdata", fc=feature_class)
-    shell: 
-        """
-        rename thin1 thin3 results/enmeval/enmeval_res_1km_*
-        rename thin1 thin2 results/enmeval/enmeval_res_5km_*
         """
 
 ## process_ENMeval_res: process results from ENMeval, use to decide best model
@@ -221,29 +208,28 @@ rule rename_ENMeval_res:
 
 rule process_ENMeval_res:
     input:
-        expand("results/enmeval/enmeval_res_{thin_dist}km_thin1_{fc}.RData", fc=feature_class, thin_dist=["0", "10", "50"]),
-        expand("results/enmeval/enmeval_res_1km_thin3_{fc}.RData", fc=feature_class),
-        expand("results/enmeval/enmeval_res_5km_thin2_{fc}.RData", fc=feature_class),
-        res_dir="results/enmeval/"
+        expand("results/enmeval/enmeval_res_{thin_dist}km_{fc}.RData", fc=feature_class, thin_dist=dataset_dists)
     output:
         expand("results/enmeval/performance_plot_{dist}km.pdf", dist = dataset_dists),
         all_models_metrics = "results/enmeval/enmeval_metrics.csv",
         best_models_metrics = "results/enmeval/enmeval_best_model_per_thin_AIC.csv",
-        best_models_plot = "results/enmeval/performance_plot_best_models.pdf"        
+        best_models_plot = "results/enmeval/performance_plot_best_models.pdf"
+    params:
+        indir="results/enmeval/"
     resources:
         cpus=1
     shell:
         """
-        Rscript src/process_ENMeval_results.R {input.res_dir} {output.all_models_metrics} {output.best_models_metrics} {output.best_models_plot}
+        Rscript src/process_ENMeval_results.R {params.indir} {output.all_models_metrics} {output.best_models_metrics} {output.best_models_plot}
         """
 
 ## sdm_range_raster: make rasters of the SDM rangemaps from the best model
-# Output name template hard codes into R script
+# Output name template hard coded into R script
 # Best model parameter needed to be added here in params. 
 rule sdm_range_raster: 
     input:
         "results/enmeval/enmeval_best_model_per_thin_AIC.csv",
-        enm_res="results/enmeval/enmeval_res_0km_thin1_LQHPT.RData"
+        enm_res="results/enmeval/enmeval_res_0km_LQHPT.RData"        
     output:
         expand("results/sdm/sdm_rangemap_best_{thresh}.{ext}", 
                thresh = ["specsens", "sens95", "sens99"],
@@ -346,18 +332,18 @@ rule figure_4_elements:
         change_map_pdf= "results/figures/pheno_change_map.pdf",
         change_map_png= "results/figures/pheno_change_map.png",
         cons_plot = "results/figures/horizontal_consv.pdf",
-        density_insert = "results/figures/density_probBrown_insert.pdf"
+        density_insert = "results/figures/density_probBrown_insert.pdf",
+        prec_brown_by_time="results/pheno/percent_brown_by_time.csv"
     resources:
         cpus=1
     shell:
         """
-        Rscript src/figure_4_elements.R {input.current_srt_pheno} {input.future_srt_pheno} {input.consv_pheno_overlap} {output.change_map_pdf} {output.change_map_png} {output.cons_plot} {output.density_insert}
+        Rscript src/figure_4_elements.R {input.current_srt_pheno} {input.future_srt_pheno} {input.consv_pheno_overlap} {output.change_map_pdf} {output.change_map_png} {output.cons_plot} {output.density_insert} {output.prec_brown_by_time}
         """
 
 ## Make supplementary figure and table rule
 # Creates all supplemental tables and figures
 # And outputs some bits of analysis for the main text
-# STILL NEED TO DO BITS OF ANALYSIS
 rule supplemental_and_analysis:
     input: 
         snowcover_glm_rdata = "results/pheno/current_pheno_glm.RData",
@@ -383,13 +369,6 @@ rule supplemental_and_analysis:
         Rscript src/supp_figs_and_tables.R {input.snowcover_glm_rdata} {input.srt_glm_rdata} {input.consv_pheno_overlap} {input.current_srt_pheno} {input.future_srt_pheno} {input.current_cover_pheno} {output.snow_cover_table} {output.snow_cover_metrics} {output.srt_table} {output.srt_metrics} {output.broad_chisq_res} {output.pheno_compare_map} {output.glm_method_compare_map} {output.percent_brown_change} {output.discrete_current_pheno_map}
         """
  
-
-## Make miscellaneous report rule
-
-
-
-
-
 
 # --- Misc --- #
 ## dag               : makes a DAG graph for this pipeline
