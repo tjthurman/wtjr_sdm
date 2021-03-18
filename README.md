@@ -44,9 +44,7 @@ Once all the necessary software is installed and you have obtained the necessary
 snakemake
 ```
 
-NEED TO EDIT- SOME PARTS WILL RUN
-
-This will run `snakemake`, but should not run the full pipeline. The final figures and results are saved in this repository, so `snakemake` will determine there is nothing to be done. To force the pipeline to be re-run (and to generate the intermediate files which were too large to be uploaded to GitHub), run:
+This will run `snakemake`, but it may not run the full pipeline: some of the intermediate files and results are already in this repository and may not need to be re-generated. If you would like to force the pipeline to re-run from scratch, run:
 
 ```
 snakemake -F
@@ -58,7 +56,7 @@ This should run the full pipeline, though note that it will likely take a long t
 Finally, the pipeline may fail if you attempt to run it on a personal computer with insufficient processing power, memory, and storage. We ran our analysis on a HPC cluster, and recommend you do the same. See the `snakemake` documentation for guidance on running `snakemake` on a [cluster](https://snakemake.readthedocs.io/en/stable/executing/cluster.html) and how to set up a [profile](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles) for specifying HPC options. A sample command for running our pipeline on a cluster, using the `snakemake` profile found in a folder named `sp_wtjr`, is:
 
 ```
-snakemake --profile sp_wtjr/ -F
+snakemake --profile sp_wtjr/
 ```
 
 but you will need to create your own profile adapted to your own HPC. 
