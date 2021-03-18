@@ -1,0 +1,48 @@
+********************************************** 
+ Beginning Spatial Thinning.
+ Script Started at: Wed Mar 17 14:44:03 2021
+
+Thinning Parameter Used (in km): 5
+Number of replicates of thinning script: 3000
+
+Elapsed time for thinning completion
+4592.664 189.014 4783.483 0 0
+
+Number of data.frames per locations retained
+loc.cnt df.freq
+673	674	675	676	677	678
+21	478	1321	949	224	7
+Maximum number of records after thinning: 678
+Number of data.frames with max records: 7
+
+**New *.csv file creation:**
+Writing new *.csv files to output directory: processed_data/thin/
+Writing file: processed_data/thin/wtjr_occ_5km_thin1.csv
+Writing file: processed_data/thin/wtjr_occ_5km_thin2.csv
+Writing file: processed_data/thin/wtjr_occ_5km_thin3.csv
+Writing file: processed_data/thin/wtjr_occ_5km_thin4.csv
+Writing file: processed_data/thin/wtjr_occ_5km_thin5.csv
+********************************************** 
+ Beginning Spatial Thinning.
+ Script Started at: Wed Mar 17 16:22:16 2021
+
+Thinning Parameter Used (in km): 5
+Number of replicates of thinning script: 3000
+
+Elapsed time for thinning completion
+4976.45 185.87 5164.315 0 0
+
+Number of data.frames per locations retained
+loc.cnt df.freq
+673	674	675	676	677	678
+21	478	1321	949	224	7
+Maximum number of records after thinning: 678
+Number of data.frames with max records: 7
+
+**New *.csv file creation:**
+Writing new *.csv files to output directory: processed_data/thin/
+Writing file: processed_data/thin/wtjr_occ_5km_thin1.csv
+Writing file: processed_data/thin/wtjr_occ_5km_thin2.csv
+Writing file: processed_data/thin/wtjr_occ_5km_thin3.csv
+Writing file: processed_data/thin/wtjr_occ_5km_thin4.csv
+Writing file: processed_data/thin/wtjr_occ_5km_thin5.csv

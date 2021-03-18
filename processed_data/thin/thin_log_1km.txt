@@ -1,0 +1,60 @@
+********************************************** 
+ Beginning Spatial Thinning.
+ Script Started at: Wed Mar 17 14:19:43 2021
+
+Thinning Parameter Used (in km): 1
+Number of replicates of thinning script: 3000
+********************************************** 
+ Beginning Spatial Thinning.
+ Script Started at: Wed Mar 17 14:23:16 2021
+
+Thinning Parameter Used (in km): 1
+Number of replicates of thinning script: 3000
+********************************************** 
+ Beginning Spatial Thinning.
+ Script Started at: Wed Mar 17 14:44:03 2021
+
+Thinning Parameter Used (in km): 1
+Number of replicates of thinning script: 3000
+
+Elapsed time for thinning completion
+3024.517 94.219 3119.935 0 0
+
+Number of data.frames per locations retained
+loc.cnt df.freq
+899	900	901
+235	2055	710
+Maximum number of records after thinning: 901
+Number of data.frames with max records: 710
+
+**New *.csv file creation:**
+Writing new *.csv files to output directory: processed_data/thin/
+Writing file: processed_data/thin/wtjr_occ_1km_thin1.csv
+Writing file: processed_data/thin/wtjr_occ_1km_thin2.csv
+Writing file: processed_data/thin/wtjr_occ_1km_thin3.csv
+Writing file: processed_data/thin/wtjr_occ_1km_thin4.csv
+Writing file: processed_data/thin/wtjr_occ_1km_thin5.csv
+********************************************** 
+ Beginning Spatial Thinning.
+ Script Started at: Wed Mar 17 16:22:19 2021
+
+Thinning Parameter Used (in km): 1
+Number of replicates of thinning script: 3000
+
+Elapsed time for thinning completion
+2814.389 90.989 2906.404 0 0
+
+Number of data.frames per locations retained
+loc.cnt df.freq
+899	900	901
+235	2055	710
+Maximum number of records after thinning: 901
+Number of data.frames with max records: 710
+
+**New *.csv file creation:**
+Writing new *.csv files to output directory: processed_data/thin/
+Writing file: processed_data/thin/wtjr_occ_1km_thin1.csv
+Writing file: processed_data/thin/wtjr_occ_1km_thin2.csv
+Writing file: processed_data/thin/wtjr_occ_1km_thin3.csv
+Writing file: processed_data/thin/wtjr_occ_1km_thin4.csv
+Writing file: processed_data/thin/wtjr_occ_1km_thin5.csv

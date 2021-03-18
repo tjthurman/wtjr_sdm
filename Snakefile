@@ -83,19 +83,6 @@ rule thin_occur_data:
       Rscript src/thin_records.R {input} {wildcards.thin_dist} 3000 {params.outdir} 462
       """
 
-## check_thin_data  : Double-check that thinning worked properly
-# Not officially part of the pipeline, needs to be run
-# by hand if you want to check
-rule check_thin_data:
-    input:
-        "processed_data/thin/"
-    resources:
-        cpus=1
-    shell:
-        """
-        Rscript src/check_thinned_records.R {input}
-        """
-
 ## prep_unthinned_data: prepare unthinned data
 # Takes unthinned data from data_curation
 # and reformats and renames it to match the thinned data
@@ -323,6 +310,7 @@ rule predict_future_phenotypes:
 # Create panels for figure 4: map of phenotypic change as pdf and png
 # conservation status by phenotype
 # and density insert
+# Plus a couple stats for the main text
 rule figure_4_elements:
     input:
         current_srt_pheno = "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif",
@@ -369,7 +357,6 @@ rule supplemental_and_analysis:
         Rscript src/supp_figs_and_tables.R {input.snowcover_glm_rdata} {input.srt_glm_rdata} {input.consv_pheno_overlap} {input.current_srt_pheno} {input.future_srt_pheno} {input.current_cover_pheno} {output.snow_cover_table} {output.snow_cover_metrics} {output.srt_table} {output.srt_metrics} {output.broad_chisq_res} {output.pheno_compare_map} {output.glm_method_compare_map} {output.percent_brown_change} {output.discrete_current_pheno_map}
         """
  
-
 # --- Misc --- #
 ## dag               : makes a DAG graph for this pipeline
 rule dag:

@@ -8,7 +8,7 @@ This Github repository contains the code, and some of the data, needed to recrea
 
 XXX CITATION FOR PAPER HERE. 
 
-We have used a set of software tools to try to make this analysis pipeline as reproducible as possible. We use the Python program `Snakemake` to create a reproducible analysis pipeline. Most analyses are performed in `R`, and we use the `renv` package to manage libraries/packages for `R`. 
+We have used a set of software tools to try to make this analysis pipeline as reproducible as possible. We used the Python program `Snakemake` to create a reproducible analysis pipeline. Most analyses are performed in `R`, and we used the `renv` package to manage libraries/packages for `R`. 
 
 ### Installation
 
@@ -17,17 +17,20 @@ You will need the following software installed on your system:
 1. Python 3. We recommend installing Python 3 through [Anaconda](https://www.anaconda.com) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html). We used Python version 3.8.3. 
 2. Snakemake. We recommend following installing `snakemake` through `conda`, see [these instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html). We used version 5.14.0.
 3. R. R can be downloaded from the [R Project for Statisical Computing](https://www.r-project.org). We used R version `4.0.2`. 
-4. The R package `renv`. See [here](https://rstudio.github.io/renv/index.html) for instructions on installing `renv`. 5. R package dependencies. These dependencies are managed with the `renv` package. To install the dependencies, open this project in RStudio (easiest) or, in your terminal, set this project as your working directory and then launch `R`. Then, call `renv::restore()` to install the necessary packages (this may take a while). 
+4. The R package `renv`. See [here](https://rstudio.github.io/renv/index.html) for instructions on installing `renv`. 
+5. R package dependencies. These dependencies are managed with the `renv` package. To install the dependencies, open this project in RStudio (easiest) or, in your terminal, set this project as your working directory and then launch `R`. Then, call `renv::restore()` to install the necessary packages (this may take a while). 
+6. Pandoc, for compiling `.Rmd` files into `.html` files. We recommend installing `pandoc` through `conda`, see [these instructions](https://anaconda.org/conda-forge/pandoc). We used `pandoc` version 2.10.1.
 
 ### Structure
 
-This repository is set up as an RStudio project. You can open it in RStudio by opening the `wtjr_sdm.Rproj` file. The project is organized into a  few top-level folders:
+This repository is set up as an RStudio project. You can open it in RStudio by opening the `wtjr_sdm.Rproj` file. The project is organized into a few top-level folders:
 
-* `processed_data`- Data that has been processed/curated and is ready for analysis. All these files are created from raw data file (in the `raw_data` folder) and analysis scripts found in `src/`.
+* `docs`- Folder for the documents created by knitting `.Rmd` files in the `src` folder. 
+* `processed_data`- Data that has been processed/curated and is ready for analysis. All these files are created from raw data files (in the `raw_data` folder) and analysis scripts found in `src/`.
 * `raw_data`- Raw data obtained for this project, without any processing. See the README file in that folder for more details on the data source for each item. **NB**- Many raw data files are included in this repository, but some raw data files are too large to be uploaded to Github. See the README file in the raw data folder for information on how to obtain those files, either from Dryad or from the original sources we used. 
 * `renv`- package/library management for this project. This folder is created/maintained by the `renv` package, users should not need to edit it. 
 * `results`- Analysis results, generated from raw data, processed data, and scripts. 
-* `src`- Scripts and functions written for this project. Some script are in `.Rmd` files, which generate corresponding `.html` files upon knitting. 
+* `src`- Scripts and functions written for this project. Some scripts are in `.Rmd` files, which generate corresponding `.html` files in the `docs` folder upon knitting. 
 
 ### Data dependencies
 
@@ -38,18 +41,21 @@ Some raw data files are too large to be uploaded to Github. They must be obtaine
 Once all the necessary software is installed and you have obtained the necessary data, you can use `snakemake` to run our analysis pipeline. First, set this project directory as your working directory, and then execute:
 
 ```
-snakemake --cores 1
+snakemake
 ```
+
+NEED TO EDIT- SOME PARTS WILL RUN
 
 This will run `snakemake`, but should not run the full pipeline. The final figures and results are saved in this repository, so `snakemake` will determine there is nothing to be done. To force the pipeline to be re-run (and to generate the intermediate files which were too large to be uploaded to GitHub), run:
 
 ```
-snakemake --cores 1 -F
+snakemake -F
 ```
 
-This should run the full pipeline, though note that it will likely take a long time, and may fail depending on the amount of processing power and memory available on your computer. Note also that some steps may produce slightly different outputs: the thinning and model-fitting processes are not deterministic, though we have provided random number seeds to mitigate these issues as much as possible.
+This should run the full pipeline, though note that it will likely take a long time. Also, you will likely get slightly different results, maps, and plots from our published analysis. This is because the model-fitting processes are not deterministic, and there will be a small amount of numerical variance upon re-running. 
 
-We ran our analysis on a HPC cluster, and recommend you do the same. See the `snakemake` documentation for guidance on running `snakemake` on a [cluster](https://snakemake.readthedocs.io/en/stable/executing/cluster.html) and how to set up a [profile](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles) for specifying HPC options. A sample command for running our pipeline on a cluster, using the `snakemake` profile found in a folder named `sp_wtjr`, is:
+
+Finally, the pipeline may fail if you attempt to run it on a personal computer with insufficient processing power, memory, and storage. We ran our analysis on a HPC cluster, and recommend you do the same. See the `snakemake` documentation for guidance on running `snakemake` on a [cluster](https://snakemake.readthedocs.io/en/stable/executing/cluster.html) and how to set up a [profile](https://snakemake.readthedocs.io/en/stable/executing/cli.html#profiles) for specifying HPC options. A sample command for running our pipeline on a cluster, using the `snakemake` profile found in a folder named `sp_wtjr`, is:
 
 ```
 snakemake --profile sp_wtjr/ -F
