@@ -54,6 +54,7 @@ pheno_compare_maps <- args[12]
 glm_method_compare_map <- args[13]
 percent_brown_change <- args[14]
 discrete_current_pheno_map <- args[15]
+glm_method_compare_metrics <- args[16]
 
 # For running as a script
 # Inputs
@@ -73,6 +74,7 @@ discrete_current_pheno_map <- args[15]
 # glm_method_compare_map <- "results/figures/supplemental/model_difference_map.pdf"
 # percent_brown_change <- "results/figures/supplemental/percent_brown_change.pdf"
 # discrete_current_pheno_map <- "results/figures/supplemental/discrete_current_pheno_map.pdf"
+# glm_method_compare_metrics <- "results/pheno/model_difference_metrics.csv"
 
 # Load map data -----------------------------------------------------------
 state_prov <- ne_states(c("united states of america", "canada"), returnclass = "sf")
@@ -217,6 +219,13 @@ model_difference_current_probBrown <- model_difference %>%
 names(model_difference_current_probBrown) <- c("difference", "Long", "Lat")
 
 diff_pal <- colorRampPalette(colors = c("#762a83", "#f7f7f7", "#1b7837"))
+
+model_diff_metrics <- tibble(mean_diff = mean(model_difference_current_probBrown$difference),
+                                 median_diff = median(model_difference_current_probBrown$difference),
+                                 sd_diff = sd(model_difference_current_probBrown$difference),
+                                 MAE_diff = mean(abs(model_difference_current_probBrown$difference))) %>% 
+  write.csv(., glm_method_compare_metrics, row.names = F)
+
 
 map_model_difference <- ggplot() +
   geom_sf(data = state_prov, color = "grey61", fill = rgb(133,141,147, maxColorValue = 255)) +

@@ -42,12 +42,14 @@ rule all:
         "results/enmeval/performance_plot_best_models.pdf", # Figure S1
         "results/figures/supplemental/pheno_compare_maps.pdf", # Figure S24
         "results/figures/supplemental/model_difference_map.pdf", # Figure S25
+        "results/pheno/model_difference_metrics.csv", # stats for Figure S25 caption
         "results/figures/supplemental/percent_brown_change.pdf", # Figure S26
         "results/figures/supplemental/discrete_current_pheno_map.pdf", # Figure S27
         "results/pheno/glm_table_current_snow_cover.csv", # Table S1A
         "results/pheno/glm_table_current_srt.csv", # Table S2B
         "results/pheno/glm_metrics_current_snow_cover.csv", # Table S2A
         "results/pheno/glm_metrics_current_srt.csv" # Table S2B
+        
                 
 ## curate_occur_data   : process WTJR occurrence data
 # Renders an Rmarkdown report on the data curation process
@@ -349,12 +351,13 @@ rule supplemental_and_analysis:
         pheno_compare_map = "results/figures/supplemental/pheno_compare_maps.pdf",
         glm_method_compare_map = "results/figures/supplemental/model_difference_map.pdf",
         percent_brown_change = "results/figures/supplemental/percent_brown_change.pdf",
-        discrete_current_pheno_map = "results/figures/supplemental/discrete_current_pheno_map.pdf"
+        discrete_current_pheno_map = "results/figures/supplemental/discrete_current_pheno_map.pdf",
+        glm_method_compare_metrics = "results/pheno/model_difference_metrics.csv"
     resources:
         cpus=1
     shell:
         """
-        Rscript src/supp_figs_and_tables.R {input.snowcover_glm_rdata} {input.srt_glm_rdata} {input.consv_pheno_overlap} {input.current_srt_pheno} {input.future_srt_pheno} {input.current_cover_pheno} {output.snow_cover_table} {output.snow_cover_metrics} {output.srt_table} {output.srt_metrics} {output.broad_chisq_res} {output.pheno_compare_map} {output.glm_method_compare_map} {output.percent_brown_change} {output.discrete_current_pheno_map}
+        Rscript src/supp_figs_and_tables.R {input.snowcover_glm_rdata} {input.srt_glm_rdata} {input.consv_pheno_overlap} {input.current_srt_pheno} {input.future_srt_pheno} {input.current_cover_pheno} {output.snow_cover_table} {output.snow_cover_metrics} {output.srt_table} {output.srt_metrics} {output.broad_chisq_res} {output.pheno_compare_map} {output.glm_method_compare_map} {output.percent_brown_change} {output.discrete_current_pheno_map} {output.glm_method_compare_metrics}
         """
  
 # --- Misc --- #
