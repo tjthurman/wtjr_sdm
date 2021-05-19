@@ -1,6 +1,6 @@
 Code and Data for
 
-## XXX TITLE OF MS TO COME
+## The evolution of seasonal camouflage in white-tailed jackrabbits in response to past and future climates
 
 ### About
 
