@@ -14,6 +14,7 @@ library(raster)
 library(ggsn)
 library(broom)
 library(gridExtra)
+library(cowplot)
 
 
 
@@ -199,9 +200,13 @@ map_pheno_future <- ggplot() +
            dist  = 200, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -92.15, y = 33.3)) +
   ggtitle("Future Prob(Brown)")
 
-combo <- grid.arrange(map_pheno_current,
-             map_pheno_future,
-             nrow = 2) 
+combo <- cowplot::plot_grid(map_pheno_current, map_pheno_future, 
+                   nrow = 2, ncol = 1, 
+                   labels = c("A", "B"), 
+                   label_fontfamily = "sans", 
+                   label_fontface = "bold", 
+                   label_size = 14)
+
 ggsave(plot = combo, pheno_compare_maps, width = 9.7, height  = 14, units = "in")
 
 
