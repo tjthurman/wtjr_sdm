@@ -1,0 +1,113 @@
+// set up a simple neutral nonWF simulation
+initialize() {
+	
+	// Set up some constants when running interactively,
+	// will be able to run in Snakemake in the future
+	
+	// Will do the phenotypic scale in terms of brown.
+	// This is the opposite of the linear models in the text.
+	// In the text, higher PC1 == more white,
+	// and the linear models in S11 have positive Betas (for the
+	// effects of the white allele on PC1).
+	
+	// For this, I will flip it: 
+	// higher PC scores and more alleles == more brown
+	// I linearly re-scale the PC scores into 
+	// a 0-1 interval, based on the min-max of the average PC1 score
+	// across genotype categories (Fig 2F) (rescale -6 to 4 into 0 to 1). 
+	if (exists("slimgui"))
+	{
+		defineConstant("K", 5000);	// carrying capacity
+		defineConstant("initFreqCorin", 0.05); // initial Corin brown allele frequency
+		defineConstant("initFreqEDNRB", 0.02); // initial EDNRB brown allele frequency
+		defineConstant("initPopSize", 5000); // initial population size
+		defineConstant("initOptPheno", 0.26); // initial optimum phenotype on 0-1 scale
+		defineConstant("finalOptPheno", 1); //final optimum phenotype on 0-1 scale
+		defineConstant("generations", 60); //generations to simulate
+		defineConstant("fitFuncWidth", 0.25); // SD of fitness function, normal dist
+	}
+
+	initializeSLiMModelType("nonWF");
+	
+	// Neutral mutation type.
+	// Not sure we actually need this.
+	// But we set the mutation rate to 0, so doesn't really matter anyway.
+	initializeMutationType("m1", 0.5, "f", 0.0);
+	initializeGenomicElementType("g1", m1, 1.0);
+	m1.convertToSubstitution = T;
+		
+	// mutations representing alleles in QTLs
+	// Simple addivity, with a fixed effect of 1
+	initializeMutationType("m2", 0.5, "f", 1);
+	initializeGenomicElementType("g2", m2, 1.0);
+	
+		// Simple addivity, with a fixed effect of 1
+	initializeMutationType("m3", 0.5, "f", 1);
+	initializeGenomicElementType("g3", m3, 1.0);
+	
+	// Set up our "chromosome"
+	// Really, just doing a two-locus model. Need them to be unlinked.
+	// Will add some empty space to ease visualization
+	initializeGenomicElement(g1, 0, 99);
+	initializeGenomicElement(g2, 100, 100); // First one is corin
+	initializeGenomicElement(g1, 101, 199);
+	initializeGenomicElement(g3, 200, 200); // second one is ednrb
+	initializeGenomicElement(g1, 201, 299);
+	
+	// Define mutation and recombination rates
+	// No mutation
+	initializeMutationRate(0);
+	// No recombination through most of the chromosome,
+	// recombination of 0.5 halfway between the two genes to make them independent
+	initializeRecombinationRate(rates = c(0, 0.5, 0), ends = c(149, 150, 299));
+}
+
+// each individual reproduces itself once
+reproduction() {
+	subpop.addCrossed(individual, subpop.sampleIndividuals(1));
+}
+
+// create an initial population of 10 individuals
+1 early() {
+	sim.addSubpop("p1", initPopSize);
+	print(paste("gen", "opt", "mean_pheno", "mean_dev", "mean_adapt", "mean_pheno_PC", "freq_br_corin", "freq_br_ednrb"));
+}
+
+1 late() {
+// Add "brown" alleles at a starting frequency of 50% at each locus
+corinTargets = sample(p1.genomes, asInteger(length(p1.genomes)*initFreqCorin));
+corinTargets.addNewDrawnMutation(m2, 100);
+
+ednrbTargets = sample(p1.genomes, asInteger(length(p1.genomes)*initFreqEDNRB));
+ednrbTargets.addNewDrawnMutation(m3, 200);
+
+	// Reschedule the end of the simulation
+	sim.rescheduleScriptBlock(s2, start = generations, end = generations);
+}
+
+early() {
+	// QTL-based fitness
+	inds = sim.subpopulations.individuals;
+	phenos_PC = -3.69 + 1.84*inds.sumOfMutationsOfType(m2) + 3.14*inds.sumOfMutationsOfType(m3);
+	phenos_01 = (phenos_PC - -6)/(4 - -6);
+	optimum = initOptPheno + (finalOptPheno - initOptPheno)/generations*sim.generation;
+	deviations = optimum - phenos_01;
+	fitnessFunctionMax = dnorm(0.0, 0.0, fitFuncWidth);
+	adaptation = dnorm(deviations, 0.0, fitFuncWidth) / fitnessFunctionMax; // WORK ON THIS
+	inds.fitnessScaling = adaptation; // WORK ON THIS
+	inds.tagF = phenos_01;   // just for output below
+	
+	print(paste(sim.generation, optimum, mean(inds.tagF), mean(deviations), mean(adaptation), mean(phenos_PC), sum(inds.countOfMutationsOfType(m2))/length(p1.genomes), sum(inds.countOfMutationsOfType(m3))/length(p1.genomes)));
+	
+	// density-dependence with a maximum benefit at low density
+	p1.fitnessScaling = K / p1.individualCount;
+}
+fitness(m2) { return 1.0; }
+fitness(m3) { return 1.0; }
+
+
+
+s2 999 late() {
+
+	sim.simulationFinished();
+}
