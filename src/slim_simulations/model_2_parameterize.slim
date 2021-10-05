@@ -17,14 +17,17 @@ initialize() {
 	// across genotype categories (Fig 2F) (rescale -6 to 4 into 0 to 1). 
 	if (exists("slimgui"))
 	{
-		defineConstant("K", 5000);	// carrying capacity
-		defineConstant("initFreqCorin", 0.05); // initial Corin brown allele frequency
-		defineConstant("initFreqEDNRB", 0.02); // initial EDNRB brown allele frequency
+		defineConstant("K", 100);	// carrying capacity
+		defineConstant("initFreqCorin", 0.95); // initial Corin brown allele frequency
+		defineConstant("initFreqEDNRB", 0.98); // initial EDNRB brown allele frequency
 		defineConstant("initPopSize", 5000); // initial population size
 		defineConstant("initOptPheno", 0.26); // initial optimum phenotype on 0-1 scale
 		defineConstant("finalOptPheno", 1); //final optimum phenotype on 0-1 scale
-		defineConstant("generations", 60); //generations to simulate
-		defineConstant("fitFuncWidth", 0.25); // SD of fitness function, normal dist
+		defineConstant("generations", 2000); //generations to simulate
+		defineConstant("fitFuncWidth", 0.9); // SD of fitness function, normal dist
+		defineConstant("phenoPCMin", -6.48); // Minimum PC1 phenotype score allowed
+		defineConstant("phenoPCMax", 3.66); // Maximum PC1 phenotype score allowed
+		defineConstant("h2", 0.64); // target heritability for color. 
 	}
 
 	initializeSLiMModelType("nonWF");
@@ -67,6 +70,10 @@ reproduction() {
 	subpop.addCrossed(individual, subpop.sampleIndividuals(1));
 }
 
+// m2 and m3 mutations have no direct effects on fitness, all done through phenotypes 
+fitness(m2) { return 1.0; } 
+fitness(m3) { return 1.0; }
+
 // create an initial population of 10 individuals
 1 early() {
 	sim.addSubpop("p1", initPopSize);
@@ -86,26 +93,68 @@ ednrbTargets.addNewDrawnMutation(m3, 200);
 }
 
 early() {
-	// QTL-based fitness
+	// Get phenotype from genotype
 	inds = sim.subpopulations.individuals;
-	phenos_PC = -3.69 + 1.84*inds.sumOfMutationsOfType(m2) + 3.14*inds.sumOfMutationsOfType(m3);
-	phenos_01 = (phenos_PC - -6)/(4 - -6);
-	optimum = initOptPheno + (finalOptPheno - initOptPheno)/generations*sim.generation;
+	add_pheno_PC = -6.48 + 1.92*inds.sumOfMutationsOfType(m2) + 3.15*inds.sumOfMutationsOfType(m3); // Use lm to get additive phenotype, in PC terms
+	
+	// Two ways to add in environmental noise.
+	// One is to just add in raw environmental noise
+	// noise_pheno_PC = rnorm(length(inds), 0, 1);
+	// Would need to figure out an appropriate value for the SD there. 
+	
+	// The other is to target a certain heritability value.
+	// This is taken from section 13.4 in the SLiM manual
+	// In our case, we could try PVE of 64%
+	V_A = var(add_pheno_PC);
+	V_E=(V_A-h2*V_A)/h2; //from h2==V_A/(V_A+V_E) 
+	noise_pheno_PC = rnorm(size(inds), 0.0, sqrt(V_E));
+
+	// Either way, add them together 	
+	phenos_PC = add_pheno_PC + noise_pheno_PC; // Add phenotype with noise to get final phenotype, on PC scale. 
+	
+	// Then, need to rescale between 0 and 1. 
+	// The initial way I did this was just to truncate the recales phenos to between 0 and 1, but that
+	// messed with heritability.
+	// Now, I'm using the observed min/max breeding values as t he min and max,
+	// but will set a new min/max each generation if any individuals fall outside that range. 
+	
+	rescaleMin = phenoPCMin;
+	rescaleMax = phenoPCMax;
+	
+	if (min(phenos_PC) < phenoPCMin) rescaleMin = min(phenos_PC); 
+	if (max(phenos_PC) > phenoPCMax) rescaleMax = max(phenos_PC); 
+	
+	// may be better to do the scaling the other way: rescale the 0 to 1 from the PC min to PC max????
+	phenos_01 = (phenos_PC - rescaleMin)/(phenoPCMax - rescaleMin); // rescale the PC phenos to be between 0 and 1, like the GLMs. 
+	
+	// COULD DO SOME PLOTTING OF THIS AS A HISTOGRAM OR DENSITY PLOT: DO WE ACTUALLY GET CONtINUOUS VARIATION. 
+	
+	
+	// But, now we can calculate the realized heritability
+	obs_h2 = V_A/var(phenos_PC);
+	
+	// Get optimal phenotype, based on generation
+	
+	
+	// Get individual fitnesses, based on individual phenotype and optimal phenotype
+	
+	//optimum = initOptPheno + (finalOptPheno - initOptPheno)/generations*sim.generation;
+	optimum = 1; 
 	deviations = optimum - phenos_01;
 	fitnessFunctionMax = dnorm(0.0, 0.0, fitFuncWidth);
 	adaptation = dnorm(deviations, 0.0, fitFuncWidth) / fitnessFunctionMax; // WORK ON THIS
 	inds.fitnessScaling = adaptation; // WORK ON THIS
 	inds.tagF = phenos_01;   // just for output below
 	
-	print(paste(sim.generation, optimum, mean(inds.tagF), mean(deviations), mean(adaptation), mean(phenos_PC), sum(inds.countOfMutationsOfType(m2))/length(p1.genomes), sum(inds.countOfMutationsOfType(m3))/length(p1.genomes)));
+	// simple density dependence
+	p1.fitnessScaling = K / p1.individualCount;	
 	
-	// density-dependence with a maximum benefit at low density
-	p1.fitnessScaling = K / p1.individualCount;
+	
+	// print out a bunch of metrics 
+	print(paste(sim.generation, optimum, mean(inds.tagF), mean(phenos_PC), V_A, V_E, obs_h2, sum(inds.countOfMutationsOfType(m2))/length(p1.genomes), sum(inds.countOfMutationsOfType(m3))/length(p1.genomes)));
+	
+	
 }
-fitness(m2) { return 1.0; }
-fitness(m3) { return 1.0; }
-
-
 
 s2 999 late() {
 

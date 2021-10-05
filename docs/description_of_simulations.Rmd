@@ -1,0 +1,139 @@
+---
+title: "Simulation description"
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    code_folding: hide
+    toc_depth: 4
+    theme: yeti
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, message=FALSE, warning=FALSE, echo = F}
+
+# Load packages -----------------------------------------------------------
+library(tidyverse)
+library(cowplot)
+library(ggrepel)
+library(lemon)
+library(knitr)
+library(rmdformats)
+library(broom)
+
+# Set global options ------------------------------------------------------
+
+## Global options
+options(max.print="100", scipen = 1, digits = 2)
+opts_chunk$set(cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE,
+               fig.align = "center")
+#opts_knit$set(width=75)
+```
+
+
+An explanation/description of the simulations I'm doing for the WTJR project.
+
+## Simulation program
+
+I'm doing these simulations in SLiM. Right now while prototyping, I'm doing everything locally on my computer in SLiMgui v3.6. Once all the kinks are worked out locally and we're ready to run the simulations for real, I'll run them on the cluster.
+
+## General simulation format
+
+SLiM does forward-in-time, individual-based simulations. Going down the hierarchy, within each simulation we have:
+
+* Subpopulations- I'm simulating one subpopulation, so one panmictic population.
+* Individuals: Each individual belongs to a subpopulation, and has multiple attributes. For our purposes, we care about each individual's genotype, and how that translates to their genotype and fitness.
+* Genomes: Each individual is diploid, and this has two copies of the genome.
+* Genotypes: Within each genome, we track the frequencies of all variants in the genome. 
+
+Importantly, SLiM can do simulations under two different population genetic models. The first is the Wright-Fisher model: effective population sizes are specified, generations are discrete and non-overlapping, and fitness/selection are related to mating success, not viability/survival, such that selection is soft. This is inappropriate for our question: we're explicitly interested in population declines, so we don't want the population size to be a specified constant: we want population size to be an emergent property of the fitness of the individuals in the population. So, I'm using the non-WF model: population regulation is specified (i.e., carrying capacity or density dependence), but population size is emergent. Generations can be overlapping, fitness/selection are related to survival/viability (such that individuals could survive for multiple generations), and selection is hard. 
+
+This non-WF model is appropriate, but we need to keep an eye on some of the emergent properties (population size, age structure, lifespan) to make sure they make sense for WTJR. Now, let's dive into the nitty-gritty aspects of the simulation.
+
+### Population regulation
+
+For now, I'm doing simple density-dependent population regulation, with a carrying capacity, $K$, of 5000 individuals. We can change that to whatever carrying capacity makes sense for WTJR, if we have any good estimates based on population density or short-term effective population size. I assume the carrying capacity is constant through time. Each individual's fitness, $w_{i}$, is scaled by a population-level constant determined by the carrying capacity and the current population size, $N$:
+
+$w_{i}^{scaled} = w_{i}\frac{K}{N}$
+
+So, when $N$ = $K$ individual fitnesses aren't changed, when $K$ > $N$ fitnesses are scaled up, and when $K$ < $N$ fitnesses are scaled down. Note that this is just scaling at the population level to impose some density-dependence: below I'll discuss how I calculate $w_{i}$ for each individual. And I'll also note that this density dependence isn't so strong that the population size can't get far above or below the carrying capacity, or for populations to decline and go extinct if selection is strong (that is, if the average $w_{i}$ can get so low that even the scaling up that comes from being at very low densities isn't sufficient to get the average $w_{i}^{scaled}$ back above 1, such that populations can shrink and go extinct). 
+
+### Mating
+
+Currently, I'm keeping this very simple. I am not modeling separate sexes, such that each diploid individual can be thought of a hermaphrodite. In each generation, all living individuals reproduce: they mate with a single, randomly-sampled individual from the population (which in theory could be itself, but the likelihood of that is $1/N$) and produce one offspring. Thus, all individuals mate at least once to produce one offspring, but some individuals will mate more than once (if they are randomly selected as a mate multiple times). Within each mating, the usual rules of Mendelian genetics apply.
+
+This is obviously a place we could do a lot different to make this more realistic for WTJR, but it may be tough depending on exactly how much good population biology data we have. Unless we have a lot of good sex ratio data, it may be better to keep things hermaphrodites, but we could prevent selfing. Or we could initialize a 50/50 sex ratio and have sex determination of offspring be random. Then we have females choose mates randomly, such that all females (but not necessarily all males) reproduce and sex ratio becomes another emergent property. Probably the most useful thing would be some more ecologically-informed distribution of offspring number, instead of a uniform distribution of 1. Maybe a Poisson distribution of offspring number, if we have a good idea what the rate should be?
+
+To be honest, I don't have strong intuition on how much of a difference these changes would make in the simulation. Would have to just play around with it and see. 
+
+### Genome and molecular evolution
+
+We're lucky for these simulations, in that we aren't interested in simulating a lot of the things poeple are usually interested in for SLiM (e.g., simulating patterns of neutral genetic diversity across the genome). We're really just interested in two loci (for now): corin and ednrb. So, I'm simulating very simple genomes. I could, in theory, just simulate two loci, but to make visualization a little easier I'm technically simulating a single chromosome that is 300 bp long. We're only interested in relatively short-term evolution from standing genetic variation, so I set the mutation rate to 0, such that there are no neutral variants to track. We're only tracking alleles at two sites: at 100bp there is a single locus that represents corin, and at 200 bp there is a single locus that represents EDNRB. Across the genome, the recombination rate is 0, except between positions 149 and 150, where the recombination rate is 0.5. This makes our corin and EDNRB loci unlinked, as if they are on separate chromosomes, even though we're technically modelling one "chromosome". 
+
+At the start of the simulation, I introduce mutations at the corin and EDNRB sites which represent winter-brown alleles. I specify the starting frequency for each gene, and the brown alleles are randomly assigned to whatever number of diploid genomes (not individuals) are necessary to acheieve the desired starting frequency. I need to double check this, but this should mean that the alleles for each gene are in HW equilibrium at the start. Currently, these alleles are assigned independently for corin and EDNRB, such that these should, on average, be in linkage equilibrium at the start of the simulation. After this initial SGV is seeded, there is no further mutation at these genes, such that no additional brown alleles are introduced to the population (no gene flow). 
+
+### Genotype-phenotype
+
+So, how do we translate the genotypes at these two loci into a phenotype? For now, I'm using simple linear models that are similar to those presented in Table S11 of the supplemental material. These models relate an individual's phenotypic PC1 score to their genotypes at corin and EDNRB.  However, I had Mafalda make some changes for me, to make the modelling a little more intuitive. In the models in table S11, the phenotypic PC score is the same as shown in Figure 2: lower PC scores are more brown, and higher PC scores are more white. Similarly, the genotypes in the original model are coded as the number of winter-white alleles, such that adding more alleles increases the PC score (makes an individual more white).
+
+To be more intuitive to our story, I wanted everything to be in terms of the brown allele, and I wanted the PC score scale to be flipped, such that higher PC scores mean more brown. So, Mafalda multiplied the PC score by -1 to flip the scale (now higher PC score = more brown), and re-ran the models in terms of number of brown alleles, instead of # of white alleles. Also, she dropped agouti for now, to keep it as the current 2-locus model. Here is the model table from that updated linear model (compare to model B in Table S11):
+
+```{r}
+load("tmp_models_from_mafalda/genotype_analyses_041021.RData")
+
+tidy(fitD)
+```
+
+LTW_2_36361155 is the SNP representing corin, and LTW_8_79701598 represents EDNRB. From this linear model, then, we can get a sort of breeding value of each individual's PC1 phenotype, $y^{PC}$, based on the genotypes $x^{corin}$ and $x^{ednrb}$, where the intercepts and coeffiecients are just straight out of the model:
+
+$y_{i}^{PC} = -6.48 + 1.92x^{corin}_{i} + 3.15x^{ednrb}_{i}$
+
+It is important to note here that this linear model somewhat bounds the possible PC1 phenotypes: the minimum PC1 score (with no brown alleles) is -6.48, and the maximum PC1 score (homozygote brown at both alleles) is 3.66. These are less extreme than the min and max PC1 scores present in the dataset as a whole (basically to -10 and 10), but this is because the linear model dosen't use all phenotype data, but only phenotype data from individuals that we did the SNP genotyping for. 
+
+In any case, this linear model gives us breeding values for each individuals, and the variance in $y^{PC}$ gives us $V_{a}$, the additive genetic variance in the phenotype. We know the phenotype isn't 100% determined by these two alleles, so we can add in some phenotypic variance that is unexplained by these genotypes. The adjusted R-squared/PVE from this model is 64%, which we can more or less take as the heritability. So, we need $\frac{V_{A}}{V_{P}} \approx 0.64$. Since $V_{P} = V_{A} + V_{E}$:
+
+$V_E=(V_A-h^2*V_A)/h^2$
+
+From that equation, we figure out what $V_{E}$ we need each generation to get our target heritability, and we add that variance in by adding a little noise to each individual phenotype, where the noise is drawn from a normal distribution with mean 0 and standard deviation equal to $V_{E}$:
+
+$\hat y_{i}^{PC} = y_{i}^{PC} + N(0, V_{E})$
+
+Then, our realized heritability is:
+
+$\frac{Var(y_{i}^{PC})}{Var(\hat y_{i}^{PC})}$
+
+So, at the end of all this, for each individual in each generation of the simulation, we have both their "breeding value" for the trait, and their actual phenotype for the trait. From these, we can calculate the heritability for the trait in that generation (which should be $\approx0.64$, at least as long as no alleles have fixed). We can use these phenotypes to estimate individual-level fitness (see next sections). 
+
+One issue to consider: in non-WF models, individuals can live for multiple generations. Since there is no mutation, the breeding values for a given individual won't change. However, the environmental noise is added anew each generation. I figure this is probably fine, but wanted that to be explicit instead of implicit. 
+
+
+### Determining optimal phenotype
+
+As we discussed, our GLMs that predict WTJR winter color based on environmental variables are basically maps of the "optimal" winter phenotype at a given location, given the snow and environmental variables. This relies on the (decent, but not ironclad) assumption that the phenotyped WTJR we used create this model were well-adapted. Not sure there's anything we can do about that assumption.
+
+Possibly more of an issue is the fact that this environment-to-phenotype modeling was done on binned binary phenotypes (white/brown) to create a continuous outcome, $Prob(winter brown)$. As reviewer three noted, there is some tension there, as it ignores the continuous color variation that is a big part of our story (and that is captured in the phenotypic PC score). I'm not fully sure how to resolve that. The tension becomes a little stronger when we have to relate our continuous $Prob(winter brown)$ variable to our continuous phenotypic PC to get some metric of environmental mismatch. For now, let's just make the assumption that these are more or less linearly related: individuals with high phenotypic PC scores (very brown) are most likely to be found in areas with high predicted $Prob(winter brown)$, very white individuals (low PC scores) are in areas with low $Prob(winter brown)$, and intermediate-colored individuals are most likely in areas with intermediate $Prob(winter brown)$. I know that assumption is arguable and was a point of contention between Scott and the Canadian hare folks RE: the 2018 Science paper, but at the moment I don't see an easy way around this. 
+
+Conceptual tensions aside, we also need to reconcile the fact that these two metrics are on different numerical scales: $Prob(winter brown)$ ranges from 0 to 1, and the phenotypic PC ranges from -10 to 10 across all samples and from -6.48 to 3.66 in breeding values. In theory, it is easy to linearly rescale variables between ranges like this. If the min and max of the observed variables, $z$, is $z_{min}$ and $z_{max}$, and we want the new scale to range from $scale_{min}$ to $scale_{max}$, than for a given value $z$ between $z_{min}$ and $z_{max}$ the scaled value is:
+
+$z_{scaled} = \frac{z - z_{min}}{z_{max} - z_{min}} \cdot (scale_{max}- scale_{min}) + scale_{min}$
+
+Then, we have a simple measure of mismatch: the difference between the $Prob(winter brown)$ and PC score when they're on the same scale. This makes the most sense when the PC scores are rescaled to the 0 to 1 interval to match the $Prob(winter brown)$ values (which do range from 0 to 1 across the range, in both current and future climates). This has a nice mathematical property: the maximum possible phenotype-environment mismatch is 1 (e.g., a rescaled phenotype of 0 that is the most white possible and a $Prob(winter brown)$ of 1): this makes reasoning about selection strengths (the next section) a little easier.
+
+Choosing observed min and max values for the PC scale is a bit of an issue. We could choose the absolute min and max observed in our dataset (-10 to 10), but that doesn't match well with the breeding values in our linear model: the maximum brown breeding value, 3.66, would only be 0.5 when re-scaled, such that it would be very mismatched in a brown-favoring environment where $Prob(winter brown)$ = 1. We could choose the min and max breeding values, but that gets weird once you add on the $V_{E}$: individuals could then get lower or higher values, such that they are outside the 0 to 1 range after re-scaling. E.g., an individual with the max breeding value of 3.66 and environmental noise that pushed their phenotype to 4 would get rescaled to 1.03. If the optimal value was $Prob(winter brown)$ = 1, that individual would actually be mismatched for being too brown. You could truncate these sorts of individuals so that all scaled phenotypes have to be between 0 and 1, but that messes with heritability estimates: individuals near the end of the scale can only have $V_{E}$ added in one direction (closer to the center of the scale), such that $V_{E}$ gets artificially reduced and heritabilities get inflated (and eventually go above 1). 
+
+I've tried getting around this in a couple different ways. One slightly unsatisfying way is to just set the min and max values from the PC scores a little above and below the breeding value min and max: e.g., -8 and 4.5. This fixes the heritability problem (they stay in the expected range, at least until any alleles are lost/fixed). This is still a little odd for measuring mismatch: an individual with a PC phenotype of 3.66 (maximum brown breeding value) would be rescaled to 0.93, and thus would be still mismatched when $Prob(winter brown)$ = 1. The other way I've done it is to use the min/max of the breeding values as the default for the ends of the scale, but to increase or decrease those limits if needed based on the min/max phenotype in a given generation. That is, an extreme individual outside that range would set the new min/max, for just that one generation. E.g., if an individual had a phenotype of 4 (above the breeding value max of 3.66), I would make 4 the new maximum for that generation, and that individual would be rescaled to a 1. The scale could thus change from generation to generation, which is maybe not ideal, but it keeps the heritabilities and mismatch values sensible. 
+
+### Selection on phenotype 
+
+So, we have a genetic architecture, we're translated them into a phenotype, and compared that phenotype to a theoretical ideal phenotype to quantify phenotype-environment mismatch. The final step is to translate that mismatch into fitness differences. Again, as reviewers pointed out, we have to make some assumptions about how selection acts on contunous phenotypes here. 
+
+
+THE IDEA: TRY TO SCALE THE FITNESS FUNCTION SO THAT MAX MISMATCH (OF 1) LEADS TO 7% WEEKLY REDUCTION IN FITNESS. NEED A "WINTER LENGTH" VARIABLE, IN WEEKS. 
+
+ALSO< NEED TO DO MORE PRINTING/SAVING OF RESULTS AND MAYBE LIVE PLOTTING? 
+
