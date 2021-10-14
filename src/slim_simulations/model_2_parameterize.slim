@@ -17,17 +17,18 @@ initialize() {
 	// across genotype categories (Fig 2F) (rescale -6 to 4 into 0 to 1). 
 	if (exists("slimgui"))
 	{
-		defineConstant("K", 100);	// carrying capacity
-		defineConstant("initFreqCorin", 0.95); // initial Corin brown allele frequency
-		defineConstant("initFreqEDNRB", 0.98); // initial EDNRB brown allele frequency
+		defineConstant("K", 5000);	// carrying capacity
+		defineConstant("initFreqCorin", 0.05); // initial Corin brown allele frequency
+		defineConstant("initFreqEDNRB", 0.05); // initial EDNRB brown allele frequency
 		defineConstant("initPopSize", 5000); // initial population size
-		defineConstant("initOptPheno", 0.26); // initial optimum phenotype on 0-1 scale
-		defineConstant("finalOptPheno", 1); //final optimum phenotype on 0-1 scale
-		defineConstant("generations", 2000); //generations to simulate
-		defineConstant("fitFuncWidth", 0.9); // SD of fitness function, normal dist
-		defineConstant("phenoPCMin", -6.48); // Minimum PC1 phenotype score allowed
-		defineConstant("phenoPCMax", 3.66); // Maximum PC1 phenotype score allowed
+		defineConstant("initOptPheno", 0.13); // initial optimum phenotype on 0-1 scale
+		defineConstant("finalOptPheno", 0.876); //final optimum phenotype on 0-1 scale
+		defineConstant("generations", 60); //generations to simulate
+		defineConstant("fitFuncWidth", 0.45); // SD of fitness function, normal dist 0.65
+		defineConstant("phenoPCMin", -6.48); // Minimum PC1 phenotype score, for rescaling
+		defineConstant("phenoPCMax", 3.66); // Maximum PC1 phenotype score, for rescaling
 		defineConstant("h2", 0.64); // target heritability for color. 
+		defineConstant("constantH2", F);
 	}
 
 	initializeSLiMModelType("nonWF");
@@ -40,13 +41,14 @@ initialize() {
 	m1.convertToSubstitution = T;
 		
 	// mutations representing alleles in QTLs
-	// Simple addivity, with a fixed effect of 1
-	initializeMutationType("m2", 0.5, "f", 1);
-	initializeGenomicElementType("g2", m2, 1.0);
+	// Simple addivity, with a fixed effect of 0 (neutral to fitness)
+	// All fitness calculation will be through the geno-pheno map, below. 
+	initializeMutationType("m2", 0.5, "f", 0);
+	initializeGenomicElementType("g2", m2, 1);
 	
-		// Simple addivity, with a fixed effect of 1
-	initializeMutationType("m3", 0.5, "f", 1);
-	initializeGenomicElementType("g3", m3, 1.0);
+	// Simple addivity, with a fixed effect of 1
+	initializeMutationType("m3", 0.5, "f", 0);
+	initializeGenomicElementType("g3", m3, 1);
 	
 	// Set up our "chromosome"
 	// Really, just doing a two-locus model. Need them to be unlinked.
@@ -67,35 +69,76 @@ initialize() {
 
 // each individual reproduces itself once
 reproduction() {
-	subpop.addCrossed(individual, subpop.sampleIndividuals(1));
+	// Old way: each individual reproduces itself once with a random mate (which could technically be itself)
+	// subpop.addCrossed(individual, subpop.sampleIndividuals(1));
+	
+	// New way, with some biology
+	// We randomize the order of individuals, and pair them off
+	// with the adjacent individual (leaving one out if odd number).
+	// So still hermaphrodites, but sort of imposing a 50/50 sex ratio
+	// in that only pairs, not individuals, have offspring. 
+	
+	// Then, for each pair
+	// we randomly draw how many litters they will have. 
+	parents = sample(p1.individuals, p1.individualCount);
+   // draw monogamous pairs and generate litters
+   offspring = 0;
+	for (i in seq(0, p1.individualCount - 2, by=2)) {
+		parent1 = parents[i]; 
+		parent2 = parents[i + 1]; 
+		litters = sample(c(1:4), 1, weights = c(0.25, 0.5, 0.15, 0.1));
+		
+		//print(paste(parent1, parent2, "litters=", litters));
+		
+		for (j in 1:litters) {
+			litterSize = sample(c(1:3), 1);
+			for (k in 1:litterSize) {
+				p1.addCrossed(parent1, parent2);
+				offspring = offspring + 1;
+				//print(paste(parent1, parent2, "litter=", j, "litter size=", litterSize));
+			}
+		}
+	}
+
+	print(paste("Average offspring per pair:"	, offspring/length(seq(0, p1.individualCount - 2, by=2))));
+	
+      // disable this callback for this generation
+      // as normally reproduction callbacks gets called for each individual,
+      // and we already did the reproduction for everyone
+	
+	self.active = 0;
 }
 
-// m2 and m3 mutations have no direct effects on fitness, all done through phenotypes 
-fitness(m2) { return 1.0; } 
-fitness(m3) { return 1.0; }
 
-// create an initial population of 10 individuals
+// create an initial population of individuals
 1 early() {
 	sim.addSubpop("p1", initPopSize);
-	print(paste("gen", "opt", "mean_pheno", "mean_dev", "mean_adapt", "mean_pheno_PC", "freq_br_corin", "freq_br_ednrb"));
+	
+	// Add "brown" alleles at the specified starting frequency at each locus
+	corinTargets = sample(p1.genomes, asInteger(length(p1.genomes)*initFreqCorin));
+	corinTargets.addNewDrawnMutation(m2, 100);
+
+	ednrbTargets = sample(p1.genomes, asInteger(length(p1.genomes)*initFreqEDNRB));
+	ednrbTargets.addNewDrawnMutation(m3, 200);
+
+	// Reschedule the end of the simulation, for however long we wanted to run the simulation for. 
+	sim.rescheduleScriptBlock(s2, start = generations, end = generations);	
+	
+	
+	// START LOGGING, NEED TO FIGURE THIS OUT BETTER
+	// print(paste("gen", "opt", "mean_pheno", "mean_dev", "mean_adapt", "mean_pheno_PC", "freq_br_corin", "freq_br_ednrb"));
 }
 
-1 late() {
-// Add "brown" alleles at a starting frequency of 50% at each locus
-corinTargets = sample(p1.genomes, asInteger(length(p1.genomes)*initFreqCorin));
-corinTargets.addNewDrawnMutation(m2, 100);
 
-ednrbTargets = sample(p1.genomes, asInteger(length(p1.genomes)*initFreqEDNRB));
-ednrbTargets.addNewDrawnMutation(m3, 200);
-
-	// Reschedule the end of the simulation
-	sim.rescheduleScriptBlock(s2, start = generations, end = generations);
-}
+// Every generation, calculate phenotype from genotype, 
+// mismatch from phenotype,
+// and fitness from mistmatch for every individual.
+// All fitness recalculating is done here, instead of in fitness callbacks. 
 
 early() {
 	// Get phenotype from genotype
 	inds = sim.subpopulations.individuals;
-	add_pheno_PC = -6.48 + 1.92*inds.sumOfMutationsOfType(m2) + 3.15*inds.sumOfMutationsOfType(m3); // Use lm to get additive phenotype, in PC terms
+	add_pheno_PC = -6.48 + 1.92*inds.countOfMutationsOfType(m2) + 3.15*inds.countOfMutationsOfType(m3); // Use lm to get additive phenotype, in PC terms
 	
 	// Two ways to add in environmental noise.
 	// One is to just add in raw environmental noise
@@ -106,54 +149,83 @@ early() {
 	// This is taken from section 13.4 in the SLiM manual
 	// In our case, we could try PVE of 64%
 	V_A = var(add_pheno_PC);
-	V_E=(V_A-h2*V_A)/h2; //from h2==V_A/(V_A+V_E) 
+	
+
+	if (sim.generation == 1) {
+		defineGlobal("V_E", (V_A-h2*V_A)/h2);
+	} else {
+		if (constantH2) {
+			defineGlobal("V_E", (V_A-h2*V_A)/h2);
+		}
+	}	
+	
+	//if (constantH2) {
+	//	V_E=(V_A-h2*V_A)/h2; //from h2==V_A/(V_A+V_E) 
 	noise_pheno_PC = rnorm(size(inds), 0.0, sqrt(V_E));
 
 	// Either way, add them together 	
 	phenos_PC = add_pheno_PC + noise_pheno_PC; // Add phenotype with noise to get final phenotype, on PC scale. 
 	
 	// Then, need to rescale between 0 and 1. 
-	// The initial way I did this was just to truncate the recales phenos to between 0 and 1, but that
-	// messed with heritability.
-	// Now, I'm using the observed min/max breeding values as t he min and max,
-	// but will set a new min/max each generation if any individuals fall outside that range. 
+	// Using the BVs as the min and max, technically individuals can fall outside min/max
+	// I'll pull them back in below
 	
 	rescaleMin = phenoPCMin;
 	rescaleMax = phenoPCMax;
 	
-	if (min(phenos_PC) < phenoPCMin) rescaleMin = min(phenos_PC); 
-	if (max(phenos_PC) > phenoPCMax) rescaleMax = max(phenos_PC); 
-	
 	// may be better to do the scaling the other way: rescale the 0 to 1 from the PC min to PC max????
-	phenos_01 = (phenos_PC - rescaleMin)/(phenoPCMax - rescaleMin); // rescale the PC phenos to be between 0 and 1, like the GLMs. 
+	phenos_rescaled = (phenos_PC - rescaleMin)/(rescaleMax - rescaleMin); // rescale the PC phenos to be between 0 and 1, like the GLMs. 
+	phenos_01 = ifelse(phenos_rescaled > 1, asFloat(1), phenos_rescaled);
+	phenos_01 = ifelse(phenos_01 < 0, asFloat(0), phenos_01);
+	 
 	
 	// COULD DO SOME PLOTTING OF THIS AS A HISTOGRAM OR DENSITY PLOT: DO WE ACTUALLY GET CONtINUOUS VARIATION. 
 	
 	
 	// But, now we can calculate the realized heritability
+	// use the phenotypes before they were rescaled between 0 and 1. 
 	obs_h2 = V_A/var(phenos_PC);
 	
 	// Get optimal phenotype, based on generation
+	optimum = initOptPheno + (finalOptPheno - initOptPheno)/generations*sim.generation;
 	
 	
 	// Get individual fitnesses, based on individual phenotype and optimal phenotype
+	// calculate mismatch
+	mismatch = optimum - phenos_01;
+	// Fitness as a Gaussian function of mismatch, with width determined by parameter
+	inds.fitnessScaling = exp(-1 *(mismatch^2)/(2*fitFuncWidth^2));
 	
-	//optimum = initOptPheno + (finalOptPheno - initOptPheno)/generations*sim.generation;
-	optimum = 1; 
-	deviations = optimum - phenos_01;
-	fitnessFunctionMax = dnorm(0.0, 0.0, fitFuncWidth);
-	adaptation = dnorm(deviations, 0.0, fitFuncWidth) / fitnessFunctionMax; // WORK ON THIS
-	inds.fitnessScaling = adaptation; // WORK ON THIS
-	inds.tagF = phenos_01;   // just for output below
+
+	// inds.tagF = phenos_01;   // just for output below
 	
+	print(paste("early", p1.individualCount));
 	// simple density dependence
-	p1.fitnessScaling = K / p1.individualCount;	
+	//if p1.individualCount > K) {
+		// p1.fitnessScaling = K / p1.individualCount;
+		p1.fitnessScaling = min(K / p1.individualCount, 1.2);
+	//}
 	
+		
 	
+	// LOGGING:
+	// Need to decide if it will bein early or late, or both.
+	// I want the generation, the phenotypic optimum, the mean phenotype on 0-1 scale, the mean phenotype on PC scale, V_A, V_E, observed heritability, and frequency of both brown alleles.
+	// I'd also like, maybe, average pre-population-scaling fitness and post-population-scaling fitness?
+	// FInally, I want some distributions of the phenotype,
+	// and I want some age structure metrics, though I need to figure those out. maybe mean age and oldest individual? inds have a .age element
+	print(paste("mean ind fitness", mean(inds.fitnessScaling)));
+	print(paste("population fitness scaling", p1.fitnessScaling));
+	print(paste("expected late pop size",  min(mean(inds.fitnessScaling)*p1.fitnessScaling, asFloat(1))*p1.individualCount));
+	print(paste("optimum phenotype:", optimum, "mean phenotype:", (mean(phenos_PC)- rescaleMin)/(rescaleMax - rescaleMin)));
+	print(paste(constantH2, "heritability:", obs_h2, "V_E", V_E));
 	// print out a bunch of metrics 
-	print(paste(sim.generation, optimum, mean(inds.tagF), mean(phenos_PC), V_A, V_E, obs_h2, sum(inds.countOfMutationsOfType(m2))/length(p1.genomes), sum(inds.countOfMutationsOfType(m3))/length(p1.genomes)));
+	// print(paste(sim.generation, p1.individualCount, optimum, mean(inds.tagF), mean(phenos_PC), V_A, V_E, obs_h2, sum(inds.countOfMutationsOfType(m2))/length(p1.genomes), sum(inds.countOfMutationsOfType(m3))/length(p1.genomes), mean(inds.age), max(inds.age), sqrt(V_E)));
 	
-	
+}
+
+late() {
+	print(paste("late", p1.individualCount)); 
 }
 
 s2 999 late() {
