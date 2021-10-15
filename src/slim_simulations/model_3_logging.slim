@@ -1,0 +1,393 @@
+/*
+#####################################
+##      User-defined functions     ##
+#####################################
+*/
+
+// Writing the earlg log file
+function (void)writeLogLineEarly(string filename) {
+
+	if (sim.generation == 1) // If the first generation, write out the header
+	{ // Initialize the output .csv
+		writeFile(filename, paste("generation", 
+										  "stage",
+										  "N",
+										  "opt_pheno",
+										  "mean_pheno",
+										  "sd_pheno",
+										  "Va",
+										  "Ve",
+										  "Vp",
+										  "obs_H2",
+										  "mean_w_prescale",
+										  "scaling_factor",
+										  "avg_offspring_per_pair",
+										  "mean_age",
+										  "max_age",
+										  "freq_corin",
+										  "freq_ednrb",
+										  sep = ","));
+	
+	}
+	
+	// For all generations, including the first, write the data lines
+	line = paste(sim.generation,
+					 "early",
+					 p1.individualCount,
+					 optimum,
+					 pheno_mean_early,
+					 pheno_sd_early,
+					 V_A,
+					 V_E,
+					 V_P,
+					 obs_H2,
+					 mean_w_prescale,
+					 scaling_factor,	
+					 p1.getValue("avg_offspring"),
+					 mean_age_early,
+					 max_age_early,
+					 freq_corin,
+					 freq_ednrb,	 
+					 sep = ",");
+	writeFile(filename, line, append = T);
+
+	// return nothing
+	return;
+}
+
+
+
+// Writing the earlg log file
+function (void)writeLogLineLate(string filename) {
+
+	if (sim.generation == 1) // If the first generation, write out the header
+	{ // Initialize the output .csv
+		writeFile(filename, paste("generation", 
+										  "stage",
+										  "N",
+										  "opt_pheno",
+										  "mean_pheno",
+										  "sd_pheno",
+										  "mean_age",
+										  "max_age",
+										  "freq_corin",
+										  "freq_ednrb",
+										  sep = ","));
+	
+	}
+	
+	// For all generations, including the first, write the data lines
+	line = paste(sim.generation,
+					 "late",
+					 p1.individualCount,
+					 optimum,
+					 pheno_mean_late,
+					 pheno_sd_late,
+					 mean_age_late,
+					 max_age_early,
+					 freq_corin,
+					 freq_ednrb,	 
+					 sep = ",");
+	writeFile(filename, line, append = T);
+
+	// return nothing
+	return;
+}
+
+
+
+
+
+
+
+/*
+#####################################
+##      Simulation initiation      ##
+#####################################
+*/
+
+
+
+// set up a simple neutral nonWF simulation
+initialize() {
+	
+	// Set up some constants when running interactively,
+	// will be able to run in Snakemake in the future
+	
+	// Will do the phenotypic scale in terms of brown.
+	// This is the opposite of the linear models in the text.
+	// In the text, higher PC1 == more white,
+	// and the linear models in S11 have positive Betas (for the
+	// effects of the white allele on PC1).
+	
+	// For this, I will flip it: 
+	// higher PC scores and more alleles == more brown
+	// I linearly re-scale the PC scores into 
+	// a 0-1 interval, based on the min-max of the average PC1 score
+	// across genotype categories (Fig 2F) (rescale -6 to 4 into 0 to 1). 
+	if (exists("slimgui"))
+	{
+		defineConstant("K", 5000);	// carrying capacity
+		defineConstant("initFreqCorin", 0.05); // initial Corin brown allele frequency
+		defineConstant("initFreqEDNRB", 0.05); // initial EDNRB brown allele frequency
+		defineConstant("initPopSize", 5000); // initial population size
+		defineConstant("initOptPheno", 0.13); // initial optimum phenotype on 0-1 scale
+		defineConstant("finalOptPheno", 0.876); //final optimum phenotype on 0-1 scale
+		defineConstant("generations", 60); //generations to simulate
+		defineConstant("fitFuncWidth", 0.45); // SD of fitness function, normal dist 0.65
+		defineConstant("phenoPCMin", -6.48); // Minimum PC1 phenotype score, for rescaling
+		defineConstant("phenoPCMax", 3.66); // Maximum PC1 phenotype score, for rescaling
+		defineConstant("h2", 0.64); // target heritability for color. 
+		defineConstant("constantH2", F); // Hold heritability constant or not?
+		defineConstant("earlyResultsFile", "~/Desktop/test_early.csv"); // Location of log file
+		defineConstant("lateResultsFile", "~/Desktop/test_late.csv"); // Location of log file
+	}
+
+	initializeSLiMModelType("nonWF");
+	
+	// Neutral mutation type.
+	// Not sure we actually need this.
+	// But we set the mutation rate to 0, so doesn't really matter anyway.
+	initializeMutationType("m1", 0.5, "f", 0.0);
+	initializeGenomicElementType("g1", m1, 1.0);
+	m1.convertToSubstitution = T;
+		
+	// mutations representing alleles in QTLs
+	// Simple addivity, with a fixed effect of 0 (neutral to fitness)
+	// All fitness calculation will be through the geno-pheno map, below. 
+	initializeMutationType("m2", 0.5, "f", 0);
+	initializeGenomicElementType("g2", m2, 1);
+	
+	// Simple addivity, with a fixed effect of 1
+	initializeMutationType("m3", 0.5, "f", 0);
+	initializeGenomicElementType("g3", m3, 1);
+	
+	// Set up our "chromosome"
+	// Really, just doing a two-locus model. Need them to be unlinked.
+	// Will add some empty space to ease visualization
+	initializeGenomicElement(g1, 0, 99);
+	initializeGenomicElement(g2, 100, 100); // First one is corin
+	initializeGenomicElement(g1, 101, 199);
+	initializeGenomicElement(g3, 200, 200); // second one is ednrb
+	initializeGenomicElement(g1, 201, 299);
+	
+	// Define mutation and recombination rates
+	// No mutation
+	initializeMutationRate(0);
+	// No recombination through most of the chromosome,
+	// recombination of 0.5 halfway between the two genes to make them independent
+	initializeRecombinationRate(rates = c(0, 0.5, 0), ends = c(149, 150, 299));
+}
+
+
+// create an initial population of individuals
+// With allele frequencies as specified
+1 early() {
+	sim.addSubpop("p1", initPopSize);
+	
+	// Add "brown" alleles at the specified starting frequency at each locus
+	corinTargets = sample(p1.genomes, asInteger(length(p1.genomes)*initFreqCorin));
+	corinTargets.addNewDrawnMutation(m2, 100);
+
+	ednrbTargets = sample(p1.genomes, asInteger(length(p1.genomes)*initFreqEDNRB));
+	ednrbTargets.addNewDrawnMutation(m3, 200);
+	
+	p1.setValue("avg_offspring", "NA");
+
+	// Reschedule the end of the simulation, for however long we wanted to run the simulation for. 
+	sim.rescheduleScriptBlock(s2, start = generations, end = generations);	
+}
+
+
+
+
+
+/*
+###############################
+##      GENERATION CYCLE     ##
+##        REPRODUCTION       ##
+###############################
+*/
+
+
+
+
+
+// each individual reproduces itself once
+reproduction() {
+	// Old way: each individual reproduces itself once with a random mate (which could technically be itself)
+	// subpop.addCrossed(individual, subpop.sampleIndividuals(1));
+	
+	// New way, with some biology
+	// We randomize the order of individuals, and pair them off
+	// with the adjacent individual (leaving one out if odd number).
+	// So still hermaphrodites, but sort of imposing a 50/50 sex ratio
+	// in that only pairs, not individuals, have offspring. 
+	
+	// Then, for each pair
+	// we randomly draw how many litters they will have. 
+	parents = sample(p1.individuals, p1.individualCount);
+   // draw monogamous pairs and generate litters
+   offspring = 0;
+	for (i in seq(0, p1.individualCount - 2, by=2)) {
+		parent1 = parents[i]; 
+		parent2 = parents[i + 1]; 
+		litters = sample(c(1:4), 1, weights = c(0.25, 0.5, 0.15, 0.1));
+		
+		//print(paste(parent1, parent2, "litters=", litters));
+		
+		for (j in 1:litters) {
+			litterSize = sample(c(1:3), 1);
+			for (k in 1:litterSize) {
+				p1.addCrossed(parent1, parent2);
+				offspring = offspring + 1;
+				//print(paste(parent1, parent2, "litter=", j, "litter size=", litterSize));
+			}
+		}
+	}
+
+	// Calculate average offspring per pair
+	// Need to assign as a population property instead of a global variable for some reason. 
+	p1.setValue("avg_offspring", offspring/length(seq(0, p1.individualCount - 2, by=2)));
+	
+   // disable this callback for this generation
+   // as normally reproduction callbacks gets called for each individual,
+   // and we already did the reproduction for everyone
+	self.active = 0;
+}
+
+
+
+/*
+###############################
+##      GENERATION CYCLE     ##
+##        	 EARLY           ##
+###############################
+*/
+
+
+// Every generation, calculate phenotype from genotype, 
+// mismatch from phenotype,
+// and fitness from mistmatch for every individual.
+// All fitness recalculating is done here, instead of in fitness callbacks. 
+
+early() {
+	// Get phenotype from genotype
+	inds = sim.subpopulations.individuals;
+	add_pheno_PC = -6.48 + 1.92*inds.countOfMutationsOfType(m2) + 3.15*inds.countOfMutationsOfType(m3); // Use lm to get additive phenotype, in PC terms
+	
+	// Two ways to add in environmental noise.
+	// One is to just add in raw environmental noise
+	// noise_pheno_PC = rnorm(length(inds), 0, 1);
+	// Would need to figure out an appropriate value for the SD there. 
+	
+	// The other is to target a certain heritability value.
+	// This is taken from section 13.4 in the SLiM manual
+	// In our case, we could try PVE of 64%
+	defineGlobal("V_A", var(add_pheno_PC));
+	
+
+	if (sim.generation == 1) {
+		defineGlobal("V_E", (V_A-h2*V_A)/h2);
+	} else {
+		if (constantH2) {
+			defineGlobal("V_E", (V_A-h2*V_A)/h2);
+		}
+	}	
+	
+	//if (constantH2) {
+	//	V_E=(V_A-h2*V_A)/h2; //from h2==V_A/(V_A+V_E) 
+	noise_pheno_PC = rnorm(size(inds), 0.0, sqrt(V_E));
+
+	// Either way, add them together 	
+	phenos_PC = add_pheno_PC + noise_pheno_PC; // Add phenotype with noise to get final phenotype, on PC scale. 
+	
+	// Calculate overall phenotypic variance and realized heritability
+	// using the phenotypes before they were rescaled between 0 and 1. 
+	defineGlobal("V_P", var(phenos_PC));
+	defineGlobal("obs_H2", V_A/V_P);
+	
+
+	// Next, rescale to the 0 to 1 scale
+	rescaleMin = phenoPCMin;
+	rescaleMax = phenoPCMax;
+	phenos_rescaled = (phenos_PC - rescaleMin)/(rescaleMax - rescaleMin); 
+	
+	
+	// Individuals can go outside 0 to 1 range with the environmental noise added in
+	// Make one more variable, truncating those to between 0 and 1, to use for mismatch calculation. 	
+	// rescale the PC phenos to be between 0 and 1, like the GLMs. 
+	phenos_01 = ifelse(phenos_rescaled > 1, asFloat(1), phenos_rescaled);
+	phenos_01 = ifelse(phenos_01 < 0, asFloat(0), phenos_01);
+	 
+	// Assign the calculated phenotypes as inidividual properties, for storage
+	inds.tagF = phenos_rescaled; // scaled phenotype
+	
+	// COULD DO SOME PLOTTING OF THIS AS A HISTOGRAM OR DENSITY PLOT: DO WE ACTUALLY GET CONtINUOUS VARIATION. 
+	
+	
+	
+	
+	// Get optimal phenotype, based on generation
+	defineGlobal("optimum", initOptPheno + (finalOptPheno - initOptPheno)/generations*sim.generation);
+	
+	
+	// Get individual fitnesses, based on individual phenotype and optimal phenotype
+	// calculate mismatch
+	mismatch = optimum - phenos_01;
+	// Fitness as a Gaussian function of mismatch, with width determined by parameter
+	inds.fitnessScaling = exp(-1 *(mismatch^2)/(2*fitFuncWidth^2));
+
+
+	// simple density dependence,
+	// with a maxmimum benefit
+		p1.fitnessScaling = min(K / p1.individualCount, 1.2);
+		
+	// Save some globals for writing out to the log file
+	defineGlobal("pheno_mean_early", mean(phenos_rescaled));
+	defineGlobal("pheno_sd_early", sd(phenos_rescaled));
+	defineGlobal("mean_w_prescale", mean(inds.fitnessScaling));
+	defineGlobal("scaling_factor", p1.fitnessScaling);
+	defineGlobal("mean_age_early", mean(inds.age));
+	defineGlobal("max_age_early", max(inds.age));
+	defineGlobal("freq_corin", sum(inds.countOfMutationsOfType(m2))/length(p1.genomes));
+	defineGlobal("freq_ednrb", sum(inds.countOfMutationsOfType(m3))/length(p1.genomes));
+	
+	
+	// Write the log line
+	writeLogLineEarly(earlyResultsFile);
+}
+
+
+
+/*
+###############################
+##      GENERATION CYCLE     ##
+##        	 LATE           ##
+###############################
+*/
+
+
+late() {
+	// Get all surviving individuals
+	inds = sim.subpopulations.individuals;
+	
+	
+	// Save some globals for the log file
+	defineGlobal("pheno_mean_late", mean(inds.tagF));
+	defineGlobal("pheno_sd_late", sd(inds.tagF));
+	defineGlobal("mean_age_late", mean(inds.age));
+	defineGlobal("max_age_late", max(inds.age));
+	defineGlobal("freq_corin", sum(inds.countOfMutationsOfType(m2))/length(p1.genomes));
+	defineGlobal("freq_ednrb", sum(inds.countOfMutationsOfType(m3))/length(p1.genomes));
+	
+	// write the log line	
+  	writeLogLineLate(lateResultsFile);
+  
+}
+
+s2 999 late() {
+	
+	
+	sim.simulationFinished();
+}
