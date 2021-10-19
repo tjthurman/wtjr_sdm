@@ -4,6 +4,20 @@
 #####################################
 */
 
+
+function (string)mySD(numeric x) {
+
+	if (length(x) < 1) {
+	result = "NA";
+	} else {
+	result = asString(sd(x));
+	}
+	
+	return result;
+}
+
+
+
 // Writing the earlg log file
 function (void)writeLogLineEarly(string filename) {
 
@@ -11,6 +25,7 @@ function (void)writeLogLineEarly(string filename) {
 	{ // Initialize the output .csv
 		writeFile(filename, paste("generation", 
 										  "stage",
+										  "K",
 										  "N",
 										  "opt_pheno",
 										  "mean_pheno",
@@ -21,7 +36,6 @@ function (void)writeLogLineEarly(string filename) {
 										  "obs_H2",
 										  "mean_w_prescale",
 										  "scaling_factor",
-										  "avg_offspring_per_pair",
 										  "mean_age",
 										  "max_age",
 										  "freq_corin",
@@ -33,6 +47,7 @@ function (void)writeLogLineEarly(string filename) {
 	// For all generations, including the first, write the data lines
 	line = paste(sim.generation,
 					 "early",
+					 K,
 					 p1.individualCount,
 					 optimum,
 					 pheno_mean_early,
@@ -43,7 +58,6 @@ function (void)writeLogLineEarly(string filename) {
 					 obs_H2,
 					 mean_w_prescale,
 					 scaling_factor,	
-					 p1.getValue("avg_offspring"),
 					 mean_age_early,
 					 max_age_early,
 					 freq_corin,
@@ -57,17 +71,25 @@ function (void)writeLogLineEarly(string filename) {
 
 
 
-// Writing the earlg log file
+// Writing the late log file
 function (void)writeLogLineLate(string filename) {
 
 	if (sim.generation == 1) // If the first generation, write out the header
 	{ // Initialize the output .csv
 		writeFile(filename, paste("generation", 
 										  "stage",
+										  "K",
 										  "N",
 										  "opt_pheno",
 										  "mean_pheno",
 										  "sd_pheno",
+										  "mating_pairs",
+										  "offspring_generated",
+										  "offspring_survived",
+										  "avg_offspring_gen",
+										  "avg_offspring_surv",
+										  "leveret_survival",
+										  "pop_survival",
 										  "mean_age",
 										  "max_age",
 										  "freq_corin",
@@ -79,10 +101,18 @@ function (void)writeLogLineLate(string filename) {
 	// For all generations, including the first, write the data lines
 	line = paste(sim.generation,
 					 "late",
+					 K,
 					 p1.individualCount,
 					 optimum,
 					 pheno_mean_late,
 					 pheno_sd_late,
+					 p1.getValue("mating_pairs"),
+					 p1.getValue("offspring_generated"),
+					 offspring_surviving,
+					 p1.getValue("avg_offspring"),
+					 avg_surv_offspring,
+					 lev_surv_rate,
+					 pop_surv_rate,
 					 mean_age_late,
 					 max_age_early,
 					 freq_corin,
@@ -127,18 +157,19 @@ initialize() {
 	// across genotype categories (Fig 2F) (rescale -6 to 4 into 0 to 1). 
 	if (exists("slimgui"))
 	{
-		defineConstant("K", 5000);	// carrying capacity
-		defineConstant("initFreqCorin", 0.05); // initial Corin brown allele frequency
-		defineConstant("initFreqEDNRB", 0.05); // initial EDNRB brown allele frequency
+		defineConstant("initFreqCorin", 0.01); // initial Corin brown allele frequency
+		defineConstant("initFreqEDNRB", 0); // initial EDNRB brown allele frequency
 		defineConstant("initPopSize", 5000); // initial population size
-		defineConstant("initOptPheno", 0.13); // initial optimum phenotype on 0-1 scale
-		defineConstant("finalOptPheno", 0.876); //final optimum phenotype on 0-1 scale
-		defineConstant("generations", 60); //generations to simulate
-		defineConstant("fitFuncWidth", 0.45); // SD of fitness function, normal dist 0.65
+		defineConstant("initOptPheno", 1); // initial optimum phenotype on 0-1 scale
+		defineConstant("finalOptPheno", 1); //final optimum phenotype on 0-1 scale
+		defineConstant("generations", 1000); //generations to simulate
+		defineConstant("fitFuncWidth", 0.65); // SD of fitness function, normal dist 0.65
 		defineConstant("phenoPCMin", -6.48); // Minimum PC1 phenotype score, for rescaling
 		defineConstant("phenoPCMax", 3.66); // Maximum PC1 phenotype score, for rescaling
 		defineConstant("h2", 0.64); // target heritability for color. 
 		defineConstant("constantH2", F); // Hold heritability constant or not?
+		defineConstant("maxLowDensBenefit", 1.0); // Maximum fitness benefit at low density
+		defineConstant("offspringPoisLambda", 3.4); // Mean of Poisson dist for # of offspring generated (not surviving) for each pair. 
 		defineConstant("earlyResultsFile", "~/Desktop/test_early.csv"); // Location of log file
 		defineConstant("lateResultsFile", "~/Desktop/test_late.csv"); // Location of log file
 	}
@@ -183,7 +214,9 @@ initialize() {
 // create an initial population of individuals
 // With allele frequencies as specified
 1 early() {
+
 	sim.addSubpop("p1", initPopSize);
+	defineGlobal("K", 5000);	// carrying capacity
 	
 	// Add "brown" alleles at the specified starting frequency at each locus
 	corinTargets = sample(p1.genomes, asInteger(length(p1.genomes)*initFreqCorin));
@@ -192,7 +225,11 @@ initialize() {
 	ednrbTargets = sample(p1.genomes, asInteger(length(p1.genomes)*initFreqEDNRB));
 	ednrbTargets.addNewDrawnMutation(m3, 200);
 	
+	// Initialize some variables that will be used after gen 1,
+	// but need to be named to avoid errors
+	p1.setValue("offspring_generated", "NA");
 	p1.setValue("avg_offspring", "NA");
+	p1.setValue("mating_pairs", "NA");
 
 	// Reschedule the end of the simulation, for however long we wanted to run the simulation for. 
 	sim.rescheduleScriptBlock(s2, start = generations, end = generations);	
@@ -232,23 +269,28 @@ reproduction() {
 	for (i in seq(0, p1.individualCount - 2, by=2)) {
 		parent1 = parents[i]; 
 		parent2 = parents[i + 1]; 
-		litters = sample(c(1:4), 1, weights = c(0.25, 0.5, 0.15, 0.1));
 		
-		//print(paste(parent1, parent2, "litters=", litters));
+		// for each mating pair, choose a number of offspring generated
+		// this could be 0, based on the random poisson 
+		pairOffspring = rpois(1, offspringPoisLambda);
 		
-		for (j in 1:litters) {
-			litterSize = sample(c(1:3), 1);
-			for (k in 1:litterSize) {
-				p1.addCrossed(parent1, parent2);
-				offspring = offspring + 1;
-				//print(paste(parent1, parent2, "litter=", j, "litter size=", litterSize));
-			}
+		// Then generate the offspring
+		for (j in seqLen(pairOffspring)) {
+		
+			p1.addCrossed(parent1, parent2);
+			// And tally the total offspring number			
+			offspring = offspring + 1;
 		}
 	}
-
-	// Calculate average offspring per pair
-	// Need to assign as a population property instead of a global variable for some reason. 
-	p1.setValue("avg_offspring", offspring/length(seq(0, p1.individualCount - 2, by=2)));
+		
+	// Calculate total number of offsrping and
+	// average offspring per pair
+	// Need to assign them as a population property instead of a global variable for some reason. 
+	mating_pairs = length(seq(0, p1.individualCount - 2, by=2));
+	p1.setValue("offspring_generated", offspring);	
+	p1.setValue("avg_offspring", offspring/mating_pairs);
+	p1.setValue("mating_pairs", mating_pairs);
+	
 	
    // disable this callback for this generation
    // as normally reproduction callbacks gets called for each individual,
@@ -341,11 +383,12 @@ early() {
 
 	// simple density dependence,
 	// with a maxmimum benefit
-		p1.fitnessScaling = min(K / p1.individualCount, 1.2);
+		p1.fitnessScaling = min(K / p1.individualCount, maxLowDensBenefit);
 		
 	// Save some globals for writing out to the log file
+	defineGlobal("inds_pre_selection", p1.individualCount);
 	defineGlobal("pheno_mean_early", mean(phenos_rescaled));
-	defineGlobal("pheno_sd_early", sd(phenos_rescaled));
+	defineGlobal("pheno_sd_early", mySD(phenos_rescaled));
 	defineGlobal("mean_w_prescale", mean(inds.fitnessScaling));
 	defineGlobal("scaling_factor", p1.fitnessScaling);
 	defineGlobal("mean_age_early", mean(inds.age));
@@ -371,11 +414,22 @@ early() {
 late() {
 	// Get all surviving individuals
 	inds = sim.subpopulations.individuals;
+	print(length(inds));
 	
 	
 	// Save some globals for the log file
 	defineGlobal("pheno_mean_late", mean(inds.tagF));
-	defineGlobal("pheno_sd_late", sd(inds.tagF));
+	defineGlobal("pheno_sd_late", mySD(inds.tagF));
+	defineGlobal("offspring_surviving", sum(inds.age == 0));
+	
+	if (sim.generation == 1) {
+		defineGlobal("lev_surv_rate", "NA");
+		defineGlobal("avg_surv_offspring", "NA");
+	} else {
+		defineGlobal("lev_surv_rate", offspring_surviving/asInteger(p1.getValue("offspring_generated")));
+		defineGlobal("avg_surv_offspring", offspring_surviving/p1.getValue("mating_pairs"));
+	}
+	defineGlobal("pop_surv_rate", p1.individualCount/inds_pre_selection);
 	defineGlobal("mean_age_late", mean(inds.age));
 	defineGlobal("max_age_late", max(inds.age));
 	defineGlobal("freq_corin", sum(inds.countOfMutationsOfType(m2))/length(p1.genomes));
