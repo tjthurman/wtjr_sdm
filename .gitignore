@@ -50,5 +50,9 @@ src/tmp_comparison.R
 src/maps_for_jeff.R
 docs/Ferreira_et_al_Coat_color_PhDversion_Main_TJT.docx
 docs/Ferreira_et_al_Coat_color_PhDversion_SM_TJT.docx
-
 docs/description_of_simulations_cache/
+
+# Slim model results
+slim_results/*
+logs/slurm_logs/*
+logs/slim/*
