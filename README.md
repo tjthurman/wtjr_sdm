@@ -21,6 +21,8 @@ You will need the following software installed on your system:
 5. R package dependencies. These dependencies are managed with the `renv` package. To install the dependencies, open this project in RStudio (easiest) or, in your terminal, set this project as your working directory and then launch `R`. Then, call `renv::restore()` to install the necessary packages (this may take a while). 
 6. Pandoc, for compiling `.Rmd` files into `.html` files. We recommend installing `pandoc` through `conda`, see [these instructions](https://anaconda.org/conda-forge/pandoc). We used `pandoc` version 2.10.1.
 
+7. SLiM? Add versions, citations, etc. 
+
 ### Structure
 
 This repository is set up as an RStudio project. You can open it in RStudio by opening the `wtjr_sdm.Rproj` file. The project is organized into a few top-level folders:
