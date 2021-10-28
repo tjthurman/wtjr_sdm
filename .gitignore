@@ -51,6 +51,9 @@ src/maps_for_jeff.R
 docs/Ferreira_et_al_Coat_color_PhDversion_Main_TJT.docx
 docs/Ferreira_et_al_Coat_color_PhDversion_SM_TJT.docx
 docs/description_of_simulations_cache/
+docs/sim_results_first_round_cache/
+docs/sim_results_first_round_files/
+
 
 # Slim model results
 slim_results/*

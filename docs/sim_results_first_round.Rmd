@@ -1,0 +1,309 @@
+---
+title: "Simulation results- first round"
+output:
+  rmdformats::readthedown:
+    highlight: tango
+    code_folding: hide
+    toc_depth: 4
+    theme: yeti
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, message=FALSE, warning=FALSE, echo = F}
+
+# Load packages -----------------------------------------------------------
+library(tidyverse)
+library(cowplot)
+library(ggrepel)
+library(lemon)
+library(knitr)
+library(rmdformats)
+library(broom)
+
+# Set global options ------------------------------------------------------
+
+## Global options
+options(max.print="100", scipen = 1, digits = 2)
+opts_chunk$set(cache=TRUE,
+               prompt=FALSE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE,
+               fig.align = "center")
+#opts_knit$set(width=75)
+```
+
+I've started running large numbers of simulations, and wanted to send along some of the preliminary results. I've also tried to explore a couple of the different ways we could analyze and visualize the data. 
+
+# Simulation details
+
+I won't go into as much detail as the last document, but here are the relevant changes to the simulations:
+
+* I switched to using a Poisson distribution for getting number of offspring per mating pair. There's no more litters, only a total reproductive output per generation.
+* I removed any fitness benefits when $N$ < $K$.
+* I allowed heritability to vary through time.
+* I've added more logging, with a focus on some of the emergent population dynamics (survival rate, age structure, etc.) that we can look at to get a sense of whether our simulations make biological sense.
+* I re-structured the code to run through the CLI, not the GUI, so that we can run very large numbers of simulations easily (more on that below).
+
+# Parameter space and number of simulations
+
+For this first round of sequencing, I varied a few parameters:
+
+* Initial frequencies of brown alleles for corin and EDNRB- I did 0% (no SGV), 1%, 5%, and 25%, and allowed frequencies to be different for each locus. All together, that's 16 combinations of starting allele frequencies.
+* Strength of selection: I chose fitness function widths corresponding to weekly survival penalties for fully mismatched hares of 5%, 7%, and 10%. These fitness functions all assumed 16 weeks of "winter", or 16 weeks of potential mismatch.
+* Initial optimal phenotypes: I tried values of 0 (completely white), 0.13 (corresponding to our UT/CO pops), and 1 (completely brown). 
+* Final optimal phenotypes: I tried values of 0.5, 0.875 (corresponding to our UT/CO pops), and 1 (completely brown). As with allele frequencies, I did all possible combinations, so 9 sets of initial/final phenotpes.
+* Average of Poisson for offspring produced: I tried values of 3.5, 4, and 15. 3.5 and 4 are in the parameter space I was testing out before. 15 is the estimated annual production of offspring taken from Table 4 of James 1969 in the WTJR papers folder. It is the estimated reproductive potential of WTJR in North Dakota for 1964 and 1965. 
+
+I kept some parameters constant:
+
+* I've just done the additive genetic architecture for now, the dominant architecture will come next.
+* I used the same initial heritability (0.64) for all simulations.
+* I used a constant $K$ of 5000 for all simulations, and all simulations started with 5000 individuals. 
+* I ran all simulations for up to 60 generations (but there could be fewer if the population went extinct). 
+
+
+So, across the parameters I varied, there are 4x4x3x3x3x3, or 1296, possible combinations. For each combination, I ran 20 replicates, for 25,920 simulations total. That is a lot of simulations to analyze all at once, and its hard to visualize across the 6 parameters we varied. Initially, I'll focus on the results of a few different relevant sets of simulations.
+
+# Complete mismtach with no SGV
+
+First, I wanted to look at the scenario we've discussed a lot: what happens when there are no brown alleles (initial corin and initial EDNRB = 0) and the population is completely mismatched (initial and final optimal phenotypes both 1)? In particular, I was interested in whether and how quickly populations go extinct with varying selection strengths and average number of offspring. Let's look at the population trajectories:
+
+```{r selection key}
+# A key to translate the fitness function widths into more intuitive and properly ordered fitness penalties
+selection_key <- tibble(fitness_width = c(0.5446, 0.6562, 0.7805)) %>% 
+  mutate(mismatch_penalty = factor(fitness_width, 
+                                   levels = c(0.7805, 0.6562, 0.5446),
+                                   labels = c("5%", "7%", "10%")))
+```
+
+
+```{r mismatch noSGV trajectory plot, fig.height=12, fig.width = 12}
+late_mismatch_noSGV <- read_csv("results/tmp/slim_summaries/complete_mismatch_no_SGV.csv")
+
+late_mismatch_noSGV %>% 
+  left_join(selection_key) %>% 
+  mutate(ID = paste(fitness_width, lambda, replicate)) %>% 
+  ggplot(aes(x = generation, y = N, color = mismatch_penalty)) +
+  geom_line(aes(group = ID), alpha = 0.4) +
+  geom_smooth() +
+  ylim(c(0, 5250)) +
+  theme_cowplot() +
+  geom_hline(aes(yintercept = 5000), linetype = "dotted") +
+  facet_rep_grid(lambda ~ ., labeller = labeller(.rows = label_both)) +
+  ggtitle("Complete mismatch, no SGV")
+```
+
+These results more-or-less recapitulate what we already know, I suppose. Populations can go completely extinct from mismatch alone, provided selection is strong enough and reproductive output is low enough. At an average of 15 offspring per breeding pair, the James 1969 estimate, reproductive output is simply too high and populations rapidly go to a minimal equilibrium based on the mismatch penalty. With less reproductive output (possibly unrealistically low??), populations can go extinct, and in some cases quite rapidly (e.g., <20 generations on average if the weekly mismatch penalty is 10%). 
+
+
+# Biggest predicted shift: NE UT and NW CO
+
+Next, I'll focus on some parameters that represent populations that are expected to see some of the strongest future climate mismatch: populations in NE Utah and NW Colorado. From our phenotype predictions, these populations are going from a $Prob(brown)$ of 0.13 to 0.876 over ~60 generations. So, let's look at simulations with those initial and final optimal phenotypes, but we can look at how outcomes vary across starting allele frequencies, average offspring, and strength of selection. 
+
+First, we can look at the population trajectories with 4 offspring per pair on average:
+
+```{r UTCO pop traj plot lambda 4, fig.height=12, fig.width = 12}
+late_UT_CO <- read_csv("results/tmp/slim_summaries/utah_and_colo.csv")
+
+late_UT_CO %>% 
+  filter(lambda == 4) %>% 
+  left_join(selection_key) %>% 
+  mutate(ID = paste(init_corin, init_ednrb, fitness_width, lambda, replicate)) %>% 
+  ggplot(aes(x = generation, y = N, color = mismatch_penalty)) +
+  geom_line(aes(group = ID), alpha = 0.4) +
+  geom_smooth() +
+  ylim(c(0, 5250)) +
+  theme_cowplot() +
+  geom_hline(aes(yintercept = 5000), linetype = "dotted") +
+  facet_rep_grid(init_corin ~ init_ednrb, labeller = labeller(.rows = label_both, .cols = label_both)) +
+  ggtitle("UT/CO pops, avg. offspring = 4")
+```
+
+Some interesting results here. First, in the upper left corner: populations trend to extinction with no brown alleles, as we saw above, but they don't go extinct within 60 generations (and at only a 5% mismatch penalty I expect they would get caught an an equilibrium). It's also interesting to compare the first column (no SGV in EDNRB) with the first row (no SGV in Corin). The phenotypic effects of Corin are weaker, and Corin alone can't fully drive adaptation to high levels of winter brown. Populations bounce back some, but without EDNRB fitness declines again as the optimal phenotype gets too brown. The same happens without corin (top row), but to a smaller extent and not until very late in the simulations. 
+
+However, provided there is SGV for brown at both alleles, it seems like all initial allele frequencies allow for evolutionary rescue. The population declines are largest when brown allele frequencies are initially low, but even still they bounce back. With 1% starting allele frequencies, it appears that in some sims brown alleles might be lost early (see the downward trends in some of those panels): I track allele frequencies through the simulation, so we could double check that. 
+
+Next, we can look at the same plot, but for 15 offspring per mating pair:
+
+```{r UTCO pop traj plot lambda 15, fig.height=12, fig.width = 12}
+late_UT_CO %>% 
+  filter(lambda == 15) %>% 
+  left_join(selection_key) %>% 
+  mutate(ID = paste(init_corin, init_ednrb, fitness_width, lambda, replicate)) %>% 
+  ggplot(aes(x = generation, y = N, color = mismatch_penalty)) +
+  geom_line(aes(group = ID), alpha = 0.4) +
+  geom_smooth() +
+  ylim(c(0, 5250)) +
+  theme_cowplot() +
+  geom_hline(aes(yintercept = 5000), linetype = "dotted") +
+  facet_rep_grid(init_corin ~ init_ednrb, labeller = labeller(.rows = label_both, .cols = label_both)) +
+  ggtitle("UT/CO pops, avg. offspring = 15")
+```
+
+Overall, they look basically the same, but with a little less variance across simulations with more offspring. I won't show the plot, but the results with average offsrping of 3.5 look the same. So, while the offspring number makes a big difference for the likelihood of pops going extinct vs. maintaining a minimum equilibrium when completely mismatched, reproductive output does not have as big effect on the amount of population decline or the probability of revolutionary rescue when considering environmental change for these Utah/Colorado populations. 
+
+
+Another way to visualize this might be to examine population declines more directly, by finding the maximum percent decline across each simulation and showing how that varies across parameter space. I'll look at just an average of 15 offspring per pair for now:
+
+```{r UTCO max decline plot lambda 15, fig.height=12, fig.width = 12}
+late_UT_CO %>% 
+  filter(lambda == 15) %>% 
+  group_by(init_corin, init_ednrb, fitness_width, lambda, replicate) %>% 
+  mutate(decline = 1 - N/K) %>% 
+  slice_max(decline, n = 1) %>% 
+  ungroup() %>% 
+  left_join(selection_key) %>% 
+  mutate(ID = paste(init_corin, init_ednrb, fitness_width, lambda, replicate)) %>% 
+  ggplot(aes(y = decline, x = mismatch_penalty)) +
+  geom_violin(draw_quantiles = c(0.5)) +
+  ylab("Maximum population decline, %") +
+  ylim(c(0,1)) +
+  theme_cowplot() +
+  geom_hline(aes(yintercept = 1), linetype = "dotted") +
+  facet_rep_grid(init_corin ~ init_ednrb, labeller = labeller(.rows = label_both, .cols = label_both)) +
+  ggtitle("UT/CO pops, avg. offspring = 15")
+```
+
+So, ignoring the case with no SGV, the maximum population decline we see is ~25% (when initial brown frequencies are low and selection is strong). Those declines are transient, and populations bounce back, but a 25% decline is still pretty significant. 
+
+One more thing I was interested in was tracking average phenotype through time. One thing I noticed with my earlier experimentation was that, if the initial frequencies of brown allele are high, populations actually start off being mismatched for being too brown, not too white, and that is the cause of initial fitness declines. We can look at average phenotype through time (looking at just 15 offspring per pair for now):
+
+
+```{r UTCO mean pheno traj plot lambda 15, fig.height=12, fig.width = 12}
+utco_opt_pheno_df <- late_UT_CO %>% 
+  filter(init_corin == init_ednrb,
+         init_corin == 0.01,
+         fitness_width == 0.6562,
+         lambda == 4,
+         replicate ==1) %>% 
+  select(generation, opt_pheno)
+
+late_UT_CO %>% 
+  filter(lambda == 15) %>% 
+  left_join(selection_key) %>% 
+  mutate(ID = paste(init_corin, init_ednrb, fitness_width, lambda, replicate)) %>% 
+  ggplot(aes(x = generation, y = mean_pheno, color = mismatch_penalty)) +
+  geom_line(aes(group = ID), alpha = 0.4) +
+  geom_smooth() +
+  theme_cowplot() +
+  geom_line(aes(x = generation, y = opt_pheno), data = utco_opt_pheno_df, linetype = "dotted", inherit.aes = F) +
+  ylab("Average phenotype") +
+  ylim(c(0,1)) +
+  facet_rep_grid(init_corin ~ init_ednrb, labeller = labeller(.rows = label_both, .cols = label_both)) +
+  ggtitle("UT/CO pops, avg. offspring = 15")
+```
+
+There are some interesting population trajectories. In the first row and the first column, we the point at which alleles fix and phenotypes stop changing. As we might expect for a moving phenotypic optimum, the populations are lagging behind the optimum, and get closest when selection is strong and when brown alleles are initially more frequent. And, as I expected, populations with high frequencies of EDNRB and Corin (the lower right corner), populations actually start off being too brown, not too white. 
+
+One more thing I was curious to look at was which genes are driving phenotypic change. Though the phenotype trajectories are pretty similar across initial allele frequencies, the allele frequency trajectories can be pretty different:
+
+```{r UTCO allele traj plot lambda 15, fig.height=12, fig.width = 12}
+late_UT_CO %>% 
+  filter(lambda == 15, 
+         fitness_width == 0.6562) %>% 
+  left_join(selection_key) %>% 
+  rename(corin = freq_corin, ednrb = freq_ednrb) %>% 
+  pivot_longer(corin:ednrb, names_to = "gene", values_to= "freq") %>% 
+  mutate(ID = paste(init_corin, init_ednrb, fitness_width, lambda, replicate, gene)) %>% 
+  ggplot(aes(x = generation, y = freq, color = gene)) +
+  geom_line(aes(group = ID), alpha = 0.4) +
+  geom_smooth() +
+  ylab("brown allele frequency") +
+  theme_cowplot() +
+  geom_line(aes(x = generation, y = opt_pheno), data = utco_opt_pheno_df, linetype = "dotted", inherit.aes = F) +
+  facet_rep_grid(init_corin ~ init_ednrb, labeller = labeller(.rows = label_both, .cols = label_both)) +
+  ggtitle("UT/CO pops, avg. offspring = 15")
+```
+
+When corin and and EDNRB start at the same frequency, EDNRB generally sees bigger shifts in allele frequency (which makes sense: it has bigger phenotypic affects). Otherwise, whichever brown allele started off most frequent tends to drive phenotypic change. In the case of high initial brown frequencies, we see the biggest changes happening in EDNRB, again as we might expect given it's larger phenotypic effects. 
+
+One final thing I wanted to look at for this scenario: let's double-check some of the population biology parameters and see if they make some sense. Specifically, let's look at yearly survival rates (for offspring specifically, and for the population overall) and age structure (mean age, max age, and percent of individuals less than 2 "years" of age). 
+
+First, survival rates. I calculated these for each generation during the simulations. I did a little bit of initial plotting, and these survival rates don't vary a ton based on initial allele frequencies, so we can just look across different strengths of selections and reproductive outputs: 
+
+```{r calculate survival rates}
+average_survival_rates <- late_UT_CO %>% 
+  left_join(selection_key) %>% 
+  rename(leverets = leveret_survival,
+         all = pop_survival) %>% 
+  pivot_longer(leverets:all, names_to = "age", values_to = "survival_rate") %>% 
+  group_by(init_corin, init_ednrb, fitness_width, lambda, replicate, age) %>% 
+  summarize(avg_survival = mean(survival_rate, na.rm = T)) %>% 
+  ungroup() %>% 
+  group_by(init_corin, init_ednrb, fitness_width, lambda, age) %>% 
+  summarize(mean_survival = mean(avg_survival, na.rm = T)) 
+```
+
+```{r survival rate plot, fig.height=12, fig.width = 12}
+late_UT_CO %>% 
+  left_join(selection_key) %>% 
+  rename(leverets = leveret_survival,
+         all = pop_survival) %>% 
+  pivot_longer(leverets:all, names_to = "age", values_to = "survival_rate") %>% 
+  mutate(ID = paste(init_corin, init_ednrb, fitness_width, lambda, replicate, age)) %>% 
+  ggplot(aes(x = generation, y = survival_rate, color = age)) +
+  geom_line(aes(group = ID), alpha = 0.4) +
+  geom_smooth() +
+  ylab("survival rate") +
+  theme_cowplot() +
+  facet_rep_grid(mismatch_penalty ~ lambda, labeller = labeller(.rows = label_both, .cols = label_both)) +
+  ggtitle("UT/CO pops")
+```
+
+Overall, survival rates are not high. With 3.5 or 4 average offspring, leveret survival rates are ~30%, but this drops to only ~12% when there are 15 average offspring per pair. Survival rates for the population overall aren't that different from leveret survival rates. I need to do a little more double-checking against the literature to see how reasonable they are. 30% leveret survival seems pretty reasonable, but maybe there should be a bigger difference between the leveret and overall survival rates? As I mentioned above, I have not yet imposed any age-specific fitness scaling, so maybe I should if we feel these rates are unrealistic? 
+
+Next, we can look at age structure: the max age of individuals, the mean age of all individuals, and the percent of individuals that are less than 2 "years" of age:
+
+```{r age structure plot, fig.height=12, fig.width = 12}
+late_UT_CO %>% 
+  left_join(selection_key) %>% 
+  pivot_longer(cols = c(mean_age, perc_young2, max_age), names_to = "age_metric") %>% 
+  group_by(init_corin, init_ednrb, mismatch_penalty, lambda, age_metric) %>% 
+  summarize(avg_age_metric = mean(value, na.rm = T)) %>% 
+  ungroup() %>% 
+  ggplot(aes(x = mismatch_penalty, y = avg_age_metric, color = mismatch_penalty, fill = mismatch_penalty)) +
+  geom_violin() +
+  facet_rep_grid(age_metric ~ lambda,  labeller = labeller(.cols = label_both), scales = "free") +
+  theme_cowplot() +
+  ggtitle("UT/CO pops, age structure")
+```
+
+Strength of selection doesn't have a huge impact on these metrics. The main factor is the average number of offspring, which affects these metrics in the ways you'd expect: higher offspring inputs mean lower average ages, higher proportions of individuals less than 2, and lower max ages. In all cases, the average age is less than 1, and >85% of individuals are less than 2: both of these seem pretty reasonable, especially for the lower reproductive outputs. With lambda = 15, these get a little extreme: basically all individuals are young-of-the-year. 
+
+### Utah/Colorado Summary
+
+For this scenario, I think there are a few main takeaways. First, these simulations more or less confirm the results from my initial testing: for these NE UT/NW CO populations, evolutionary rescue always occurs provided there is SGV. This is true across a wide range of initial allele frequencies. Number of offspring and strength of selection have relatively little impact on the "overall" outcome of evolutionary rescue or not. The second point, though, is that these parameters do matter for the amount of population decline. Strength of selection and initial brown allele frequencies both influence the amount of population declines, and unfavorable combinations of these parameters (low starting allele frequencies and strong selection) can lead to strong population declines on the order of 25% reduction compared to carrying capacity. We have the logging data to be able to dive into the evolutionary dynamics of that more (in terms of changing phenotypes and allele frequencies). Finally, the range of parameters I've looked at so far seems to create plausible emergent population biology parameters. Of these parameters, the most important are the strength of selection and especially average number of offspring, which strongly effect survival rates and age structure. Fortunately, (?), average number of offspring has relatively little impact on the outcome of evolutionary rescue and degree of population declines (at least for these UT/CO populations). so unless we really care about getting the age structure to exactly match empirical observations, we perhaps don't have to worry too much about dialing in this parameter perfectly? Offspring number still matters a lot for whether completely mismatched populations go extinct, but apparently that doesn't translate to strongly different outcomes for evolutionary rescue under less drastic environmental shifts. 
+
+
+# Degree of environmental change
+
+I wanted to look at one final set of scenarios: how does the degree of population decline vary in relation to how much the environment is changing? Initially, to keep this simple, I'll keep the initial allele frequencies constant (5% brown each), an initial optimal phenotype of 0, and I'll only look at an average of 4 offspring. So, we can see how population declines vary with the the degree of environmental change (3 changes: to 0.5, 0.876, and 1) and the strength of selection:
+
+
+```{r env change plot, fig.height=12, fig.width = 12}
+change_in_opt <- read_csv("results/tmp/slim_summaries/changing_opt.csv")
+
+change_in_opt %>% 
+  left_join(selection_key) %>%
+  group_by(final_opt, mismatch_penalty, replicate) %>% 
+  mutate(decline = 1 - N/K) %>% 
+  slice_max(decline, n = 1) %>% 
+  ungroup() %>% 
+  ggplot(aes(x = as_factor(final_opt), y = decline, color = mismatch_penalty, fill= mismatch_penalty)) +
+  geom_violin() +
+  theme_cowplot() +
+  xlab("Final optimum phenotype") + 
+  ylab("Maximum population decline, %") +
+  ylim(c(0,0.5)) +
+  ggtitle("Declines across changing environments")
+```
+
+I guess the results are about what you'd expect: we see greater population declines when selection is stronger and when the environment is changing more. In all cases, populations seem to have recovered (I saw "seem to" because I haven't looked at their trajectories, but if they were going extinct I'd expect a higher decline). Still, though the population declines may have been transient, they are substantial, at least 10% and up to about 25%. Another result that reinforces the idea that, while evolutionary rescue seems likely if phenotypic mismatch is the only stressor, population declines are still substantial, and other stressors could really exacerbate things. 
+
+# Next steps
+
+For my next set of simulations, I want to simulate the dominant genetic architecture. I'll also start experimenting with varying $K$, but I may not be doing those on a large scale for a little bit still. 
+
+
