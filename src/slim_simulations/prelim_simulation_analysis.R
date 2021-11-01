@@ -1,7 +1,17 @@
 library(tidyverse)
-library(cowplot)
 
-late <- NULL
+
+
+
+# Selection key for plotting ----------------------------------------------
+selection_key <- tibble(fitness_width = c(0.5446, 0.6562, 0.7805)) %>% 
+  mutate(mismatch_penalty = factor(fitness_width, 
+                                   levels = c(0.7805, 0.6562, 0.5446),
+                                   labels = c("5%", "7%", "10%")))
+
+# Scenario 1 --------------------------------------------------------------
+# Complete mismatch, no SGV
+late_mismatch_noSGV <- NULL
 for (file in list.files("slim_results/additive_constantK/", pattern = "late.csv", full.names = T)) {
   # parse filename for sim parameters
   elements <- str_split(basename(file), pattern = "_")[[1]]
@@ -14,61 +24,142 @@ for (file in list.files("slim_results/additive_constantK/", pattern = "late.csv"
   lambda  <- as.numeric(str_remove(elements[10], "lambda"))
   replicate <- as.numeric(str_remove(elements[11], "rep"))
   
-  # Import CSV and add parameters
-  one_sim_res <- read.csv(file) %>% 
-    mutate(sim_gens = sim_gens,
-           init_corin = init_Corin,
-           init_ednrb = init_EDNRB,
-           fitness_width = fitness_width,
-           lambda = lambda,
-           replicate = replicate)
-  late <- rbind(late, one_sim_res)
+  if (fitness_width == 0.65) {
+    next
+  }
+  
+  if (init_Corin == 0 & init_EDNRB == 0 & init_opt == 1 & final_opt == 1) {
+    # Import CSV and add parameters
+    one_sim_res <- read.csv(file) %>%
+      mutate(sim_gens = sim_gens,
+             init_corin = init_Corin,
+             init_ednrb = init_EDNRB,
+             init_opt = init_opt,
+             final_opt = final_opt,
+             fitness_width = fitness_width,
+             lambda = lambda,
+             replicate = replicate)
+    late_mismatch_noSGV <- rbind(late_mismatch_noSGV, one_sim_res)
+  }
+}
+
+
+write_csv(late_mismatch_noSGV, path = "results/tmp/slim_summaries/complete_mismatch_no_SGV.csv", col_names = T)
+
+
+
+
+# Scenario 2: Colorado/UT -------------------------------------------------
+# Starting and final optimal phenos set, allow rest of the params to vary. 
+late_UT_CO <- NULL
+for (file in list.files("slim_results/additive_constantK/", pattern = "late.csv", full.names = T)) {
+  # parse filename for sim parameters
+  elements <- str_split(basename(file), pattern = "_")[[1]]
+  sim_gens <- as.numeric(str_remove(elements[1], "gens"))
+  init_Corin <- as.numeric(str_remove(elements[4], "iCorin"))
+  init_EDNRB <- as.numeric(str_remove(elements[5], "iEDNRB"))
+  init_opt <- as.numeric(str_remove(elements[6], "initOpt"))
+  final_opt <- as.numeric(str_remove(elements[7], "finalOpt"))
+  fitness_width <- as.numeric(str_remove(elements[8], "sel"))
+  lambda  <- as.numeric(str_remove(elements[10], "lambda"))
+  replicate <- as.numeric(str_remove(elements[11], "rep"))
+  
+  if (fitness_width == 0.65) {
+    next
+  }
+  
+  if (init_opt == 0.13 & final_opt == 0.876) {
+    # Import CSV and add parameters
+    one_sim_res <- read.csv(file) %>%
+      mutate(sim_gens = sim_gens,
+             init_corin = init_Corin,
+             init_ednrb = init_EDNRB,
+             init_opt = init_opt,
+             final_opt = final_opt,
+             fitness_width = fitness_width,
+             lambda = lambda,
+             replicate = replicate)
+    late_UT_CO <- rbind(late_UT_CO, one_sim_res)
+  }
+}
+
+write_csv(late_UT_CO, path = "results/tmp/slim_summaries/utah_and_colo.csv", col_names = T)
+
+
+# Scenario 3 --------------------------------------------------------------
+change_in_opt <- NULL
+for (file in list.files("slim_results/additive_constantK/", pattern = "late.csv", full.names = T)) {
+  # parse filename for sim parameters
+  elements <- str_split(basename(file), pattern = "_")[[1]]
+  sim_gens <- as.numeric(str_remove(elements[1], "gens"))
+  init_Corin <- as.numeric(str_remove(elements[4], "iCorin"))
+  init_EDNRB <- as.numeric(str_remove(elements[5], "iEDNRB"))
+  init_opt <- as.numeric(str_remove(elements[6], "initOpt"))
+  final_opt <- as.numeric(str_remove(elements[7], "finalOpt"))
+  fitness_width <- as.numeric(str_remove(elements[8], "sel"))
+  lambda  <- as.numeric(str_remove(elements[10], "lambda"))
+  replicate <- as.numeric(str_remove(elements[11], "rep"))
+  
+  if (fitness_width == 0.65) {
+    next
+  }
+  
+  if (lambda == 4 & init_opt == 0 & init_Corin == 0.05 & init_EDNRB == 0.05) {
+      
+    # Import CSV and add parameters
+    one_sim_res <- read.csv(file) %>%
+      mutate(sim_gens = sim_gens,
+             init_corin = init_Corin,
+             init_ednrb = init_EDNRB,
+             init_opt = init_opt,
+             final_opt = final_opt,
+             fitness_width = fitness_width,
+             lambda = lambda,
+             replicate = replicate)
+    change_in_opt <- rbind(change_in_opt, one_sim_res)
+  }
 }
 
 
 
-
-# Population size through time
-late %>% 
-  mutate(ID = paste(init_corin, init_ednrb, fitness_width, lambda, replicate)) %>% 
-  filter(init_corin == init_ednrb) %>% 
-  ggplot(aes(x = generation, y = N, color = as.factor(fitness_width))) +
-  geom_line(aes(group = ID), alpha = 0.4) +
-  geom_smooth() +
-  ylim(c(0, 5250)) +
-  theme_cowplot() +
-  geom_hline(aes(yintercept = 5000)) +
-  facet_grid(init_corin ~ lambda)
-
-
-opt_pheno_df <- late %>% 
-  filter(init_corin == init_ednrb,
-         init_corin == 0.01,
-         fitness_width == 0.6562,
-         lambda == 4,
-         replicate ==1) %>% 
-  select(generation, opt_pheno)
-
-# Average phenotype through time, compared to optimum
-late %>% 
-  filter(init_corin == init_ednrb,
-         init_corin == 0.01,
-         fitness_width == 0.6562,
-         lambda == 4) %>% 
-  ggplot(aes(x = generation, y = mean_pheno)) +
-  geom_line(aes(group = replicate), alpha = 0.5) +
-  geom_smooth() +
-  geom_line(aes(x = generation, y = opt_pheno), linetype = "dashed", data = opt_pheno_df)  +
-  theme_cowplot() 
+write_csv(change_in_opt, path = "results/tmp/slim_summaries/changing_opt.csv", col_names = T)
 
 
 
+# Scenario 4: UT/CO, receesive architecture -------------------------------
+late_recessive_UT_CO <- NULL
+for (file in list.files("slim_results/recessive_constantK/", pattern = "late.csv", full.names = T)) {
+  # parse filename for sim parameters
+  elements <- str_split(basename(file), pattern = "_")[[1]]
+  sim_gens <- as.numeric(str_remove(elements[1], "gens"))
+  init_Corin <- as.numeric(str_remove(elements[4], "iCorin"))
+  init_EDNRB <- as.numeric(str_remove(elements[5], "iEDNRB"))
+  init_opt <- as.numeric(str_remove(elements[6], "initOpt"))
+  final_opt <- as.numeric(str_remove(elements[7], "finalOpt"))
+  fitness_width <- as.numeric(str_remove(elements[8], "sel"))
+  lambda  <- as.numeric(str_remove(elements[10], "lambda"))
+  replicate <- as.numeric(str_remove(elements[11], "rep"))
+  
+  if (fitness_width == 0.65) {
+    next
+  }
+  
+  if (init_opt == 0.13 & final_opt == 0.876) {
+    # Import CSV and add parameters
+    one_sim_res <- read.csv(file) %>%
+      mutate(sim_gens = sim_gens,
+             init_corin = init_Corin,
+             init_ednrb = init_EDNRB,
+             init_opt = init_opt,
+             final_opt = final_opt,
+             fitness_width = fitness_width,
+             lambda = lambda,
+             replicate = replicate)
+    late_recessive_UT_CO <- rbind(late_recessive_UT_CO, one_sim_res)
+  }
+}
 
-# Max population decrease
+write_csv(late_recessive_UT_CO, path = "results/tmp/slim_summaries/utah_and_colo_recessive.csv", col_names = T)
 
 
-
-
-# Some gut check metrics:
-# percent survival, age structure, etc
 

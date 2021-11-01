@@ -279,7 +279,7 @@ For this scenario, I think there are a few main takeaways. First, these simulati
 
 # Degree of environmental change
 
-I wanted to look at one final set of scenarios: how does the degree of population decline vary in relation to how much the environment is changing? Initially, to keep this simple, I'll keep the initial allele frequencies constant (5% brown each), an initial optimal phenotype of 0, and I'll only look at an average of 4 offspring. So, we can see how population declines vary with the the degree of environmental change (3 changes: to 0.5, 0.876, and 1) and the strength of selection:
+How does the degree of population decline vary in relation to how much the environment is changing? Initially, to keep this simple, I'll keep the initial allele frequencies constant (5% brown each), an initial optimal phenotype of 0, and I'll only look at an average of 4 offspring. So, we can see how population declines vary with the the degree of environmental change (3 changes: to 0.5, 0.876, and 1) and the strength of selection:
 
 
 ```{r env change plot, fig.height=12, fig.width = 12}
@@ -302,8 +302,87 @@ change_in_opt %>%
 
 I guess the results are about what you'd expect: we see greater population declines when selection is stronger and when the environment is changing more. In all cases, populations seem to have recovered (I saw "seem to" because I haven't looked at their trajectories, but if they were going extinct I'd expect a higher decline). Still, though the population declines may have been transient, they are substantial, at least 10% and up to about 25%. Another result that reinforces the idea that, while evolutionary rescue seems likely if phenotypic mismatch is the only stressor, population declines are still substantial, and other stressors could really exacerbate things. 
 
+
+# Differing genetic architecture
+
+The above simulations all modeled winter phenotype with an additive genetic architecture, as uncovered by Mafalda's GWAS and dominance tests. However, it is interesting to consider a counterfactual: in the closely-related snowshoe hare, winter color pattern has a different dominance relationship. There, winter white is dominant and winter brown is recessive. Would WTJR be more or less vulnerable if they had a dominant genetic architecture like SSH, instead of the additive architecture? 
+
+To investigate this, I made a second SLiM simulation that changes the genotype-to-phenotype map, but is otherwise identical to the simulations listed above. Here, winter-brown is recessive at each locus: winter-brown alleles only have an effect when they are present in homozygotes. For now, I've only run these simulations for the parameters of the UT/CO populations: initial optimal pheno of 0.13, final optimum of 0.876 (but I ran it for all combinations of initial allele frequencies, selection strengths, and average number of offspring). So, an additional 2880 simulations, to go with the equivalent 2880 simulations that had the same parameters but an additive genetic architecture. 
+
+First, we can look at the population trajectories, for when average offspring per pair is 4:
+
+
+```{r UTCO rec pop 4, fig.height=12, fig.width = 12}
+late_UT_CO_rec <- read_csv("results/tmp/slim_summaries/utah_and_colo_recessive.csv")
+
+late_UT_CO_rec %>% 
+  filter(lambda == 4) %>% 
+  left_join(selection_key) %>% 
+  mutate(ID = paste(init_corin, init_ednrb, fitness_width, lambda, replicate)) %>% 
+  ggplot(aes(x = generation, y = N, color = mismatch_penalty)) +
+  geom_line(aes(group = ID), alpha = 0.4) +
+  geom_smooth() +
+  ylim(c(0, 5250)) +
+  theme_cowplot() +
+  geom_hline(aes(yintercept = 5000), linetype = "dotted") +
+  facet_rep_grid(init_corin ~ init_ednrb, labeller = labeller(.rows = label_both, .cols = label_both)) +
+  ggtitle("UT/CO pops, recessive, avg. offspring = 4")
+```
+
+When winter-brown is recessive, population trajectories are pretty different. With low amounts of SGV, populations decline and evolutionary rescue looks like it won't happen (certainly is not happening within 60 generations). This is to be expected: brown alleles are rarely present in homozygotes when the frequency of the brown alleles is low, so they rarely lead to any fitness benefits. With more SGV (e.g., brown alleles 5% or greater), then populations seem like they can recover when selection is strong. But, the population declines are much larger and the lag time before recovery begins is longer. Here, the difference in the phenotypic effects of corin and EDNRB is even more pronounced: higher initial frequencies of EDNRB help much more than higher initial frequencies of corin. Among simulation where populations start to bounce back, there seems to be a lot more variance in population trajectories. 
+
+We can look at the underlying allele frequencies to see why. Here, I'll consider the case when average offspring per generation is 4 and the fitness penalty for mismatch is 10%: 
+
+```{r UTCO rec pheno 4, fig.height=12, fig.width = 12}
+late_UT_CO_rec %>% 
+  filter(lambda == 4, 
+         fitness_width == 0.5446) %>% 
+  left_join(selection_key) %>% 
+  rename(corin = freq_corin, ednrb = freq_ednrb) %>% 
+  pivot_longer(corin:ednrb, names_to = "gene", values_to= "freq") %>% 
+  mutate(ID = paste(init_corin, init_ednrb, fitness_width, lambda, replicate, gene)) %>% 
+  ggplot(aes(x = generation, y = freq, color = gene)) +
+  geom_line(aes(group = ID), alpha = 0.4) +
+  geom_smooth() +
+  ylab("brown allele frequency") +
+  theme_cowplot() +
+  geom_line(aes(x = generation, y = opt_pheno), data = utco_opt_pheno_df, linetype = "dotted", inherit.aes = F) +
+  facet_rep_grid(init_corin ~ init_ednrb, labeller = labeller(.rows = label_both, .cols = label_both)) +
+  ggtitle("UT/CO pops, recessive, avg. offspring = 4")
+```
+
+
+The shapes of the allele frequency trajectories look quite similar: once brown alleles get frequent enough to be appearing in homozygotes (and once the optimum phenotype has changed enough that those homozygotes have a large fitness advantage), they rapidly go toward fixation. But the timing of when that starts varies a lot (probably just due to drift?), leading to a lot of variance in the timing of population size rebound/recovery. 
+
+We can compare the amount of population decline with recessive vs. additive genetic architectures:
+
+```{r UTCO declines 4, fig.height=12, fig.width = 12}
+late_UT_CO %>%
+  mutate(dominance = "additive") %>% 
+  rbind(mutate(late_UT_CO_rec, dominance = "recessive")) %>% 
+  filter(lambda == 4) %>% 
+  group_by(init_corin, init_ednrb, fitness_width, lambda, replicate, dominance) %>% 
+  mutate(decline = 1 - N/K) %>% 
+  slice_max(decline, n = 1) %>% 
+  ungroup() %>% 
+  left_join(selection_key) %>% 
+  mutate(ID = paste(init_corin, init_ednrb, fitness_width, lambda, replicate, dominance)) %>% 
+  ggplot(aes(y = decline, x = mismatch_penalty, fill = dominance)) +
+  geom_violin(draw_quantiles = c(0.5)) +
+  ylab("Maximum population decline, %") +
+  ylim(c(0,1)) +
+  theme_cowplot() +
+  geom_hline(aes(yintercept = 1), linetype = "dotted") +
+  facet_rep_grid(init_corin ~ init_ednrb, labeller = labeller(.rows = label_both, .cols = label_both)) +
+  ggtitle("UT/CO pops, avg. offspring = 4")
+
+```
+
+These results just confirm what we could see in the population size trajectories: for most combinations of parameters, WTJR suffer greater declines when the phenotypic effects of winter brown alleles are recessive. 
+
+Not sure how much we'd want to discuss this in the paper, I suppose it all depends on what we want to focus on. It certainly is another demonstration of how understanding the genetic basis of traits can be useful for conservation: stakeholders would need to be a lot more worried about WTJR if they didn't have this additive genetic architecture. And it is perhaps another differentiator from the SSH work.  
+
 # Next steps
 
-For my next set of simulations, I want to simulate the dominant genetic architecture. I'll also start experimenting with varying $K$, but I may not be doing those on a large scale for a little bit still. 
-
+The next step is figuring out varying $K$ to simulate population cycles. 
 
