@@ -41,6 +41,25 @@ sim_results_additive_constantK = expand(res_pattern_additive_constant_K,
                                         output_file = output_files)
 
 
+# Filename pattern for the output files from each sim
+res_pattern_recessive_constant_K = "slim_results/recessive_constantK/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_{output_file}"
+
+# And expand all varying parameters to create the list of desired files
+sim_results_recessive_constantK = expand(res_pattern_recessive_constant_K,                                
+                                        gen = gens,
+                                        K = Ks,
+                                        initPop = initPops,
+                                        iCorin = iCorins,
+                                        iEDNRB = iEDNRBs,
+                                        initOpt = [0.13],
+                                        finalOpt = [0.876],
+                                        selection = selections,
+                                        H2 = H2s,
+                                        offspring = offsprings,
+                                        replicate = replicates,
+                                        output_file = output_files)
+
+
 
 
 
@@ -53,7 +72,8 @@ sim_results_additive_constantK = expand(res_pattern_additive_constant_K,
 
 rule all:
     input:
-        sim_results_additive_constantK
+        sim_results_additive_constantK,
+        sim_results_recessive_constantK
 
 rule sim_additive_constantK:
     input:
@@ -70,3 +90,17 @@ rule sim_additive_constantK:
         slim -d generations={wildcards.gen} -d K={wildcards.K} -d initPopSize={wildcards.initPop} -d initFreqCorin={wildcards.iCorin} -d initFreqEDNRB={wildcards.iEDNRB} -d initOptPheno={wildcards.initOpt} -d finalOptPheno={wildcards.finalOpt} -d fitFuncWidth={wildcards.selection} -d h2={wildcards.H2} -d offspringPoisLambda={wildcards.offspring}  -d replicate={wildcards.replicate} -d "outputDir='slim_results/additive_constantK'" src/slim_simulations/constant_K_additive_CLI.slim > {log} 
         """
 
+rule sim_recessive_constantK:
+    input:
+    output:
+        "slim_results/recessive_constantK/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_early.csv",
+        "slim_results/recessive_constantK/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_late.csv",
+        "slim_results/recessive_constantK/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_seed.txt"
+    log:
+        "logs/slim/recessive/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}.log"
+    resources:
+        cpus=1
+    shell:
+        """
+        slim -d generations={wildcards.gen} -d K={wildcards.K} -d initPopSize={wildcards.initPop} -d initFreqCorin={wildcards.iCorin} -d initFreqEDNRB={wildcards.iEDNRB} -d initOptPheno={wildcards.initOpt} -d finalOptPheno={wildcards.finalOpt} -d fitFuncWidth={wildcards.selection} -d h2={wildcards.H2} -d offspringPoisLambda={wildcards.offspring}  -d replicate={wildcards.replicate} -d "outputDir='slim_results/recessive_constantK'" src/slim_simulations/constant_K_recessive_CLI.slim > {log} 
+        """
