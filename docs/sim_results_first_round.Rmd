@@ -98,6 +98,31 @@ late_mismatch_noSGV %>%
 These results more-or-less recapitulate what we already know, I suppose. Populations can go completely extinct from mismatch alone, provided selection is strong enough and reproductive output is low enough. At an average of 15 offspring per breeding pair, the James 1969 estimate, reproductive output is simply too high and populations rapidly go to a minimal equilibrium based on the mismatch penalty. With less reproductive output (possibly unrealistically low??), populations can go extinct, and in some cases quite rapidly (e.g., <20 generations on average if the weekly mismatch penalty is 10%). 
 
 
+# Moving optimum with no SGV
+
+The above simulations with no SGV modeled a rapid, complete change in optimal phenotype to fully brown, with the goal of understanding if populations would go extinct if completely mismatched. Mafalda suggested doing a similar set of simulations, but with a changing phenotypic optimum. That would be a sort of realistic worst-case scenario: how far can populations decline in 60 generations, given varying environmental changes? In the scenarios below, we also model no SGV in some cases. So, the simulations here are sort of a compilation of all the no SGV simulations for various situations below. 
+
+As above, we can plot the population trajectories across different initial and final phenotypic optima:
+
+```{r mistmatch noSGV moving optimum, fig.height=12, fig.width = 12}
+noSGV_moving <- read_csv("results/tmp/slim_summaries/moving_opt_no_SGV.csv")
+
+noSGV_moving %>% 
+  left_join(selection_key) %>% 
+  mutate(ID = paste(fitness_width, lambda, replicate, init_opt, final_opt)) %>% 
+  ggplot(aes(x = generation, y = N, color = mismatch_penalty)) +
+  geom_line(aes(group = ID), alpha = 0.4) +
+  #geom_smooth() +
+  ylim(c(0, 5250)) +
+  theme_cowplot() +
+  geom_hline(aes(yintercept = 5000), linetype = "dotted") +
+  facet_rep_grid(final_opt ~ init_opt, labeller = labeller(.rows = label_both, .cols = label_both)) +
+  ggtitle("No SGV, moving optimum")
+
+```
+
+Here, we see that populations declines are much more gradual with a moving optimum. Unlike above, where populations go extinct, here most populations don't disappear, and if they do it is only near the very end of the 60 generations. The degree of decline is mostly dependent on the overall degree of change in the optimal phenotype and the strength of selection. I didn't differentiate the simulations by lambda for this plot, but in most cases it doesn't make a difference. In the lowest rows, where you start to see multiple trajectories for each group of mismatch penalties: those are the different lambdas. With low reproductive output the populations decline rapidly near the end and some go, whereas with high reproductive output the decline is more constnat (presumably on the way to the equilibria in the simulations above). 
+
 # Biggest predicted shift: NE UT and NW CO
 
 Next, I'll focus on some parameters that represent populations that are expected to see some of the strongest future climate mismatch: populations in NE Utah and NW Colorado. From our phenotype predictions, these populations are going from a $Prob(brown)$ of 0.13 to 0.876 over ~60 generations. So, let's look at simulations with those initial and final optimal phenotypes, but we can look at how outcomes vary across starting allele frequencies, average offspring, and strength of selection. 
@@ -382,7 +407,70 @@ These results just confirm what we could see in the population size trajectories
 
 Not sure how much we'd want to discuss this in the paper, I suppose it all depends on what we want to focus on. It certainly is another demonstration of how understanding the genetic basis of traits can be useful for conservation: stakeholders would need to be a lot more worried about WTJR if they didn't have this additive genetic architecture. And it is perhaps another differentiator from the SSH work.  
 
+# Population cycles
+
+The next big question we were curious about was whether the population cycles that jackrabbits undergo might influence the chance of evolutionary rescue or degree of population decline. Finding ways to induce population cycles "naturally" (as an emergent property) in the simulations is tough. Instead I made the carrying capacity, $K$, vary as a function of time. The cycling of $K$ follows a sine wave function, parameterized to allow us to change the min/max population size, period, etc. Of course, adding in all these new parameters greatly increases the number of possible combinations to simulate: we can vary the min and max carrying capacities of the cycle, the period of the cycle, and the starting point in the cycle (which includes both the starting $K$ and whether the cycle is going up or down). With such a substantial increase in parameter space, for now I've only simulated population cycling for our UT/CO populations (initial phenotypic optimum of 0.13, final optimum of 0.876). I still varied the initial allele frequencies, selection strength, and reproductive output as before for the UT/CO populations. For the cycling parameters, I kept the period constant at 9 years (the midpoint of cycling times estimated for BTJR, I couldn't find anything specific for WTJR). I tested two sets of population sizes: cycling between $K$ = 100 and 1000, and cycling between $K$ = 500 and 5000. For all simulations, I started $K$ at the midpoint of the cycle, and simulated both directions. As before, I did 20 replicates of each parameter combination. All told, this is another 11570 simulations. 
+
+For analysis of this, I'm just focusing on the maximum population decline: plotting the actual population size trajectories is sort of incomprehensible, given how $K$ varies. I'll compare these to the maximum population declines for the simulations where $K$ is constant at 5000. 
+
+```{r varying K, fig.height=15, fig.width = 15}
+vary_K <- read_csv("results/tmp/slim_summaries/varying_K_initial.csv")
+
+
+varyK_maxdecline <- vary_K %>%
+  group_by(min_K, max_K, period, init_K, init_dec, init_corin, init_ednrb, fitness_width, lambda, replicate) %>% 
+  mutate(decline = 1 - N/K) %>% 
+  slice_max(decline, n = 1) %>% 
+  ungroup() %>% 
+  left_join(selection_key) %>% 
+  mutate(cycle = paste0("vary", min_K)) %>%
+  select(-min_K, -max_K, -period, -init_K, -init_dec) 
+           
+constantK_maxdecline <- late_UT_CO %>% 
+  group_by(init_corin, init_ednrb, fitness_width, lambda, replicate) %>% 
+  mutate(decline = 1 - N/K) %>% 
+  slice_max(decline, n = 1) %>% 
+  ungroup() %>% 
+  left_join(selection_key) %>% 
+  mutate(cycle = "constant5000")
+
+
+
+varyK_extinction_rate <- vary_K %>%
+  group_by(min_K, max_K, period, init_K, init_dec, init_corin, init_ednrb, fitness_width, lambda, replicate) %>% 
+  summarize(extinct = ifelse(max(generation == 60), F, T)) %>% 
+  ungroup() %>% 
+  group_by(min_K, max_K, period, init_K, init_dec, init_corin, init_ednrb, fitness_width, lambda) %>% 
+  summarize(ext_rate = sum(extinct)/length(extinct))
+
+
+rbind(constantK_maxdecline, varyK_maxdecline) %>% 
+  ggplot(aes(y = decline, x = cycle, fill = mismatch_penalty)) +
+  geom_violin(draw_quantiles = c(0.5)) +
+  ylab("Maximum population decline, %") +
+  ylim(c(0,1)) +
+  theme_cowplot() +
+  geom_hline(aes(yintercept = 1), linetype = "dotted") +
+  facet_rep_grid(init_corin ~ init_ednrb, labeller = labeller(.rows = label_both, .cols = label_both)) +
+  ggtitle("UT/CO pops, decline by population cycle")
+
+```
+
+Overall, having population cycles definitely makes a difference in the dynamics of population decreases. But, at least from the simulations so far, its a little hard to disentangle the cycling from the general effects of smaller populations. Cycling smaller population sizes (between 100 and 1000) leads to slightly higher median declines, but the main effect is to greatly increase the variance in population declines. In some simulations, populations declined to near extinction. In the cycles with larger $K$ (500 to 5000), both the median decline and variance in decline was lower than for cycling from 100 to 1000, but higher than the median and variance in decline for the constant carrying capacity of 5000. 
+
+I checked the population trajectories a little closer, and even with population cycling (and even with population cycling down to 200 individuals), extinction events only occurred when there was no SGV. In some cases declines were very severe and close to wiping out the population, but extinction only occurred with no SGV (and even then, it was rare). 
+
+I suppose to answer our question for sure, I'll need to run some constant-$K$ simulations where $K$ equals the mean of the $K$ used in the cycling simulations (e.g., a constant $K$ of 550 and 2750). Then we can see what effects population cycling has by itself, independent of differing average $K$ across the simulation. However, initially it seems that the population cycles don't really increase the risk of extinction within 60 generation, but do lead to (slightly) larger and (much) more variable population declines. One other thing I could test further is starting the populations at very different points in the phase of the cycle: perhaps if we ensure that the low-point of the cycle corresponds to the largest period of decline/mismatch (which itself changes according to the other parameters) the risk of extinction might be greater. 
+
+
 # Next steps
 
-The next step is figuring out varying $K$ to simulate population cycles. 
+I think the main question is to finalize the carrying capacity, to make sure we're in the proper parameter space (and to re-run a bunch of simulations for that if necessary). 
+
+
+We also have a couple more ideas we could test out that folks have suggested:
+
+* Adding additional stressors.
+
+* Adding further genetic architectures (e.g., single-locus architectures). 
 
