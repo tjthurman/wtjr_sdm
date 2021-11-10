@@ -59,8 +59,44 @@ sim_results_recessive_constantK = expand(res_pattern_recessive_constant_K,
                                         replicate = replicates,
                                         output_file = output_files)
 
+# Filename pattern for output files from varying K sims
+res_pattern_additive_varyK = "slim_results/additive_varyK/gens{gen}_minK{minK}_maxK{maxK}_period{period}_startK{startK}_initDec{initDec}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_{output_file}"
+
+sim_results_additive_varyK_small = expand(res_pattern_additive_varyK,                                
+                                    gen = gens,
+                                    minK = [100],
+                                    maxK = [1000],
+                                    period = [9],
+                                    startK = [550],
+                                    initDec = ["T","F"],
+                                    iCorin = iCorins,
+                                    iEDNRB = iEDNRBs,
+                                    initOpt = [0.13],
+                                    finalOpt = [0.876],
+                                    selection = selections,
+                                    H2 = H2s,
+                                    offspring = offsprings,
+                                    replicate = replicates,
+                                    output_file = output_files)
 
 
+
+sim_results_additive_varyK_large = expand(res_pattern_additive_varyK,                                
+                                    gen = gens,
+                                    minK = [500],
+                                    maxK = [5000],
+                                    period = [9],
+                                    startK = [2750],
+                                    initDec = ["T","F"],
+                                    iCorin = iCorins,
+                                    iEDNRB = iEDNRBs,
+                                    initOpt = [0.13],
+                                    finalOpt = [0.876],
+                                    selection = selections,
+                                    H2 = H2s,
+                                    offspring = offsprings,
+                                    replicate = replicates,
+                                    output_file = output_files)
 
 
 ###############
@@ -72,8 +108,10 @@ sim_results_recessive_constantK = expand(res_pattern_recessive_constant_K,
 
 rule all:
     input:
-        sim_results_additive_constantK,
-        sim_results_recessive_constantK
+        #sim_results_additive_constantK,
+        #sim_results_recessive_constantK,
+        sim_results_additive_varyK_small, 
+        sim_results_additive_varyK_large
 
 rule sim_additive_constantK:
     input:
@@ -103,4 +141,19 @@ rule sim_recessive_constantK:
     shell:
         """
         slim -d generations={wildcards.gen} -d K={wildcards.K} -d initPopSize={wildcards.initPop} -d initFreqCorin={wildcards.iCorin} -d initFreqEDNRB={wildcards.iEDNRB} -d initOptPheno={wildcards.initOpt} -d finalOptPheno={wildcards.finalOpt} -d fitFuncWidth={wildcards.selection} -d h2={wildcards.H2} -d offspringPoisLambda={wildcards.offspring}  -d replicate={wildcards.replicate} -d "outputDir='slim_results/recessive_constantK'" src/slim_simulations/constant_K_recessive_CLI.slim > {log} 
+        """
+
+rule sim_additive_varyK:
+    input:
+    output:
+        "slim_results/additive_varyK/gens{gen}_minK{minK}_maxK{maxK}_period{period}_startK{startK}_initDec{initDec}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_early.csv",
+        "slim_results/additive_varyK/gens{gen}_minK{minK}_maxK{maxK}_period{period}_startK{startK}_initDec{initDec}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_late.csv",
+        "slim_results/additive_varyK/gens{gen}_minK{minK}_maxK{maxK}_period{period}_startK{startK}_initDec{initDec}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_seed.txt"
+    log:
+        "logs/slim/additive_varyK/gens{gen}_minK{minK}_maxK{maxK}_period{period}_startK{startK}_initDec{initDec}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_seed.log"
+    resources:
+        cpus=1
+    shell:
+        """
+        slim -d generations={wildcards.gen} -d min_K={wildcards.minK} -d max_K={wildcards.maxK} -d period={wildcards.period} -d start_K={wildcards.startK} -d initial_dec={wildcards.initDec} -d initFreqCorin={wildcards.iCorin} -d initFreqEDNRB={wildcards.iEDNRB} -d initOptPheno={wildcards.initOpt} -d finalOptPheno={wildcards.finalOpt} -d fitFuncWidth={wildcards.selection} -d h2={wildcards.H2} -d offspringPoisLambda={wildcards.offspring}  -d replicate={wildcards.replicate} -d "outputDir='slim_results/additive_varyK'" src/slim_simulations/varying_K_additive.slim > {log} 
         """

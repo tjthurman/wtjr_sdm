@@ -552,15 +552,15 @@ function (void)writeLogLineLate(string filename) {
 // A function for doing population cycles of the carrying capacity, K
 // Basically just a parameterized sine wave.
 // Need to parameterize the min and max possible Ks, the period of the cycle (trough-to-trough), the starting value for K (at generation t = 0, just before the simulation starts), and whether the population is starting on a decline or an increase
-function (integer)sine_cyclical_K(integer generation, integer min_K, integer max_K, integer period, integer start_K, logical initial_dec) {
-  if (initial_dec == T) {
-    phase = asin(1- ((start_K - min_K)/(max_K - min_K)*2)) - PI;
+function (integer)sine_cyclical_K(integer generation, integer minK, integer maxK, integer per, integer startK, logical initialDec) {
+  if (initialDec == T) {
+    phase = asin(1- ((startK - minK)/(maxK - minK)*2)) - PI;
   } else {
-    phase = asin(((start_K - min_K)/(max_K - min_K)*2) - 1);
+    phase = asin(((startK - minK)/(maxK - minK)*2) - 1);
   }
   
-  K_01 = (sin(generation*2*PI/period + phase) + 1)/2;
-  K = min_K + (max_K - min_K)*K_01;
+  K_01 = (sin(generation*2*PI/per + phase) + 1)/2;
+  K = minK + (maxK - minK)*K_01;
   
   return(asInteger(ceil(K)));
 }
