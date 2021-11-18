@@ -57,5 +57,6 @@ docs/sim_results_first_round_files/
 
 # Slim model results
 slim_results/*
+slim_results_final/*
 logs/slurm_logs/*
 logs/slim/*
