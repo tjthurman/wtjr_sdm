@@ -15,7 +15,7 @@ iCorins = [0, 0.01, 0.05, 0.25] # expand
 iEDNRBs = [0, 0.01, 0.05, 0.25] # expand
 initOpts = [0.13] # Corresponds to NE Utah/ NW CO
 finalOpts = [0.876] # Corresponds to NE Utah/ NW CO
-selections = [0.6562] # Corresponding to a 5%, 7%, and 10% weekly survival penalty with 16 weeks of winter
+selections = [0.7805, 0.6562, 0.5446] # Corresponding to a 5%, 7%, and 10% weekly survival penalty with 16 weeks of winter
 H2s = [0.64]
 offsprings = [4, 15] # 3.5 and 4 are close to what I've been working with, 15 is from James 1969
 replicates = list(range(1,31)) # second number = 1 more than the desired number of replicates
@@ -90,7 +90,7 @@ rule all:
     input:
         sim_results_additive_constantK,
         sim_results_recessive_constantK,
-        sim_results_additive_varyK
+        sim_results_additive_varyK 
 
 rule sim_additive_constantK:
     input:

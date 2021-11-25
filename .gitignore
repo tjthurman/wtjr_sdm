@@ -56,7 +56,9 @@ docs/sim_results_first_round_files/
 
 
 # Slim model results
+initial_slim_res.tar.gz
 slim_results/*
 slim_results_final/*
 logs/slurm_logs/*
 logs/slim/*
+
