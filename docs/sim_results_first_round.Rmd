@@ -24,6 +24,7 @@ library(broom)
 # Set global options ------------------------------------------------------
 
 ## Global options
+options(digits = 5)
 options(max.print="100", scipen = 1, digits = 2)
 opts_chunk$set(cache=TRUE,
                prompt=FALSE,
@@ -463,6 +464,197 @@ I checked the population trajectories a little closer, and even with population 
 I suppose to answer our question for sure, I'll need to run some constant-$K$ simulations where $K$ equals the mean of the $K$ used in the cycling simulations (e.g., a constant $K$ of 550 and 2750). Then we can see what effects population cycling has by itself, independent of differing average $K$ across the simulation. However, initially it seems that the population cycles don't really increase the risk of extinction within 60 generation, but do lead to (slightly) larger and (much) more variable population declines. One other thing I could test further is starting the populations at very different points in the phase of the cycle: perhaps if we ensure that the low-point of the cycle corresponds to the largest period of decline/mismatch (which itself changes according to the other parameters) the risk of extinction might be greater. 
 
 
+# New plotting idea: lambda
+
+This is perhaps a little confusing, as I have mostly been using "lambda" to refer to the average number of offspring per mating pair/generation, as lambda is the Greek letter used to refer to the mean/variance of a Poisson distribution, which is what we're using to describe offspring number. For this section, though, I'm referring to $\lambda$ (I'll make it the Greek letter), the geometric growth rate/population multiplication rate in discrete growth models. Jeff suggested that it might lead to nicer graphs, as the interpretation of $\lamba$ is pretty clear: 1 means the population is stable, < 1 means it is getting smaller, and > 1 means it is growing. Plus, we can calculate how $\lambda$ changes through time in our simulations quite easily: is is simply $N_{t + 1}/N_{t}$, where $t$ is generation. This works best for the the constant $K$ models, of course: interpreting $\lambda$ when we have externally-imposed population cycles is a little difficult (though we could get fancy and figure out what the "baseline" $\lambda$ would be for a population exactly tracking the cycle of $K$ and see if our simulations are above or below that). 
+
+First, let's re-create our population trajectory plot for the UT/CO scenario with additive architecture and constant $K$, but plotting \lambda, not $N$, on the y axis: 
+
+```{r, fig.height=12, fig.width = 12}
+late_UT_CO %>% 
+  filter(lambda == 4) %>% 
+  group_by(init_corin, init_ednrb, fitness_width, lambda, replicate) %>% 
+  mutate(lamb = N/lag(N, n = 1, default = unique(K))) %>% 
+  ungroup() %>% 
+  left_join(selection_key) %>% 
+  mutate(ID = paste(init_corin, init_ednrb, fitness_width, lambda, replicate)) %>% 
+  ggplot(aes(x = generation, y = lamb, color = mismatch_penalty)) +
+  geom_line(aes(group = ID), alpha = 0.4) +
+  geom_smooth() +
+  theme_cowplot() +
+  geom_hline(aes(yintercept = 1), linetype = "dotted") +
+  facet_rep_grid(init_corin ~ init_ednrb, labeller = labeller(.rows = label_both, .cols = label_both), scales = "free") +
+  ggtitle("UT/CO pops, avg. offspring = 15")
+  
+```
+
+Hmm, I'm not sure I like these plots better. One of the issues (visually, not scientifically) is that the per-year declines due to mismatch aren't that visually striking: $\lambda$ seems to be around 0.96-0.97 in the years of decline before evolutionary rescue. 20 generations of 4% declines adds up in the plot of $N$, but it doesn't look like much on these plots. Though, part of the issue could be that the general trend is getting obscured by the very large amound of variance in per-generation $\lambda$ across replicate simulations. 
+
+One idea we had (for this display, and for other plots) was to replace the per-simulation trajectories with a smoothed ribbon that averages over the replicates for a particular parameter set. Let's see how that looks for these $\lambda$ plots, and maybe for the population trajectory plots as well:
+
+```{r, fig.height=12, fig.width = 12}
+late_UT_CO %>% 
+  filter(lambda == 15) %>% 
+  # filter(fitness_width == 0.5446) %>% 
+  group_by(init_corin, init_ednrb, fitness_width, lambda, replicate) %>% 
+  mutate(lamb = N/lag(N, n = 1, default = unique(K))) %>% 
+  ungroup() %>% 
+  group_by(generation, init_corin, init_ednrb, fitness_width, lambda) %>% 
+  summarise(low95 = quantile(lamb, c(0.025)),
+            up95 = quantile(lamb, c(0.975)),
+            lamb = mean(lamb)) %>% 
+  ungroup() %>% 
+  left_join(selection_key) %>% 
+  ggplot(aes(x = generation, y = lamb, ymin = low95, ymax = up95, fill = mismatch_penalty)) +
+  geom_hline(aes(yintercept = 1), linetype = "dotted") +
+  geom_line(aes(color = mismatch_penalty)) + 
+  geom_ribbon(alpha = 0.2) +
+  theme_cowplot() +
+  facet_rep_grid(init_corin ~ init_ednrb, labeller = labeller(.rows = label_both, .cols = label_both), scales = "free") +
+  ggtitle("UT/CO pops, avg. offspring = 15")
+```
+
+Hmm, I'm not sure that looks all that much better. There's so much overlap between the different mismatch penalties that the ribbons basically just become a big gray blob. We could look at just one mismatch to see:
+
+```{r, fig.height=12, fig.width = 12}
+late_UT_CO %>% 
+  filter(lambda == 15) %>% 
+  filter(fitness_width == 0.5446) %>% 
+  group_by(init_corin, init_ednrb, fitness_width, lambda, replicate) %>% 
+  mutate(lamb = N/lag(N, n = 1, default = unique(K))) %>% 
+  ungroup() %>% 
+  group_by(generation, init_corin, init_ednrb, fitness_width, lambda) %>% 
+  summarise(low95 = quantile(lamb, c(0.025)),
+            up95 = quantile(lamb, c(0.975)),
+            lamb = mean(lamb)) %>% 
+  ungroup() %>% 
+  left_join(selection_key) %>% 
+  ggplot(aes(x = generation, y = lamb, ymin = low95, ymax = up95, fill = mismatch_penalty)) +
+  geom_hline(aes(yintercept = 1), linetype = "dotted") +
+  geom_line(aes(color = mismatch_penalty)) + 
+  geom_ribbon(alpha = 0.2) +
+  theme_cowplot() +
+  facet_rep_grid(init_corin ~ init_ednrb, labeller = labeller(.rows = label_both, .cols = label_both), scales = "free") +
+  ggtitle("UT/CO pops, avg. offspring = 15")
+```
+
+Hmm, looks a little better. But I think the main original issue (relatively little visual deviance below 1 during the time of population decline) still applies. Not sure I like these better than the population trajectory plots. Let's check out how they would look using the ribbon method:
+
+
+```{r, fig.height=12, fig.width = 12}
+late_UT_CO %>% 
+  filter(lambda == 15) %>% 
+  group_by(generation, init_corin, init_ednrb, fitness_width, lambda) %>% 
+  summarise(low95 = quantile(N, c(0.025)),
+            up95 = quantile(N, c(0.975)),
+            N = mean(N)) %>% 
+  ungroup() %>% 
+  left_join(selection_key) %>% 
+  ggplot(aes(x = generation, y = N, ymin = low95, ymax = up95, fill = mismatch_penalty)) +
+  geom_hline(aes(yintercept = 5000), linetype = "dotted") +
+  geom_line(aes(color = mismatch_penalty)) + 
+  geom_ribbon(alpha = 0.5) +
+  theme_cowplot() +
+  facet_rep_grid(init_corin ~ init_ednrb, labeller = labeller(.rows = label_both, .cols = label_both), scales = "free") +
+  ggtitle("UT/CO pops, avg. offspring = 15")
+```
+
+I think these do a better job of visually representing the message of evolutionary rescue (though we'd want to fine-tune the colors and transparencies and whatnot for a publication-quality figure). 
+
+# Figure mock-ups
+
+Here I'll mock up a couple possible figures. The goal is to show: (1) the high probability of evolutionary rescue provided SGV, (2) the lack of evolutionary rescue with no SGV, and (3) the effects of genetic architecture. We could maybe drop #2, if it gets too busy. This means we can't plot variation across some of the other parameters we varied (average offspring number, strength of selection), but those don't have a huge impact on the overall outcomes of evolutionary rescue or not, more on the overall degree of decline. Same with the population cycling: this doesn't make a huger overall impact in the same way that genetic architecture does, so better to save it for the supplement. As for what values to choose for plotting those, I'll go ahead and use 15 offspring per mating pair (as it is an estimate from previous studies) and 7% weekly mismatch penalty (as it's Marketa's estimate). But we can choose differently for the final figure. 
+
+One thing to note is that Nature has different figure sizes than Science. Science uses three text columns, and figures can either be 1 column wide (5.5cm) or 2 columns wide (12cm). For our last submission, we made figure 1 (the range maps) 2 cols wide, and Figure 4 (the phenotypic mismatch) 1 col wide (5.5cm). Nature uses 2 text columns, and figures can either be one column wide (8.9 cm) or two columns/full page (18.3 cm). I assume we'll want both Fig. 1 and Fig. 4 to be 1 column wide (8.9cm), so we'll have to shrink Figure 1 and make Figure 4 bigger. For Science, we had Figure 4 be vertically oriented, to match the width restriction: map on top, bar plot on bottom. For Nature, I think it'd be better to keep the map part of Figure 4 the same with (5.5 cm) and add our simulation plots to the right side, stacked vertically. They would need to be 3.4 cm wide and 3.35 cm tall in total, to match the same height as before while matching the width needed for Nature. 
+
+So, I'll mock up a plot for showing the predicted scenario in UT/CO pops, some of the area with the most predicted mismatch. I'll do it for both $N$ and $\lambda$, and will leave aside the many, many other little details we'd need to figure out (better colors, labels, legend placement, etc). 
+
+
+```{r mocK-up with N}
+
+late_UT_CO %>%
+  mutate(dominance = "additive") %>% 
+  rbind(mutate(late_UT_CO_rec, dominance = "recessive")) %>% 
+  filter(lambda == 15) %>%
+  filter(fitness_width == 0.6562) %>% 
+  filter(init_corin == init_ednrb) %>% 
+  group_by(generation, init_corin, init_ednrb, fitness_width, dominance) %>% 
+  summarise(low95 = quantile(N, c(0.025)),
+            up95 = quantile(N, c(0.975)),
+            N = mean(N)) %>% 
+  ungroup() %>% 
+  left_join(selection_key) %>%
+  mutate(ID = paste(init_corin, init_ednrb, dominance)) %>% 
+  ggplot(aes(x = generation, y = N, ymin = low95, ymax = up95, fill = as.factor(init_corin))) +
+  guides(fill=guide_legend(title="p_i"), color = guide_legend(title = "p_i")) +
+  geom_hline(aes(yintercept = 5000), linetype = "dotted") +
+  geom_ribbon(aes(group = ID), alpha = 0.5) +
+  geom_line(aes(color = as.factor(init_corin), group = ID)) +
+  theme_cowplot() +
+  theme(legend.position = c(0.1, 0.15)) +
+  facet_rep_grid(dominance ~ ., labeller = labeller(.rows = label_both, .cols = label_both), scales = "free")
+
+ggsave("results/figures/tmp/mock_sims_N.pdf", width = 3.4*2, height = 3.35*2, units = "in")
+```
+
+```{r mocK-up with lambda}
+late_UT_CO %>%
+  mutate(dominance = "additive") %>% 
+  rbind(mutate(late_UT_CO_rec, dominance = "recessive")) %>% 
+  filter(lambda == 15) %>%
+  filter(fitness_width == 0.6562) %>% 
+  filter(init_corin == init_ednrb) %>% 
+  group_by(init_corin, init_ednrb, fitness_width, replicate, dominance) %>% 
+  mutate(lamb = N/lag(N, n = 1, default = unique(K))) %>% 
+  ungroup() %>% 
+  group_by(generation, init_corin, init_ednrb, fitness_width, dominance) %>% 
+  summarise(low95 = quantile(lamb, c(0.025)),
+            up95 = quantile(lamb, c(0.975)),
+            lamb = mean(lamb)) %>% 
+  ungroup() %>% 
+  left_join(selection_key) %>%
+  mutate(ID = paste(init_corin, init_ednrb, dominance)) %>% 
+  ggplot(aes(x = generation, y = lamb, ymin = low95, ymax = up95, fill = as.factor(init_corin))) +
+  guides(fill=guide_legend(title="p_i"), color = guide_legend(title = "p_i")) +
+  geom_hline(aes(yintercept = 1), linetype = "dotted") +
+  geom_ribbon(aes(group = ID), alpha = 0.5) +
+  geom_line(aes(color = as.factor(init_corin), group = ID)) + 
+  theme_cowplot() +
+  theme(legend.position = c(0.08, 0.4)) +
+  facet_rep_grid(dominance ~ ., labeller = labeller(.rows = label_both, .cols = label_both), scales = "free")
+
+ggsave("results/figures/tmp/mock_sims_lambda.pdf", width = 3.4*2, height = 3.35*2, units = "in")
+```
+
+
+```{r mocK-up with lambda no ribbon}
+late_UT_CO %>%
+  mutate(dominance = "additive") %>% 
+  rbind(mutate(late_UT_CO_rec, dominance = "recessive")) %>% 
+  filter(lambda == 15) %>%
+  filter(fitness_width == 0.6562) %>% 
+  filter(init_corin == init_ednrb) %>% 
+  group_by(init_corin, init_ednrb, fitness_width, replicate, dominance) %>% 
+  mutate(lamb = N/lag(N, n = 1, default = unique(K))) %>% 
+  ungroup() %>% 
+  group_by(generation, init_corin, init_ednrb, fitness_width, dominance) %>% 
+  summarise(low95 = quantile(lamb, c(0.025)),
+            up95 = quantile(lamb, c(0.975)),
+            lamb = mean(lamb)) %>% 
+  ungroup() %>% 
+  left_join(selection_key) %>%
+  mutate(ID = paste(init_corin, init_ednrb, dominance)) %>% 
+  ggplot(aes(x = generation, y = lamb, ymin = low95, ymax = up95, fill = as.factor(init_corin))) +
+  guides(fill=guide_legend(title="p_i"), color = guide_legend(title = "p_i")) +
+  geom_hline(aes(yintercept = 1), linetype = "dotted") +
+  #geom_ribbon(aes(group = ID), alpha = 0.5) +
+  geom_line(aes(color = as.factor(init_corin), group = ID)) + 
+  theme_cowplot() +
+  theme(legend.position = c(0.08, 0.4)) +
+  facet_rep_grid(dominance ~ ., labeller = labeller(.rows = label_both, .cols = label_both), scales = "free")
+
+ggsave("results/figures/tmp/mock_sims_lambda_noCI.pdf", width = 3.4*2, height = 3.35*2, units = "in")
+```
 # Next steps
 
 I think the main question is to finalize the carrying capacity, to make sure we're in the proper parameter space (and to re-run a bunch of simulations for that if necessary). 
