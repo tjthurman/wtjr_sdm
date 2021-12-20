@@ -38,7 +38,11 @@ colo_png <- args[6]
 # colo_pdf <- "results/figures/colorado.pdf"
 # colo_png <- "results/figures/colorado.png"
 
-
+# For 83 mm
+# us_pdf <- "results/figures/current_pheno_map_83mm.pdf"
+# us_png <- "results/figures/current_pheno_map_83mm.png"
+# colo_pdf <- "results/figures/colorado_83mm.pdf"
+# colo_png <- "results/figures/colorado_83mm.png"
 
 # Load data -----------------------------------------------------------
 pred.new <- raster(map_file)
@@ -59,11 +63,11 @@ pred.pheno.df <- as(pred.new, "SpatialPixelsDataFrame") %>%
 names(pred.pheno.df) <- c("probWhite", "Long", "Lat", "probBrown")
 
 us <- ggplot() +
-  geom_sf(data = state_prov, color = "grey61", fill = rgb(133,141,147, maxColorValue = 255)) +
+  geom_sf(data = state_prov, color = "grey61", fill = rgb(133,141,147, maxColorValue = 255), size = 0.25) +
   geom_tile(data = pred.pheno.df, aes(fill = probBrown, color = probBrown, x = Long, y = Lat)) +
-  geom_sf(data = state_prov, color = "grey61", fill = NA, ) +
-  geom_sf(data = countries, color = "grey10", fill = NA) +
-  geom_sf(data= coast, color = "grey10", fill = NA) +
+  geom_sf(data = state_prov, color = "grey61", fill = NA, size = 0.25) +
+  geom_sf(data = countries, color = "grey10", fill = NA, size = 0.25) +
+  geom_sf(data= coast, color = "grey10", fill = NA, size = 0.25) +
   coord_sf(
     xlim = c(-132, -80.5),
     ylim = c(32, 56.5),
@@ -71,31 +75,41 @@ us <- ggplot() +
     expand = F) +
   scale_fill_gradientn(colors = pal(100), guide = F) +
   scale_color_gradientn(colors = pal(100), name = NULL, breaks = c(0, 0.5, 1)) +
-  guides(color = guide_colorbar(label.position = "left", ticks = T, ticks.colour = "black", frame.colour = "black", frame.linewidth = 1.3, barwidth = 1.5, barheight = 7)) +
-  xlab("") +
-  ylab("") +
+  guides(color = guide_colorbar(label.position = "left", 
+                                ticks = T, 
+                                ticks.colour = "black", 
+                                frame.colour = "black", 
+                                frame.linewidth = 1, 
+                                barwidth = unit(2.5, "mm"), 
+                                barheight = unit(10, "mm"),
+                                label.hjust = 1)) +
   scale_y_continuous(breaks = seq(35, 55, by = 5)) + 
   scale_x_continuous(breaks = seq(-130, -100, by = 10)) +
   theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
-        legend.position = c(0.105, 0.36),
+        legend.position = c(0.09, 0.36),
         legend.box.background = element_blank(),
         legend.background = element_blank(),
+        legend.text.align = 1, 
+        legend.box.margin = margin(0,0,0,0, unit = "pt"),
+        legend.margin = margin(0,0,0,0, unit = "pt"),
         legend.key = element_blank(),
-        axis.ticks = element_line(size = 1.5),
-        axis.ticks.length = unit(0.25, "cm"),
-        axis.text = element_text(size = 14, color = "black"),
+        legend.text = element_text(size = 5, margin = margin(0,0,0,0, unit = "pt"), hjust = 1),
+        axis.ticks = element_line(size = 1),
+        axis.title = element_blank(), 
+        axis.text = element_text(size = 5, color = "black"),
         panel.background = element_rect(fill = "white"),
         panel.border = element_rect(fill = NA, color = "black", size = 1.5),
-        plot.margin = unit(c(0.1, 0.5, 0.1, 0.1), "cm")) +
+        plot.margin = unit(c(0, 0, 0, 0), "cm")) +
   ggsn::scalebar(x.min = -132, x.max = -80.5,
            y.min = 32, y.max = 56.5, 
-           dist  = 300, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -122.48, y = 35))
+           dist  = 300, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -123.5, y = 33.5), st.size = 5/.pt, border.size = 0.25)
+
+ggsave(us, filename = us_pdf, width = 83, height = 55.6, units = "mm")
+ggsave(us, filename = us_png, width = 83, height = 55.6, units = "mm", dpi = 72)
 
 
 
-ggsave(us, filename = us_pdf, width = 9.7, height = 7)
-ggsave(us, filename = us_png, width = 9.7, height = 7, dpi = 72)
 
 # Colorado Insert ---------------------------------------------------------
 # Get locations of genomics samples
@@ -142,6 +156,8 @@ cluster_plots <- unique_gps %>%
             Long = mean(roundLong),
             samples = sum(n))
 
+
+# Need to figure out how to match legend key size with the displayed size
 # Then, plot. Will use ggplot so I can scale circles by sample size
 colorado <- ggplot() +
   aes(x = Long, y = Lat) +
@@ -151,27 +167,32 @@ colorado <- ggplot() +
     clip = "on", 
     expand = F) +
   geom_tile(data = pred.pheno.df, aes(fill = probBrown, color = probBrown)) +
+  scale_fill_gradientn(colors = pal(100), guide = F) +
+  scale_color_gradientn(colors = pal(100), guide = F) +
+  geom_point(data  = cluster_plots, aes(size = samples), color = "black", fill = "#F4742A", shape = 21, stroke = 0.25) +
+  scale_size_continuous(range= c(0.75, 3.5)) +
   theme(panel.background = element_rect(fill = rgb(133,141,147, maxColorValue = 255), colour = rgb(133,141,147, maxColorValue = 255)),
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
-        legend.position = c(0.89, 0.27),
+        panel.border = element_rect(colour = "black", fill=NA),
+        legend.position = c(0.86, 0.245),
         legend.background = element_blank(),
+        legend.margin = margin(0,0,0,0, "pt"),
         legend.key = element_blank(),
-        legend.text = element_text(color = "white", size = 21, face = "bold"),
-        legend.title = element_text(color = "white", size = 23, face = "bold", vjust = 0, margin = margin(t = 0, r = 0, b = 0, l = 0, unit = "pt")),
-        legend.spacing.y = unit(1.5, "pt")) +
-  scale_fill_gradientn(colors = pal(100), guide = F) +
-  scale_color_gradientn(colors = pal(100), guide = F) +
-  geom_point(data  = cluster_plots, aes(size = samples), color = "black", fill = "#F4742A", shape = 21, stroke = 1) +
-  scale_size_continuous(range= c(6, 14)) +
-  ggsn::scalebar(x.min = -109, x.max = -102,
-           y.min = 37, y.max = 41, 
-           dist  = 50, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -102.6, y = 37.25), st.color = "white", st.size = 6, st.dist = 0.025) 
+        legend.key.size = unit(0.2, "mm"),
+        legend.text = element_text(color = "white", size = 5, face = "bold", margin = margin(0,0,0,0, unit = "mm")),
+        legend.title = element_text(color = "white", size = 5, face = "bold", vjust = 0, margin = margin(t = 0, r = 0, b = 0, l = 0, unit = "pt")),
+        legend.spacing = unit(.03, "mm"),
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        plot.margin = unit(c(0.05, 0, 0, 0), "cm"),
+        plot.background = element_rect(fill = "transparent", color = NA)) +
+  labs(x = NULL, y = NULL)
 
+ggsave(colorado, filename = colo_pdf, width = 31.5, height = 23.2, unit = "mm")
 
-ggsave(colorado, filename = colo_pdf, width = 7, height = 6)
-
-ggsave(colorado, filename = colo_png, width = 7, height = 6, dpi = 72)
+ggsave(colorado, filename = colo_png, width = 31.5, height = 23.2, unit = "mm", dpi = 72)
 
   
 
