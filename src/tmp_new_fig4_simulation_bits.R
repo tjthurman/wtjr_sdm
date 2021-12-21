@@ -99,7 +99,7 @@ ggsave("results/figures/tmp/sim_pop_traj_for_jeff.pdf", width = 6, height = 7.5,
 # Plots for figure 4 ------------------------------------------------------
 
 # Panel B using both additive and recessive
-bind_rows(additive, recessive) %>% 
+trajectories <- bind_rows(additive, recessive) %>% 
   filter(lambda == 15) %>%
   filter(fitness_width == 0.6562) %>% 
   filter(init_corin == init_ednrb) %>% 
@@ -133,7 +133,7 @@ bind_rows(additive, recessive) %>%
         axis.line = element_line(size = 0.25),
         legend.title = element_markdown(size = 5, margin= margin(0,0,0,0, unit = "pt"),  padding = unit(c(0,0,0,0), "pt")),
         legend.text = element_text(size = 5, margin= margin(0,0,0,0, unit = "pt")),
-        legend.key.size = unit(1, "mm"),
+        legend.key.size = unit(1.5, "mm"),
         legend.spacing = unit(0, "mm"),
         legend.box.margin = margin(0,0,0,0, unit = "pt"),
         legend.box.spacing = unit(0, "mm"),
@@ -148,7 +148,7 @@ bind_rows(additive, recessive) %>%
         strip.background = element_blank(),
         strip.placement = "inside")
 
-ggsave("results/figures/sim_pop_trajectories.pdf", width = 31.5, height = 30.5, units = "mm")
+ggsave(trajectories, filename =  "results/figures/sim_pop_trajectories_83mm.pdf", width = 29, height = 31.5, units = "mm")
 
 
 
