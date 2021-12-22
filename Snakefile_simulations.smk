@@ -22,7 +22,7 @@ replicates = list(range(1,21)) # second number = 1 more than the desired number 
 
 
 
-# Filename pattern for the output files from each sim
+# Filename pattern for the output files from each sim. Additive constant K
 res_pattern_additive_constant_K = "slim_results/additive_constantK/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_{output_file}"
 
 # And expand all varying parameters to create the list of desired files
@@ -41,7 +41,7 @@ sim_results_additive_constantK = expand(res_pattern_additive_constant_K,
                                         output_file = output_files)
 
 
-# Filename pattern for the output files from each sim
+# Filename pattern for the output files from each sim. Recessive constant K
 res_pattern_recessive_constant_K = "slim_results/recessive_constantK/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_{output_file}"
 
 # And expand all varying parameters to create the list of desired files
@@ -108,8 +108,8 @@ sim_results_additive_varyK_large = expand(res_pattern_additive_varyK,
 
 rule all:
     input:
-        #sim_results_additive_constantK,
-        #sim_results_recessive_constantK,
+        sim_results_additive_constantK,
+        sim_results_recessive_constantK,
         sim_results_additive_varyK_small, 
         sim_results_additive_varyK_large
 

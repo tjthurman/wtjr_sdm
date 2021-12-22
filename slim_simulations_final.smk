@@ -1,7 +1,7 @@
 ###############
 ##   SETUP   ##
 ############### 
-localrules: all
+localrules: all, compile_slim_results
 
 # Output file setup
 output_files = ["early.csv", "late.csv", "seed.txt"]
@@ -78,6 +78,26 @@ sim_results_additive_varyK = expand(res_pattern_additive_varyK,
                                     offspring = offsprings,
                                     replicate = replicates,
                                     output_file = output_files)
+                                
+
+# Filename pattern for the output files from each sim. Recessive constant K
+res_pattern_recessive_constant_K_SSH = "slim_results_final/recessive_constantK_SSH/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_{output_file}"
+
+# And expand all varying parameters to create the list of desired files
+sim_results_recessive_constantK_SSH = expand(res_pattern_recessive_constant_K_SSH,                                
+                                        gen = gens,
+                                        K = Ks,
+                                        initPop = initPops,
+                                        iCorin = iCorins,
+                                        initOpt = [0.13],
+                                        finalOpt = [0.876],
+                                        selection = selections,
+                                        H2 = H2s,
+                                        offspring = offsprings,
+                                        replicate = replicates,
+                                        output_file = output_files)
+
+
 
 ###############
 ## Pipeline  ##
@@ -87,10 +107,11 @@ sim_results_additive_varyK = expand(res_pattern_additive_varyK,
 
 
 rule all:
-    input:
-        sim_results_additive_constantK,
-        sim_results_recessive_constantK,
-        sim_results_additive_varyK 
+    input: # slim simulation summaries
+        "results/slim_summaries/additive_constantK.csv",
+        "results/slim_summaries/additive_varyK.csv",
+        "results/slim_summaries/recessive_constantK.csv",
+        "results/slim_summaries/SSH_constantK.csv"
 
 rule sim_additive_constantK:
     input:
@@ -135,4 +156,38 @@ rule sim_additive_varyK:
     shell:
         """
         slim -d generations={wildcards.gen} -d min_K={wildcards.minK} -d max_K={wildcards.maxK} -d period={wildcards.period} -d start_K={wildcards.startK} -d initial_dec={wildcards.initDec} -d initFreqCorin={wildcards.iCorin} -d initFreqEDNRB={wildcards.iEDNRB} -d initOptPheno={wildcards.initOpt} -d finalOptPheno={wildcards.finalOpt} -d fitFuncWidth={wildcards.selection} -d h2={wildcards.H2} -d offspringPoisLambda={wildcards.offspring}  -d replicate={wildcards.replicate} -d "outputDir='slim_results_final/additive_varyK'" src/slim_simulations/varying_K_additive.slim > {log} 
+        """
+    
+
+rule sim_recessive_constantK_SSH:
+    input:
+    output:
+        "slim_results_final/recessive_constantK_SSH/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_early.csv",
+        "slim_results_final/recessive_constantK_SSH/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_late.csv",
+        "slim_results_final/recessive_constantK_SSH/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_seed.txt"
+    log:
+        "logs/slim/recessive_SSH/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}.log"
+    resources:
+        cpus=1
+    shell:
+        """
+        slim -d generations={wildcards.gen} -d K={wildcards.K} -d initPopSize={wildcards.initPop} -d initFreqCorin={wildcards.iCorin} -d initOptPheno={wildcards.initOpt} -d finalOptPheno={wildcards.finalOpt} -d fitFuncWidth={wildcards.selection} -d h2={wildcards.H2} -d offspringPoisLambda={wildcards.offspring}  -d replicate={wildcards.replicate} -d "outputDir='slim_results_final/recessive_constantK_SSH'" src/slim_simulations/constant_K_recessive_CLI_SSH.slim > {log} 
+        """
+
+rule compile_slim_results:
+    input:
+        sim_results_additive_constantK,
+        sim_results_recessive_constantK,
+        sim_results_additive_varyK,
+        sim_results_recessive_constantK_SSH
+    output:
+        "results/slim_summaries/additive_constantK.csv",
+        "results/slim_summaries/additive_varyK.csv",
+        "results/slim_summaries/recessive_constantK.csv",
+        "results/slim_summaries/SSH_constantK.csv"
+    resources:
+        cpus=1
+    shell:
+        """
+        Rscript src/compile_slim_results.R
         """
