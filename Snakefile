@@ -16,6 +16,12 @@ CON_STATUSES=["extirpated","broad_extirp","local_extirp","poss_decline","pres_st
 localrules: all, dag, filegraph, help
 
 
+subworkflow slim_simulations:
+    workdir:
+        "/home/tt164677e/tim_beegfs/wtjr_sdm"
+    snakefile:
+        "/home/tt164677e/tim_beegfs/wtjr_sdm/slim_simulations_final.smk"
+
 # Final desired outputs:
 # 1) Performance plots from ENMeval (ensures that all ENMeval stuff runs)
 # 2) the statistics reported in the main text
@@ -27,6 +33,11 @@ rule all:
         # Performance plots to ensure all thinning and ENMeval runs happen
         # and not just the final dataset
         expand("results/enmeval/performance_plot_{dist}km.pdf", dist = dataset_dists),
+        # Slim simulations
+        slim_simulations("results/slim_summaries/additive_constantK.csv"),
+        slim_simulations("results/slim_summaries/additive_varyK.csv"),
+        slim_simulations("results/slim_summaries/recessive_constantK.csv"),
+        slim_simulations("results/slim_summaries/SSH_constantK.csv"),
         # Stats in main text
         "results/conservation/broad_chisq_res.csv", # Chisq results as table
         "results/conservation/cons_by_current_color.RData", # Chisq results as R object
@@ -360,6 +371,9 @@ rule supplemental_and_analysis:
         Rscript src/supp_figs_and_tables.R {input.snowcover_glm_rdata} {input.srt_glm_rdata} {input.consv_pheno_overlap} {input.current_srt_pheno} {input.future_srt_pheno} {input.current_cover_pheno} {output.snow_cover_table} {output.snow_cover_metrics} {output.srt_table} {output.srt_metrics} {output.broad_chisq_res} {output.pheno_compare_map} {output.glm_method_compare_map} {output.percent_brown_change} {output.discrete_current_pheno_map} {output.glm_method_compare_metrics}
         """
  
+
+
+
 # --- Misc --- #
 ## dag               : makes a DAG graph for this pipeline
 rule dag:
