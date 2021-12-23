@@ -220,18 +220,23 @@ map_pheno_future <- ggplot() +
 
 
 # Difference in SRT vs. snow cover models ---------------------------------
-current_snow_cover <- raster(current_cover_file) %>% 
-  projectRaster(., crs = crs(current_pheno)) %>% 
-  aggregate(., fact = 4, expand = F) 
-# Crop
-current_snow_cover_cropped <- crop(current_snow_cover, current_pheno)
-# Align extents so I can map
-extent(current_pheno) <- alignExtent(current_pheno, current_snow_cover_cropped)
-# map
-current_snow_cover_masked <- mask(current_snow_cover_cropped, current_pheno)
-  
+# first, calculate model difference metrics on the full
+# resolution data
+
+# First, get the current SRT results, but do not aggregate
+cur_SRT_full <- raster(current_file) 
+# Then, get current snow cover without aggregation
+cur_SC_full <- raster(current_cover_file)
+
+# reproject the current SRT to be in terms of the current SC
+cur_SRT_full <- projectRaster(from = cur_SRT_full, to = cur_SC_full)
+
+# mask the current snow cover
+cur_SC_full_masked <- mask(cur_SC_full, cur_SRT_full)
+
+
 # Get model difference, do it in terms of probBrown
-model_difference <- (1- current_snow_cover_masked) - (1 - current_pheno)
+model_difference <- (1- cur_SC_full_masked) - (1 - cur_SRT_full)
 
 # Convert to DF
 model_difference_current_probBrown <- model_difference %>% 
@@ -243,17 +248,27 @@ names(model_difference_current_probBrown) <- c("difference", "Long", "Lat")
 
 # Calculate and save some metrics
 model_diff_metrics <- tibble(mean_diff = mean(model_difference_current_probBrown$difference),
-                                 median_diff = median(model_difference_current_probBrown$difference),
-                                 sd_diff = sd(model_difference_current_probBrown$difference),
-                                 MAE_diff = mean(abs(model_difference_current_probBrown$difference))) %>% 
+                             median_diff = median(model_difference_current_probBrown$difference),
+                             sd_diff = sd(model_difference_current_probBrown$difference),
+                             MAE_diff = mean(abs(model_difference_current_probBrown$difference))) %>% 
   write.csv(., glm_method_compare_metrics, row.names = F)
+
+# Then, aggregate to a lower resolution for plotting
+model_difference_lowres <- aggregate(model_difference, fact = 4)
+
+# convert to DF
+model_difference_current_probBrown_lowres <- model_difference_lowres %>% 
+  as(., "SpatialPixelsDataFrame") %>% 
+  as.data.frame(.) %>%
+  dplyr::filter(!is.na(.[1])) 
+names(model_difference_current_probBrown_lowres) <- c("difference", "Long", "Lat")
 
 # Plot
 diff_pal <- colorRampPalette(colors = c("#762a83", "#f7f7f7", "#1b7837"))
 
 map_model_difference <- ggplot() +
   geom_sf(data = state_prov, color = "grey61", fill = rgb(133,141,147, maxColorValue = 255), size = 0.25) +
-  geom_tile(data = model_difference_current_probBrown, aes(fill = difference, color = difference, x = Long, y = Lat)) +
+  geom_tile(data = model_difference_current_probBrown_lowres, aes(fill = difference, color = difference, x = Long, y = Lat)) +
   geom_sf(data = state_prov, color = "grey61", fill = NA, size = 0.25) +
   geom_sf(data = countries, color = "grey10", fill = NA, size = 0.25) +
   geom_sf(data= coast, color = "grey10", fill = NA, size = 0.25) +
