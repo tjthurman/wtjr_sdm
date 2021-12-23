@@ -43,8 +43,8 @@ rule all:
         "results/conservation/cons_by_current_color.RData", # Chisq results as R object
         "results/pheno/percent_brown_by_time.csv", # Percent brown at different times
         # Figure 1 elements
-        "results/figures/current_pheno_map.pdf", # Figure 1A
-        "results/figures/colorado.pdf", # Figure 1C 
+        "results/figures/current_pheno_map_89mm.pdf", # Figure 1A
+        "results/figures/colorado_89mm.pdf", # Figure 1C 
         # Figure 4 elements
         "results/figures/pheno_change_map.pdf", # Figure 4A
         "results/figures/horizontal_consv.pdf", # Figure 4B
@@ -267,10 +267,10 @@ rule figure_1_maps:
         pheno_range = "results/pheno/current_predicted_probWhite_SDMrange.tif",
         sample_coords = "raw_data/sample_coordinates_74individuals.txt"
     output:
-        colo_pdf= "results/figures/colorado.pdf",
-        colo_png= "results/figures/colorado.png",
-        us_pdf = "results/figures/current_pheno_map.pdf",
-        us_png = "results/figures/current_pheno_map.png"
+        colo_pdf= "results/figures/colorado_89mm.pdf",
+        colo_png= "results/figures/colorado_89mm.png",
+        us_pdf = "results/figures/current_pheno_map_89mm.pdf",
+        us_png = "results/figures/current_pheno_map_89mm.png"
     resources:
         cpus=1
     shell:

@@ -30,22 +30,17 @@ colo_pdf <- args[5]
 colo_png <- args[6]
 
 
-# For tunning as script
+# For running as script
 # map_file <- "results/pheno/current_predicted_probWhite_SDMrange.tif"
 # colo_samples <- "raw_data/sample_coordinates_74individuals.txt"
-# us_pdf <- "results/figures/current_pheno_map.pdf"
-# us_png <- "results/figures/current_pheno_map.png"
-# colo_pdf <- "results/figures/colorado.pdf"
-# colo_png <- "results/figures/colorado.png"
-
-# For 83 mm
-# us_pdf <- "results/figures/current_pheno_map_83mm.pdf"
-# us_png <- "results/figures/current_pheno_map_83mm.png"
-# colo_pdf <- "results/figures/colorado_83mm.pdf"
-# colo_png <- "results/figures/colorado_83mm.png"
+# us_pdf <- "results/figures/current_pheno_map_89mm.pdf"
+# us_png <- "results/figures/current_pheno_map_89mm.png"
+# colo_pdf <- "results/figures/colorado_89mm.pdf"
+# colo_png <- "results/figures/colorado_89mm.png"
 
 # Load data -----------------------------------------------------------
-pred.new <- raster(map_file)
+pred.new <- raster(map_file) %>% 
+  aggregate(., fact = 4)
 
 
 state_prov <- ne_states(c("united states of america", "canada"), returnclass = "sf")
