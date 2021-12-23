@@ -24,14 +24,11 @@ args = commandArgs(trailingOnly=TRUE)
 res.folder <- args[1]
 all_metrics_file <- args[2]
 best_metrics_file <- args[3]
-best_metrics_plot <- args[4]
-
 
 # For running outside snakemake
 # res.folder <- "results/enmeval/"
 # all_metrics_file <- "results/enmeval/enmeval_metrics.csv"
 # best_metrics_file <- "results/enmeval/enmeval_best_model_per_thin_AIC.csv"
-# best_metrics_plot <- "results/enmeval/performance_plot_best_models.pdf"
 
 # Load results and plot them ----------------------------------------------
 
@@ -78,32 +75,3 @@ best_mods <- sorted %>%
   group_by(thin_dist) %>% 
   filter(AICc == min(AICc))
 write.csv(x = best_mods, file = best_metrics_file, row.names = F)
-
-
-# Performance plot of best model in each dataset
-means <- best_mods %>%
-  dplyr::select(-contains("var")) %>%
-  pivot_longer(cols = c(contains("avg"), train.AUC, parameters), names_to = "metric", values_to = "mean") %>%
-  mutate(metric = str_remove(metric, pattern = "avg\\."))
-vars <- best_mods %>%
-  dplyr::select(-contains("avg"), -train.AUC, -parameters) %>%
-  pivot_longer(cols = contains("var"), names_to = "metric", values_to = "vars") %>%
-  mutate(metric = str_remove(metric, pattern = "var\\."))
- 
-means %>%
-  left_join(vars) %>%
-  mutate(sd = sqrt(vars),
-         n = 4) %>%
-  mutate(se = sd/sqrt(n)) %>%
-  mutate(metric = fct_relevel(metric, "train.AUC", "test.AUC",
-                              "diff.AUC", "test.or10pct", "parameters")) %>% 
-  separate(thin_dist, into = c("thin_dist", "extra"), sep = -2, convert = T) %>%
-  ggplot(aes(x = as.factor(thin_dist), y = mean, ymin = mean - 1.96*se, ymax = mean + 1.96*se)) +
-  geom_pointrange() +
-  ggtitle(paste0("Performance metrics across datasets")) +
-  xlab("Thinning distance of dataset") +
-  ylab("value, +/- approx. 95% CI when possible") +
-  facet_rep_wrap(facets = vars(metric), scales = "free_y", nrow = 2, ncol = 3) +
-  theme_cowplot() +
-  ggsave(filename = best_metrics_plot,
-         width = 12, height = 7, units = "in")

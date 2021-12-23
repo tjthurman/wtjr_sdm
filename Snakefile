@@ -50,18 +50,16 @@ rule all:
         "results/figures/horizontal_consv.pdf", # Figure 4B
         "results/figures/density_probBrown_insert.pdf", # Figure 4A insert
         # Supplementary figures, tables, and analysis
-        "results/enmeval/performance_plot_best_models.pdf", # Figure S1
-        "results/figures/supplemental/pheno_compare_maps.pdf", # Figure S24
-        "results/figures/supplemental/model_difference_map.pdf", # Figure S25
-        "results/pheno/model_difference_metrics.csv", # stats for Figure S25 caption
-        "results/figures/supplemental/percent_brown_change.pdf", # Figure S26
-        "results/figures/supplemental/discrete_current_pheno_map.pdf", # Figure S27
-        "results/pheno/glm_table_current_snow_cover.csv", # Table S1A
-        "results/pheno/glm_table_current_srt.csv", # Table S2B
-        "results/pheno/glm_metrics_current_snow_cover.csv", # Table S2A
-        "results/pheno/glm_metrics_current_srt.csv" # Table S2B
-        
-                
+        "results/pheno/glm_table_current_snow_cover.csv",
+        "results/pheno/glm_metrics_current_snow_cover.csv",
+        "results/pheno/glm_table_current_srt.csv",
+        "results/pheno/glm_metrics_current_srt.csv",
+        "results/conservation/broad_chisq_res.csv",
+        "results/figures/supplemental/extended_data_SDMs.pdf",
+        "results/figures/supplemental/extended_data_SDMs.jpeg",
+        "results/pheno/model_difference_metrics.csv"
+
+      
 ## curate_occur_data   : process WTJR occurrence data
 # Renders an Rmarkdown report on the data curation process
 # inputs and outputs are hard-coded into the data_curation.Rmd script
@@ -212,15 +210,14 @@ rule process_ENMeval_res:
     output:
         expand("results/enmeval/performance_plot_{dist}km.pdf", dist = dataset_dists),
         all_models_metrics = "results/enmeval/enmeval_metrics.csv",
-        best_models_metrics = "results/enmeval/enmeval_best_model_per_thin_AIC.csv",
-        best_models_plot = "results/enmeval/performance_plot_best_models.pdf"
+        best_models_metrics = "results/enmeval/enmeval_best_model_per_thin_AIC.csv"
     params:
         indir="results/enmeval/"
     resources:
         cpus=1
     shell:
         """
-        Rscript src/process_ENMeval_results.R {params.indir} {output.all_models_metrics} {output.best_models_metrics} {output.best_models_plot}
+        Rscript src/process_ENMeval_results.R {params.indir} {output.all_models_metrics} {output.best_models_metrics}
         """
 
 ## sdm_range_raster: make rasters of the SDM rangemaps from the best model
@@ -352,27 +349,24 @@ rule supplemental_and_analysis:
         consv_pheno_overlap = "results/conservation/cons_by_current_color.RData",
         current_srt_pheno = "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif",
         future_srt_pheno = "results/pheno/future_predicted_probWhite_SDMrange.tif",
-        current_cover_pheno = "results/pheno/current_predicted_probWhite_SDMrange.tif"
+        current_cover_pheno = "results/pheno/current_predicted_probWhite_SDMrange.tif",
+        best_metrics_file = "results/enmeval/enmeval_best_model_per_thin_AIC.csv"
     output:
         snow_cover_table = "results/pheno/glm_table_current_snow_cover.csv",
         snow_cover_metrics = "results/pheno/glm_metrics_current_snow_cover.csv",
         srt_table = "results/pheno/glm_table_current_srt.csv",
         srt_metrics = "results/pheno/glm_metrics_current_srt.csv",
         broad_chisq_res = "results/conservation/broad_chisq_res.csv",
-        pheno_compare_map = "results/figures/supplemental/pheno_compare_maps.pdf",
-        glm_method_compare_map = "results/figures/supplemental/model_difference_map.pdf",
-        percent_brown_change = "results/figures/supplemental/percent_brown_change.pdf",
-        discrete_current_pheno_map = "results/figures/supplemental/discrete_current_pheno_map.pdf",
+        ext_data_sdm_fig = "results/figures/supplemental/extended_data_SDMs.pdf", 
+        ext_data_sdm_fig_jpg = "results/figures/supplemental/extended_data_SDMs.jpeg", 
         glm_method_compare_metrics = "results/pheno/model_difference_metrics.csv"
     resources:
         cpus=1
     shell:
         """
-        Rscript src/supp_figs_and_tables.R {input.snowcover_glm_rdata} {input.srt_glm_rdata} {input.consv_pheno_overlap} {input.current_srt_pheno} {input.future_srt_pheno} {input.current_cover_pheno} {output.snow_cover_table} {output.snow_cover_metrics} {output.srt_table} {output.srt_metrics} {output.broad_chisq_res} {output.pheno_compare_map} {output.glm_method_compare_map} {output.percent_brown_change} {output.discrete_current_pheno_map} {output.glm_method_compare_metrics}
+        Rscript src/supp_figs_and_tables.R {input.snowcover_glm_rdata} {input.srt_glm_rdata} {input.consv_pheno_overlap} {input.current_srt_pheno} {input.future_srt_pheno} {input.current_cover_pheno} {input.best_metrics_file} {output.snow_cover_table} {output.snow_cover_metrics} {output.srt_table} {output.srt_metrics} {output.broad_chisq_res} {output.ext_data_sdm_fig} {output.ext_data_sdm_fig_jpg} {output.glm_method_compare_metrics}
         """
- 
-
-
+        
 
 # --- Misc --- #
 ## dag               : makes a DAG graph for this pipeline

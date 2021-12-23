@@ -48,17 +48,22 @@ results/figures/supplemental/
 docs/methods_for_mafalda.docx
 src/tmp_comparison.R
 src/maps_for_jeff.R
+src/slim_simulations/varying_K_scratch.R
 docs/Ferreira_et_al_Coat_color_PhDversion_Main_TJT.docx
 docs/Ferreira_et_al_Coat_color_PhDversion_SM_TJT.docx
 docs/description_of_simulations_cache/
 docs/sim_results_first_round_cache/
 docs/sim_results_first_round_files/
+results/tmp/
+results/figures/tmp/
+tmp_models_from_mafalda/
+results/figures/PDF/
+results/figures/maps_for_jeff/
 
-
-# Slim model results
+# Full Slim model results
+# way too many files to track
 initial_slim_res.tar.gz
 slim_results/*
 slim_results_final/*
 logs/slurm_logs/*
 logs/slim/*
-
