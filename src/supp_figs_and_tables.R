@@ -15,6 +15,7 @@ library(ggsn)
 library(broom)
 library(gridExtra)
 library(cowplot)
+library(lemon)
 
 
 

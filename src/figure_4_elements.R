@@ -12,6 +12,8 @@ library(rnaturalearthhires)
 library(raster)
 library(ggsn)
 library(cowplot)
+library(lemon)
+library(ggtext)
 
 
 # Get arguments -----------------------------------------------------------
