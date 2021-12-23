@@ -28,21 +28,23 @@ args = commandArgs(trailingOnly=TRUE)
 
 current_file <- args[1]
 future_file <- args[2]
-conservation_overlap <- args[3]
-map_out_pdf <- args[4]
-map_out_png <- args[5]
-cons_plot_out <- args[6]
+slim_res_additive <- args[3]
+slim_res_recessive <- args[4]
+map_out_pdf <- args[5]
+map_out_png <- args[6]
 insert_plot_out <- args[7]
-perc_brown_csv_out <- args[8]
+pop_traj_plot_out <- args[8]
+perc_brown_csv_out <- args[9]
 
 # for running as a script
 # current_file <- "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif"
 # future_file <- "results/pheno/future_predicted_probWhite_SDMrange.tif"
-# conservation_overlap <- "results/conservation/cons_by_current_color.RData"
-# map_out_pdf <- "results/figures/pheno_change_map_83mm.pdf"
-# map_out_png <- "results/figures/pheno_change_map_83mm.png"
-# cons_plot_out <- "results/figures/horizontal_consv.pdf"
+# slim_res_additive <- "results/slim_summaries/additive_constantK.csv"
+# slim_res_recessive <- "results/slim_summaries/recessive_constantK.csv"
+# map_out_pdf <- "results/figures/pheno_change_map_89mm.pdf"
+# map_out_png <- "results/figures/pheno_change_map_89mm.png"
 # insert_plot_out <- "results/figures/density_probBrown_insert.pdf"
+# pop_traj_plot_out <- "results/figures/sim_pop_trajectories_89mm.pdf"
 # perc_brown_csv_out <- "results/pheno/percent_brown_by_time.csv"
 
 # Load data ---------------------------------------------------------------
@@ -52,17 +54,17 @@ state_prov <- ne_states(c("united states of america", "canada"), returnclass = "
 countries <- ne_countries(continent = "north america", scale = 10, returnclass = "sf")
 coast <- ne_coastline(scale = 10, returnclass = "sf")
 
-load(conservation_overlap)
-
 # Plot US map -----------------------------------------------------------
 pal <- colorRampPalette(colors = c(rgb(41, 57, 113, maxColorValue = 255), # mills 2018  USING THIS AT THE MOMENT
                                    rgb(248, 236, 63,  alpha = 0.8, maxColorValue = 255),
                                    rgb(212, 59, 15, maxColorValue = 255)))
 
+# Full resolution
+difference <- (1- future_pheno) - (1 - current_pheno) 
+# Lower res for plotting
+difference_lowres <- aggregate(difference, fact = 4)
 
-difference <- (1- future_pheno) - (1 - current_pheno)
-
-change.df <- as(difference, "SpatialPixelsDataFrame") %>% 
+change.df <- as(difference_lowres, "SpatialPixelsDataFrame") %>% 
   as.data.frame(.) %>%
   dplyr::filter(!is.na(.[1]))
 names(change.df) <- c("change_probBrown", "Long", "Lat")
@@ -85,7 +87,7 @@ us <- ggplot() +
                                 barwidth = unit(1.75, units = "mm"),
                                 barheight = unit(8, units = "mm"))) +
   scale_y_continuous(breaks = seq(34, 48, by = 4)) + 
-  scale_x_continuous(breaks = seq(-125, -95, by = 10)) +
+  scale_x_continuous(breaks = seq(-125, -105, by = 10)) +
   theme(panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
         legend.position = c(0.095, 0.34),
@@ -109,53 +111,7 @@ us <- ggplot() +
 
 
 ggsave(us, filename = map_out_png, width = 57, height = 34.34, units = "mm", dpi = 72)
-
-
 ggsave(us, filename = map_out_pdf, width = 57, height = 34.34, units = "mm")
-
-
-
-
-
-
-# Horizontal conservation panel --------------------------------------------------
-broad$conservation <- factor(broad$conservation, 
-                             levels = rev(c("extirpated", "broad.extirp", "local.extirp", "poss.decline", "pres.stable")),
-                             labels = rev(c("extirpated", "broad\nextirpations", "local\nextirpations",
-                                        "possible\ndeclines", "presumed\nstable")))
-
-color_pal <- c("black", "grey30", "grey60", "grey80", "grey95") # greyscale
-
-broad %>% 
-  pivot_longer(brown:mixed, names_to = "pheno", values_to = "area") %>% 
-  mutate(pheno = factor(.$pheno, levels = c("white", "mixed", "brown"))) %>% 
-  ggplot(aes(x = pheno, y = area/1000, fill = conservation)) +
-  geom_col(color = "black", position = position_fill(), width = 0.5, size = 0.15) +
-  scale_fill_manual(
-    values = c(
-      "extirpated" = color_pal[1],
-      "broad\nextirpations" = color_pal[2],
-      "local\nextirpations" = color_pal[3],
-      "possible\ndeclines" = color_pal[4],
-      "presumed\nstable" = color_pal[5]
-    ), name = "conservation\nstatus", guide = F
-  ) +
-  scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) +
-  coord_flip() +
-  theme(panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(),
-        axis.line = element_blank(),
-        axis.ticks = element_blank(),
-        axis.text = element_blank(), 
-        axis.title = element_blank(),
-        panel.background = element_rect(fill = "transparent", colour = NA),
-        plot.background = element_rect(fill = "transparent", colour = NA),
-        panel.border = element_blank(),
-        plot.margin = unit(c(0, 0, 0, 0), "cm"),
-        panel.spacing = unit(c(0, 0, 0, 0), "null")) +
-  ggsave(cons_plot_out, width = 4.25, height = 2, units = "cm")
-
-
 
 # Insert --------------------------------------------------------
 # Density of Prob white across years:
@@ -194,12 +150,71 @@ insert <- probBrown_df %>%
         legend.key = element_blank(),
         legend.spacing = unit(0, "mm"),
         legend.margin = margin(0,0,0,0, "mm"), 
-        # panel.spacing = unit(0.05, "mm"),
-        #panel.border = element_blank(),
         plot.margin = margin(0.08, 0.1, 0, 0.04, "cm"))
 
-
 ggsave(insert, filename = insert_plot_out, height = 13.8, width = 17.5, units = "mm")
+
+
+
+# Simulation trajectories -------------------------------------------------
+additive <- read_csv(slim_res_additive) %>% 
+  mutate(dominance = "additive")
+recessive <- read_csv(slim_res_recessive) %>% 
+  mutate(dominance = "recessive")
+
+selection_key <- tibble(fitness_width = c(0.5446, 0.6562, 0.7805)) %>% 
+  mutate(mismatch_penalty = factor(fitness_width, 
+                                   levels = c(0.7805, 0.6562, 0.5446),
+                                   labels = c("5%", "7%", "10%")))
+
+
+# Panel B using both additive and recessive
+trajectories <- bind_rows(additive, recessive) %>% 
+  filter(lambda == 15) %>%
+  filter(fitness_width == 0.6562) %>% 
+  filter(init_corin == init_ednrb) %>% 
+  group_by(generation, init_corin, init_ednrb, fitness_width, dominance) %>% 
+  summarise(low95 = quantile(N, c(0.025)),
+            up95 = quantile(N, c(0.975)),
+            N = mean(N)) %>%
+  ungroup() %>% 
+  left_join(selection_key) %>%
+  mutate(ID = paste(init_corin, init_ednrb, dominance)) %>% 
+  ggplot(aes(x = generation, y = N, ymin = low95, ymax = up95, fill = as.factor(init_corin))) +
+  scale_color_viridis_d(begin = 0, end = 0.8) +
+  scale_fill_viridis_d(begin = 0, end = 0.8) +
+  guides(fill=guide_legend(title="<i>p</i><sub> brown</sub>"), color = guide_legend(title = "<i>p</i><sub> brown</sub>")) +
+  geom_segment(aes(x = 0, xend = 60, y = 2750, yend = 2750), linetype = "dotted", size = 0.25) +
+  geom_ribbon(aes(group = ID), alpha = 0.3) +
+  geom_line(aes(color = as.factor(init_corin), group = ID), size = 0.25) +
+  theme_cowplot() +
+  theme(legend.position = c(0.07, 0.18)) +
+  facet_rep_grid(dominance ~ .) +
+  xlim(c(0,61)) +
+  theme(
+    axis.text.y = element_text(size = 4, angle = 90, hjust = 0.5, margin= margin(0,0,0,0, unit = "pt")),
+    axis.text.x = element_text(size = 4, margin= margin(0,0,0,0, unit = "pt"), lineheight = 0),
+    axis.title = element_blank(),
+    axis.ticks.length = unit(0.25, "mm"),
+    axis.ticks = element_line(size = 0.25), 
+    axis.line = element_line(size = 0.25),
+    legend.title = element_markdown(size = 5, margin= margin(0,0,0,0, unit = "pt"),  padding = unit(c(0,0,0,0), "pt")),
+    legend.text = element_text(size = 5, margin= margin(0,0,0,0, unit = "pt")),
+    legend.key.size = unit(1.5, "mm"),
+    legend.spacing = unit(0, "mm"),
+    legend.box.margin = margin(0,0,0,0, unit = "pt"),
+    legend.box.spacing = unit(0, "mm"),
+    legend.margin = margin(0,0,0,0, unit = "pt"),
+    strip.text = element_blank(),
+    panel.spacing = unit(0, "mm"),
+    panel.background = element_blank(),
+    panel.border = element_blank(), 
+    plot.margin = margin(0,0,0,0, unit = "pt"),
+    plot.background = element_blank(), 
+    strip.background = element_blank(),
+    strip.placement = "inside")
+
+ggsave(trajectories, filename = pop_traj_plot_out, width = 29, height = 31.5, units = "mm")
 
 
 

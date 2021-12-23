@@ -46,8 +46,8 @@ rule all:
         "results/figures/current_pheno_map_89mm.pdf", # Figure 1A
         "results/figures/colorado_89mm.pdf", # Figure 1C 
         # Figure 4 elements
-        "results/figures/pheno_change_map.pdf", # Figure 4A
-        "results/figures/horizontal_consv.pdf", # Figure 4B
+        "results/figures/pheno_change_map_89mm.pdf", # Figure 4A
+        "results/figures/sim_pop_trajectories_89mm.pdf", # Figure 4B
         "results/figures/density_probBrown_insert.pdf", # Figure 4A insert
         # Supplementary figures, tables, and analysis
         "results/pheno/glm_table_current_snow_cover.csv",
@@ -325,20 +325,21 @@ rule figure_4_elements:
     input:
         current_srt_pheno = "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif",
         future_srt_pheno = "results/pheno/future_predicted_probWhite_SDMrange.tif",
-        consv_pheno_overlap = "results/conservation/cons_by_current_color.RData"
+        slim_res_additive = slim_simulations("results/slim_summaries/additive_constantK.csv"),
+        slim_res_recessive = slim_simulations("results/slim_summaries/recessive_constantK.csv")
     output:
-        change_map_pdf= "results/figures/pheno_change_map.pdf",
-        change_map_png= "results/figures/pheno_change_map.png",
-        cons_plot = "results/figures/horizontal_consv.pdf",
+        change_map_pdf= "results/figures/pheno_change_map_89mm.pdf",
+        change_map_png= "results/figures/pheno_change_map_89mm.png",
         density_insert = "results/figures/density_probBrown_insert.pdf",
-        prec_brown_by_time="results/pheno/percent_brown_by_time.csv"
+        pop_traj_plot_out = "results/figures/sim_pop_trajectories_89mm.pdf",
+        prec_brown_by_time= "results/pheno/percent_brown_by_time.csv"
     resources:
         cpus=1
     shell:
         """
-        Rscript src/figure_4_elements.R {input.current_srt_pheno} {input.future_srt_pheno} {input.consv_pheno_overlap} {output.change_map_pdf} {output.change_map_png} {output.cons_plot} {output.density_insert} {output.prec_brown_by_time}
+        Rscript src/figure_4_elements.R {input.current_srt_pheno} {input.future_srt_pheno} {input.slim_res_additive} {input.slim_res_recessive} {output.change_map_pdf} {output.change_map_png} {output.density_insert} {output.pop_traj_plot_out} {output.prec_brown_by_time}
         """
-
+        
 ## Make supplementary figure and table rule
 # Creates all supplemental tables and figures
 # And outputs some bits of analysis for the main text
