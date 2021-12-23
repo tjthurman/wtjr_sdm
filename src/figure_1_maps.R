@@ -169,7 +169,7 @@ colorado <- ggplot() +
   theme(panel.background = element_rect(fill = rgb(133,141,147, maxColorValue = 255), colour = rgb(133,141,147, maxColorValue = 255)),
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
-        panel.border = element_rect(colour = "black", fill=NA),
+        panel.border = element_blank(),
         legend.position = c(0.86, 0.245),
         legend.background = element_blank(),
         legend.margin = margin(0,0,0,0, "pt"),
