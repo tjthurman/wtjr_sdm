@@ -175,18 +175,19 @@ trajectories <- bind_rows(additive, recessive) %>%
   filter(lambda == 15) %>%
   filter(fitness_width == 0.6562) %>% 
   filter(init_corin == init_ednrb) %>% 
+  mutate(perc_K = N/K) %>% 
   group_by(generation, init_corin, init_ednrb, fitness_width, dominance) %>% 
-  summarise(low95 = quantile(N, c(0.025)),
-            up95 = quantile(N, c(0.975)),
-            N = mean(N)) %>%
+  summarise(low95 = quantile(perc_K, c(0.025)),
+            up95 = quantile(perc_K, c(0.975)),
+            perc_K = mean(perc_K)) %>% 
   ungroup() %>% 
   left_join(selection_key) %>%
   mutate(ID = paste(init_corin, init_ednrb, dominance)) %>% 
-  ggplot(aes(x = generation, y = N, ymin = low95, ymax = up95, fill = as.factor(init_corin))) +
+  ggplot(aes(x = generation, y = perc_K, ymin = low95, ymax = up95, fill = as.factor(init_corin))) +
   scale_color_viridis_d(begin = 0, end = 0.8) +
   scale_fill_viridis_d(begin = 0, end = 0.8) +
-  guides(fill=guide_legend(title="<i>p</i><sub> brown</sub>"), color = guide_legend(title = "<i>p</i><sub> brown</sub>")) +
-  geom_segment(aes(x = 0, xend = 60, y = 2750, yend = 2750), linetype = "dotted", size = 0.25) +
+  guides(fill=guide_legend(title="<i>p</i><sub> i</sub>"), color = guide_legend(title = "<i>p</i><sub> i</sub>")) +
+  geom_segment(aes(x = 0, xend = 60, y = 1, yend = 1), linetype = "dotted", size = 0.25) +
   geom_ribbon(aes(group = ID), alpha = 0.3) +
   geom_line(aes(color = as.factor(init_corin), group = ID), size = 0.25) +
   theme_cowplot() +
