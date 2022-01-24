@@ -65,5 +65,7 @@ results/figures/maps_for_jeff/
 initial_slim_res.tar.gz
 slim_results/*
 slim_results_final/*
+slim_results_final_80gens/*
+results/slim_summaries_80gens/*
 logs/slurm_logs/*
 logs/slim/*
