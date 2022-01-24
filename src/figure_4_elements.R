@@ -39,14 +39,14 @@ pop_traj_plot_out <- args[8]
 perc_brown_csv_out <- args[9]
 
 # for running as a script
-# current_file <- "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif"
-# future_file <- "results/pheno/future_predicted_probWhite_SDMrange.tif"
-# slim_res_additive <- "results/slim_summaries/additive_constantK.csv"
-# slim_res_recessive <- "results/slim_summaries/recessive_constantK.csv"
+current_file <- "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif"
+future_file <- "results/pheno/future_predicted_probWhite_SDMrange.tif"
+# slim_res_additive <- "results/slim_summaries_80gens/additive_constantK.csv"
+# slim_res_recessive <- "results/slim_summaries_80gens/recessive_constantK.csv"
 # map_out_pdf <- "results/figures/pheno_change_map_89mm.pdf"
 # map_out_png <- "results/figures/pheno_change_map_89mm.png"
 # insert_plot_out <- "results/figures/density_probBrown_insert.pdf"
-# pop_traj_plot_out <- "results/figures/sim_pop_trajectories_89mm.pdf"
+# pop_traj_plot_out <- "results/figures/sim_pop_trajectories_89mm_80gens.pdf"
 # perc_brown_csv_out <- "results/pheno/percent_brown_by_time.csv"
 
 # Load data ---------------------------------------------------------------
@@ -63,6 +63,7 @@ pal <- colorRampPalette(colors = c(rgb(41, 57, 113, maxColorValue = 255), # mill
 
 # Full resolution
 difference <- (1- future_pheno) - (1 - current_pheno) 
+
 # Lower res for plotting
 difference_lowres <- aggregate(difference, fact = 4)
 
@@ -220,7 +221,6 @@ trajectories <- bind_rows(additive, recessive) %>%
 ggsave(trajectories, filename = pop_traj_plot_out, width = 29, height = 31.5, units = "mm")
 
 
-
 # Stats on proportion brown --------------------------------------------------------
 current_for_brown_area <- current_pheno
 values(current_for_brown_area) <- ifelse(values(current_for_brown_area) <= 0.2, 1, NA)
@@ -241,3 +241,78 @@ data.frame(perc.brown.current = current_perc_brown,
            perc.brown.future = future_perc_brown) %>%
     mutate(fold.change = perc.brown.future/perc.brown.current) %>%
     write.csv(., file = perc_brown_csv_out, row.names = F)
+
+
+
+# Area where P(brown) decreases -------------------------------------------
+
+
+stats::quantile(values(difference), probs = c(0.95, 0.9998), na.rm = T)
+
+max(values(difference), na.rm = T)
+
+non_na_changes <- values(difference)[which(!is.na(values(difference)))]
+
+non_na_df <- as(difference, "SpatialPixelsDataFrame") %>% 
+  as.data.frame(.) %>% 
+  dplyr::filter(!is.na(.[1]))
+names(non_na_df) <- c("change_probBrown", "Long", "Lat")
+
+sum(non_na_df$change_probBrown > 0.746)/nrow(non_na_df)
+
+
+current_df <- as(current_pheno, "SpatialPixelsDataFrame") %>% 
+  as.data.frame(.) 
+names(current_df) <- c("current_probBrown", "Long", "Lat")
+
+negative_change <- non_na_df %>% 
+  dplyr::filter(change_probBrown <= 0) %>% 
+  left_join(current_df)
+
+
+greater_08 <- non_na_df %>% 
+  dplyr::filter(change_probBrown >= 0.8) %>% 
+  left_join(current_df)
+
+greater_0746 <- non_na_df %>% 
+  dplyr::filter(change_probBrown >= 0.746) %>% 
+  left_join(current_df)
+
+sort(negative_change$current_probBrown, decreasing = T)
+
+min(negative_change$change_probBrown)
+
+ggplot(aes(x = change_probBrown, y = current_probBrown), data = negative_change) +
+  geom_point()
+
+ggplot() +
+  geom_sf(data = state_prov, color = "grey61", fill = rgb(133,141,147, maxColorValue = 255), size = 0.25) +
+  geom_tile(data = greater_0746, aes(fill = change_probBrown, color = change_probBrown, x = Long, y = Lat)) +
+  geom_sf(data = state_prov, color = "grey61", fill = NA, size = 0.25) +
+  geom_sf(data = countries, color = "grey10", fill = NA, size = 0.25) +
+  geom_sf(data= coast, color = "grey10", fill = NA, size = 0.25) +   
+  coord_sf(
+    xlim = c(-129.75, -89.5),
+    ylim = c(32, 49.5),
+    clip = "on", 
+    expand = F)
+
+
+sum(non_na_changes <= 0)/length(non_na_changes)
+
+
+
+sort(non_na_changes, decreasing = T)
+
+
+
+# % of area with decrease in prob brown:
+difference_for_area <- difference
+values(difference_for_area) <- ifelse(values(difference_for_area) <= 0, 1, NA)
+
+area_decrease_brown <- sum(values(area(difference_for_area, na.rm = T)), na.rm = T)
+
+area_decrease_brown/us_only_range_area
+
+
+
