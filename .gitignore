@@ -14,6 +14,8 @@ wtjr_sdm.code-workspace
 sp_wtjr/*
 # Snakemake logs
 logs/snakemake_slurm/*.out
+logs/slurm_logs/*
+logs/slim/*
 
 # Doc outputs
 *.html
@@ -67,7 +69,6 @@ slim_results/*
 slim_results_final/*
 slim_results_final_80gens/*
 slim_results_final_80gens_consVE/*
+results/slim_summaries_60gens/*
 results/slim_summaries_80gens/*
 results/slim_summaries_80gens_consVE/*
-logs/slurm_logs/*
-logs/slim/*
