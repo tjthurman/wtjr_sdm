@@ -22,11 +22,12 @@ replicates = list(range(1,31)) # second number = 1 more than the desired number 
 
 
 
-# Filename pattern for the output files from each sim
-res_pattern_additive_constant_K = "slim_results_final_80gens_consVE/additive_constantK/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_{output_file}"
+# Filename pattern for the output files from each individual simulation 
+# with the additive, constantK, two locus model
+res_pattern_additive_consK_2locus = "slim_results_final_80gens_consVE/additive_constantK_2locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_{output_file}"
 
 # And expand all varying parameters to create the list of desired files
-sim_results_additive_constantK = expand(res_pattern_additive_constant_K,                                
+sim_results_additive_consK_2locus = expand(res_pattern_additive_consK_2locus,                                
                                         gen = gens,
                                         K = Ks,
                                         initPop = initPops,
@@ -41,23 +42,24 @@ sim_results_additive_constantK = expand(res_pattern_additive_constant_K,
                                         output_file = output_files)
 
 
-# Filename pattern for the output files from each sim
-# res_pattern_recessive_constant_K = "slim_results_final_80gens/recessive_constantK/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_{output_file}"
+# Filename pattern for the output files from each individual simulation 
+# with the recessive, constantK, two locus model
+res_pattern_recessive_consK_2locus = "slim_results_final_80gens_consVE/recessive_constantK_2locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_{output_file}"
 
 # And expand all varying parameters to create the list of desired files
-# sim_results_recessive_constantK = expand(res_pattern_recessive_constant_K,                                
-#                                         gen = gens,
-#                                         K = Ks,
-#                                         initPop = initPops,
-#                                         iCorin = iCorins,
-#                                         iEDNRB = iEDNRBs,
-#                                         initOpt = initOpts,
-#                                         finalOpt = finalOpts,
-#                                         selection = selections,
-#                                         H2 = H2s,
-#                                         offspring = offsprings,
-#                                         replicate = replicates,
-#                                         output_file = output_files)
+sim_results_recessive_consK_2locus = expand(res_pattern_recessive_consK_2locus,                                
+                                        gen = gens,
+                                        K = Ks,
+                                        initPop = initPops,
+                                        iCorin = iCorins,
+                                        iEDNRB = iEDNRBs,
+                                        initOpt = initOpts,
+                                        finalOpt = finalOpts,
+                                        selection = selections,
+                                        VE = VEs,
+                                        offspring = offsprings,
+                                        replicate = replicates,
+                                        output_file = output_files)
 
 # Filename pattern for output files from varying K sims
 # res_pattern_additive_varyK = "slim_results_final_80gens/additive_varyK/gens{gen}_minK{minK}_maxK{maxK}_period{period}_startK{startK}_initDec{initDec}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_{output_file}"
@@ -108,41 +110,42 @@ sim_results_additive_constantK = expand(res_pattern_additive_constant_K,
 
 rule all:
     input: # slim simulation summaries
-        sim_results_additive_constantK
+        sim_results_additive_consK_2locus,
+        sim_results_recessive_consK_2locus
         # "results/slim_summaries_80gens_Ve/additive_constantK.csv",
         # "results/slim_summaries_80gens/additive_varyK.csv",
         # "results/slim_summaries_80gens/recessive_constantK.csv",
         # "results/slim_summaries_80gens/SSH_constantK.csv"
 
-rule sim_additive_constantK:
+rule sim_additive_constantK_2locus:
     input:
     output:
-        "slim_results_final_80gens_consVE/additive_constantK/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_early.csv",
-        "slim_results_final_80gens_consVE/additive_constantK/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_late.csv",
-        "slim_results_final_80gens_consVE/additive_constantK/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_seed.txt"
+        "slim_results_final_80gens_consVE/additive_constantK_2locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_early.csv",
+        "slim_results_final_80gens_consVE/additive_constantK_2locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_late.csv",
+        "slim_results_final_80gens_consVE/additive_constantK_2locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_seed.txt"
     log:
         "logs/slim/additive/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}.log"
     resources:
         cpus=1
     shell:
         """
-        slim -d generations={wildcards.gen} -d K={wildcards.K} -d initPopSize={wildcards.initPop} -d initFreqCorin={wildcards.iCorin} -d initFreqEDNRB={wildcards.iEDNRB} -d initOptPheno={wildcards.initOpt} -d finalOptPheno={wildcards.finalOpt} -d fitFuncWidth={wildcards.selection} -d V_E={wildcards.VE} -d offspringPoisLambda={wildcards.offspring}  -d replicate={wildcards.replicate} -d "outputDir='slim_results_final_80gens_consVE/additive_constantK'" src/slim_simulations/constant_K_additive_input_Ve_CLI.slim 2> {log} 
+        slim -d generations={wildcards.gen} -d K={wildcards.K} -d initPopSize={wildcards.initPop} -d initFreqCorin={wildcards.iCorin} -d initFreqEDNRB={wildcards.iEDNRB} -d initOptPheno={wildcards.initOpt} -d finalOptPheno={wildcards.finalOpt} -d fitFuncWidth={wildcards.selection} -d V_E={wildcards.VE} -d offspringPoisLambda={wildcards.offspring}  -d replicate={wildcards.replicate} -d "outputDir='slim_results_final_80gens_consVE/additive_constantK_2locus'" src/slim_simulations/constant_K_additive_2locus_consVE_CLI.slim 2> {log} 
         """
 
-# rule sim_recessive_constantK:
-#     input:
-#     output:
-#         "slim_results_final_80gens/recessive_constantK/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_early.csv",
-#         "slim_results_final_80gens/recessive_constantK/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_late.csv",
-#         "slim_results_final_80gens/recessive_constantK/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}_seed.txt"
-#     log:
-#         "logs/slim/recessive/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_H2{H2}_lambda{offspring}_rep{replicate}.log"
-#     resources:
-#         cpus=1
-#     shell:
-#         """
-#         slim -d generations={wildcards.gen} -d K={wildcards.K} -d initPopSize={wildcards.initPop} -d initFreqCorin={wildcards.iCorin} -d initFreqEDNRB={wildcards.iEDNRB} -d initOptPheno={wildcards.initOpt} -d finalOptPheno={wildcards.finalOpt} -d fitFuncWidth={wildcards.selection} -d h2={wildcards.H2} -d offspringPoisLambda={wildcards.offspring}  -d replicate={wildcards.replicate} -d "outputDir='slim_results_final_80gens/recessive_constantK'" src/slim_simulations/constant_K_recessive_CLI.slim 2> {log} 
-#         """
+rule sim_recessive_constantK_2locus:
+    input:
+    output:
+        "slim_results_final_80gens_consVe/recessive_constantK_2locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_early.csv",
+        "slim_results_final_80gens_consVe/recessive_constantK_2locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_late.csv",
+        "slim_results_final_80gens_consVe/recessive_constantK_2locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_seed.txt"
+    log:
+        "logs/slim/recessive_2locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}.log"
+    resources:
+        cpus=1
+    shell:
+        """
+        slim -d generations={wildcards.gen} -d K={wildcards.K} -d initPopSize={wildcards.initPop} -d initFreqCorin={wildcards.iCorin} -d initFreqEDNRB={wildcards.iEDNRB} -d initOptPheno={wildcards.initOpt} -d finalOptPheno={wildcards.finalOpt} -d fitFuncWidth={wildcards.selection} -d V_E={wildcards.VE} -d offspringPoisLambda={wildcards.offspring}  -d replicate={wildcards.replicate} -d "outputDir='slim_results_final_80gens_consVe/recessive_constantK_2locus'" src/slim_simulations/constant_K_recessive_2locus_consVE_CLI.slim 2> {log} 
+        """
 
 # rule sim_additive_varyK:
 #     input:
