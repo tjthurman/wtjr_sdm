@@ -1,0 +1,208 @@
+// This is a simplified version of the 
+// main simulation. The purpose of this
+// simulation is simply to repeatedly
+// initiate our simulated WTJR population
+// and calculate the Ve necessary to achieve
+// our desired heritability.
+
+// This Ve calculation is performed for a simulated population
+// with initial allele frequencies matching the frequencies 
+// in the WTJR samples used in the linear models
+// for estimating phenotypic effects and PVE/heritability.
+
+// The calculated Ve from this simulation will be used as the
+// Ve in the other simulations.
+
+/*
+#####################################
+##      Simulation initiation      ##
+#####################################
+*/
+
+// set up a simple neutral nonWF simulation
+initialize() {
+	
+	// Set up some constants when running interactively,
+	// will be able to run in Snakemake in the future
+	
+	// Will do the phenotypic scale in terms of brown.
+	// This is the opposite of the linear models in the text.
+	// In the text, higher PC1 == more white,
+	// and the linear models in S11 have positive Betas (for the
+	// effects of the white allele on PC1).
+	
+	// For this, I will flip it: 
+	// higher PC scores and more alleles == more brown
+	// I linearly re-scale the PC scores into 
+	// a 0-1 interval, based on the min-max of the average PC1 score
+	// across genotype categories (Fig 2F) (rescale -6 to 4 into 0 to 1). 
+	if (exists("slimgui"))
+	{
+		defineGlobal("K", 2750);	// carrying capacity		
+		defineConstant("initFreqCorin", 0.7033898); // initial Corin brown allele frequency
+		defineConstant("initFreqEDNRB", 0.5762712); // initial EDNRB brown allele frequency
+		defineConstant("initPopSize", 2750); // initial population size
+		defineConstant("h2", 0.64); // target heritability for color. 
+		defineConstant("iterations", 10000); // number of times to iterate population generation 
+		defineConstant("outputDir", "~/Desktop/slim_testing");
+	}
+	
+	initializeSLiMModelType("nonWF");
+	
+	// Neutral mutation type.
+	// just needed for our spacer regions for visualizing
+	initializeMutationType("m1", 0.5, "f", 0.0);
+	initializeGenomicElementType("g1", m1, 1.0);
+	m1.convertToSubstitution = T;
+		
+	// mutations representing alleles in QTLs
+	// Simple addivity, with a fixed effect of 0 (neutral to fitness)
+	// All fitness calculation will be through the geno-pheno map, below. 
+	// mutation type m2 for corin
+	initializeMutationType("m2", 0.5, "f", 0);
+	initializeGenomicElementType("g2", m2, 1);
+	
+	// mutation type m3 for ednrb
+	initializeMutationType("m3", 0.5, "f", 0);
+	initializeGenomicElementType("g3", m3, 1);
+	
+	// Set up our "chromosome"
+	// Really, just doing a two-locus model. Need them to be unlinked.
+	// Will add some empty space to ease visualization
+	initializeGenomicElement(g1, 0, 99);
+	initializeGenomicElement(g2, 100, 100); // First one is corin
+	initializeGenomicElement(g1, 101, 199);
+	initializeGenomicElement(g3, 200, 200); // second one is ednrb
+	initializeGenomicElement(g1, 201, 299);
+	
+	// Define mutation and recombination rates
+	// No mutation
+	initializeMutationRate(0);
+	// No recombination through most of the chromosome,
+	// recombination of 0.5 halfway between the two genes to make them independent
+	initializeRecombinationRate(rates = c(0, 0.5, 0), ends = c(149, 150, 299));
+	
+}
+
+
+// create an initial population of individuals
+// With allele frequencies as specified
+1 early() {
+
+	
+	// Build a base filename to be used, based on the parameters we vary
+	baseFileName = "Ve_calculation_additive_2locus" +
+						"_K" + K + 
+						"_initPop" + initPopSize +
+						"_iCorin" + initFreqCorin + 
+						"_iEDNRB" + initFreqEDNRB +
+						"_desiredH2" + h2 +
+						"_iter" + iterations;
+						
+	// Define filenames for the log files
+	defineConstant("outFile", outputDir + "/" + baseFileName + ".csv");	
+	
+	
+	// List the names of the columns for the results file
+	cols = paste("iteration",
+					 "K",
+					 "pop_size",
+					 "desired_h2",
+					 "p_corin",
+					 "p_ednrb",
+					 "Va",
+					 "Ve",
+					 "Vp",
+					 "obs_h2",
+					 sep = ",");
+					 
+		// Check if overall output directory exists, create if not
+	if (!fileExists(outputDir)) 
+	{
+		createDirectory(outputDir);
+	}
+
+	// Do iterations of generating subpopulations of individuals,
+	// assigning phenotypes, and calculating the necessary V_E
+	for (i in 1:iterations) {
+		// if the first iteration, print out col names
+		if (i == 1) writeFile(outFile, cols);
+		
+		// Then, the actual iteration of what I want to do
+		// Create a subpop
+		sim.addSubpop("p1", initPopSize);
+		
+		// Add "brown" alleles at the specified starting frequency at each locus
+		corinTargets = sample(p1.genomes, asInteger(length(p1.genomes)*initFreqCorin));
+		corinTargets.addNewDrawnMutation(m2, 100);
+
+		ednrbTargets = sample(p1.genomes, asInteger(length(p1.genomes)*initFreqEDNRB));
+		ednrbTargets.addNewDrawnMutation(m3, 200);
+	
+		// Now, after generating the individuals, we get phenotype from genotype
+		inds = sim.subpopulations.individuals;
+	
+		// We're using the usual V_A + V_E = V_P for adding developmental/environmental "noise"
+		// to phenotypes.
+		// The heritabiliy, then, is V_A/V_P.
+		// In our LM, this heritability/PVE is 0.64. 
+		// Heritability is a specific value for a population at a point in time,
+		// and depends on allele frequency.
+		// So, we want to figure out what amount of V_E is necessary in to achieve a heritability of 
+		// 0.64 given the allele freqs we have. Then, we'll use that V_E across multiple simulations. 
+
+		// First, let's get V_E
+		// We use the linear model to get each individuals "breeding value" for the trait,
+		// the value they'd have with only the additive effects of phenotype. 
+		// This is on the PCA scale.
+		add_pheno_PC = -6.48 + 1.92*inds.countOfMutationsOfType(m2) + 3.15*inds.countOfMutationsOfType(m3);
+	
+		// then, we calculate V_A
+		defineGlobal("V_A", var(add_pheno_PC));
+	
+		// from that, calculating V_E is pretty easy, just a simple algebraic re-arrangment
+		defineGlobal("V_E", (V_A-h2*V_A)/h2);
+	
+		// Then, generate vector of inidividual phenotypic noises,
+		// from a normal distribution with an sd based on V_E
+		noise_pheno_PC = rnorm(size(inds), 0.0, sqrt(V_E));
+
+		// Finally, add the additive phenos with the noise to get the final pheno, on the PCA scale.
+		phenos_PC = add_pheno_PC + noise_pheno_PC;
+		
+		// Calculate allele freqs, overall phenotypic variance and realized heritability.
+		// Just helps with diagnosis to make sure its working right
+		defineGlobal("freq_corin", sum(inds.countOfMutationsOfType(m2))/length(p1.genomes));
+		defineGlobal("freq_ednrb", sum(inds.countOfMutationsOfType(m3))/length(p1.genomes));
+		defineGlobal("V_P", var(phenos_PC));
+		defineGlobal("obs_H2", V_A/V_P);
+		
+		// Print values of things
+		line = paste("1",
+					 	K,
+					 	p1.individualCount,
+					 	h2,
+					 	freq_corin,
+					 	freq_ednrb,					 
+					 	V_A,
+					 	V_E,
+					 	V_P,
+					 	obs_H2,
+					 	sep = ",");
+					
+		writeFile(outFile, line, append = T);
+		
+		// Once this is all done, remove the subpopulation so we can re-start the iteration		
+		p1.removeSubpopulation();
+		rm("inds");
+		}
+
+	// And once all iterations have run, finish the simulation.
+	sim.simulationFinished();
+
+}
+
+
+
+
+
