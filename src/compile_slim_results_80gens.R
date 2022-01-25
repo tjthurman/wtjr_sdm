@@ -5,7 +5,7 @@ library(assertthat)
 # CO/UT- additive, constant K ---------------------------------------------
 additive_constant_K <- NULL
 for (file in list.files(
-  "slim_results_final_80gens/additive_constantK/",
+  "slim_results_final_80gens_consVE/additive_constantK/",
   pattern = "late.csv",
   full.names = T
 )) {
@@ -69,7 +69,7 @@ assert_that(length(unique(additive_constant_K$lambda)) == 2, msg = "Incorrect la
 assert_that(length(unique(additive_constant_K$replicate)) == 30, msg = "Incorrect replicates for additive_constant_K")
 
 # Save results
-write_csv(additive_constant_K, path = "results/slim_summaries_80gens/additive_constantK.csv", col_names = T)
+write_csv(additive_constant_K, path = "results/slim_summaries_80gens_consVE/additive_constantK.csv", col_names = T)
 
 # rm intermediate files
 rm(not30, param_combos)
