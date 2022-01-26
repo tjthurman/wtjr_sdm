@@ -16,22 +16,22 @@ selection_key <- tibble(fitness_width = c(0.5446, 0.6562, 0.7805)) %>%
                                    labels = c("5%", "7%", "10%")))
 
 # Load results from the 4 sets of simulations -----------------------------
-additive <- read_csv("results/slim_summaries_80gens/additive_constantK.csv") %>% 
+additive_consK_2locus_late <- read_csv("results/slim_summaries_80gens_consVE/additive_constantK_2locus_late.csv") %>% 
   mutate(dominance = "additive",
          K_change = "constant",
          loci = 2)
 
-recessive <- read_csv("results/slim_summaries_80gens/recessive_constantK.csv") %>% 
+recessive_consK_2locus_late <- read_csv("results/slim_summaries_80gens_consVE/recessive_constantK_2locus_late.csv") %>% 
   mutate(dominance = "recessive",
          K_change = "constant",
          loci = 2)
 
-additive_varyK <- read_csv("results/slim_summaries_80gens/additive_varyK.csv") %>% 
+additive_varyK_2locus_late <- read_csv("results/slim_summaries_80gens_consVE/additive_varyK_2locus_late.csv") %>% 
   mutate(dominance = "additive",
          K_change = "varying",
          loci = 2)
 
-recessive_SSH <- read_csv("results/slim_summaries_80gens/SSH_constantK.csv") %>% 
+recessive_consK_1locus_late <- read_csv("results/slim_summaries_80gens_consVE/recessive_constantK_1locus_late.csv") %>% 
   mutate(dominance = "recessive",
          K_change = "constant",
          loci = 1)
@@ -39,11 +39,11 @@ recessive_SSH <- read_csv("results/slim_summaries_80gens/SSH_constantK.csv") %>%
 # Important of genetic architecture ---------------------------------------
 # additive vs recessive vs locus number
 
-for_arch_plot <- rbind(additive, recessive) %>% 
+for_arch_plot <- rbind(additive_consK_2locus_late, recessive_consK_2locus_late) %>% 
   filter(init_corin == init_ednrb) %>% 
   dplyr::select(-init_ednrb, -freq_ednrb)
 
-arch_plot <- rbind(for_arch_plot, recessive_SSH) %>% 
+arch_plot <- rbind(for_arch_plot, recessive_consK_1locus_late) %>% 
   filter(lambda == 15) %>% 
   rename(p_i = init_corin) %>% 
   mutate(perc_K = N/K) %>% 
@@ -60,9 +60,10 @@ arch_plot <- rbind(for_arch_plot, recessive_SSH) %>%
   geom_hline(aes(yintercept = 1), linetype = "dotted") +
   geom_ribbon(aes(group = ID), alpha = 0.5) +
   geom_line(aes(color = mismatch_penalty, group = ID)) +
-  facet_rep_grid(dominance + loci ~ p_i, labeller = labeller(.rows = label_both, .cols = label_both), scales = "free") +
+  facet_rep_grid(dominance + loci ~ p_i, labeller = labeller(.rows = label_both, .cols = label_both), scales = "fixed") +
   theme_cowplot() +
   ylab("Percent of carrying capacity, K") +
+  ylim(c(0,1.04)) +
   ggtitle("Effect of genetic architecture on evolutionary rescue") +
   theme(axis.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
         axis.title = element_text(size = 7, margin = margin(0,0,0,0, "mm")),
@@ -76,9 +77,9 @@ arch_plot <- rbind(for_arch_plot, recessive_SSH) %>%
 
 # Effect of varying carrying capacity -------------------------------------
 
-varyK_plot <- additive_varyK %>% 
+varyK_plot <- additive_varyK_2locus_late %>% 
   dplyr::select(-min_K, -max_K, -period, -init_K) %>% 
-  rbind(mutate(additive, init_dec = NA)) %>% 
+  rbind(mutate(additive_consK_2locus_late, init_dec = NA)) %>% 
   filter(lambda == 15,
          init_corin == init_ednrb) %>% 
   rename(p_i = init_corin) %>% 
@@ -96,9 +97,10 @@ varyK_plot <- additive_varyK %>%
   geom_hline(aes(yintercept = 1), linetype = "dotted") +
   geom_ribbon(aes(group = ID), alpha = 0.5) +
   geom_line(aes(color = mismatch_penalty, group = ID)) +
-  facet_rep_grid(K_change + init_dec ~ p_i, labeller = labeller(.rows = label_both, .cols = label_both), scales = "free") +
+  facet_rep_grid(K_change + init_dec ~ p_i, labeller = labeller(.rows = label_both, .cols = label_both), scales = "fixed") +
   theme_cowplot() +
   ylab("Percent of carrying capacity, K") +
+  ylim(c(0,1.04)) +
   ggtitle("Effect of population cycling on evolutionary rescue") +
   theme(axis.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
         axis.title = element_text(size = 7, margin = margin(0,0,0,0, "mm")),
@@ -120,14 +122,14 @@ combo <- cowplot::plot_grid(arch_plot, varyK_plot,
                             align = "none")
 
 
-ggsave(plot = combo, filename = "results/figures/supplemental/extended_data_arch_varyK_sim_res_80gens.pdf", width = 183, height  = 208, units = "mm")
-ggsave(plot = combo, filename = "results/figures/supplemental/extended_data_arch_varyK_sim_res_80gens.jpeg", width = 183, height  = 208, units = "mm", dpi = 300)
+ggsave(plot = combo, filename = "results/figures/supplemental/extended_data_arch_varyK_sim_res_80gens_consVE.pdf", width = 183, height  = 208, units = "mm")
+ggsave(plot = combo, filename = "results/figures/supplemental/extended_data_arch_varyK_sim_res_80gens_consVE.jpeg", width = 183, height  = 208, units = "mm", dpi = 300)
 
 
 
 # Effect of changes in other parameters -----------------------------------
 
-robust <- additive %>% 
+robust <- additive_consK_2locus_late %>% 
   mutate(perc_K = N/K) %>% 
   group_by(generation, init_corin, init_ednrb, fitness_width, lambda) %>% 
   summarise(low95 = quantile(perc_K, c(0.025)),
@@ -142,10 +144,11 @@ robust <- additive %>%
   geom_hline(aes(yintercept = 1), linetype = "dotted") +
   geom_ribbon(aes(group = ID), alpha = 0.5) +
   geom_line(aes(color = mismatch_penalty, group = ID)) +
-  facet_rep_grid(init_ednrb + lambda ~ init_corin, labeller = labeller(.rows = label_both, .cols = label_both), scales = "free") +
+  facet_rep_grid(init_ednrb + lambda ~ init_corin, labeller = labeller(.rows = label_both, .cols = label_both), scales = "fixed") +
   theme_cowplot() +
   ylab("Percent of carrying capacity, K") +
-  ggtitle("Effect of initial allele frequencies and reproductive output on evolutrionary rescue") +
+  ylim(c(0,1.04)) +
+  ggtitle("Effect of initial allele frequencies and reproductive output on evolutionary rescue") +
   theme(axis.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
         axis.title = element_text(size = 7, margin = margin(0,0,0,0, "mm")),
         plot.title =  element_text(size = 7, margin = margin(0,0,0,0, "mm")),
@@ -156,9 +159,9 @@ robust <- additive %>%
         legend.position = c(0.8, 0.94),
         legend.key.size = unit(3, "mm"))
 
-ggsave(plot = robust, filename = "results/figures/supplemental/extended_data_sim_robust_80gens.pdf", width = 183, height  = 225, units = "mm")
+ggsave(plot = robust, filename = "results/figures/supplemental/extended_data_sim_robust_80gens_consVE.pdf", width = 183, height  = 225, units = "mm")
 
-ggsave(plot = robust, filename = "results/figures/supplemental/extended_data_sim_robust_80gens.jpeg", width = 183, height  = 225, units = "mm", dpi = 300)
+ggsave(plot = robust, filename = "results/figures/supplemental/extended_data_sim_robust_80gens_consVE.jpeg", width = 183, height  = 225, units = "mm", dpi = 300)
 
 
 

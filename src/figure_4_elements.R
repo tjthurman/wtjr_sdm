@@ -41,13 +41,13 @@ perc_brown_csv_out <- args[9]
 # for running as a script
 current_file <- "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif"
 future_file <- "results/pheno/future_predicted_probWhite_SDMrange.tif"
-# slim_res_additive <- "results/slim_summaries_80gens/additive_constantK.csv"
-# slim_res_recessive <- "results/slim_summaries_80gens/recessive_constantK.csv"
-# map_out_pdf <- "results/figures/pheno_change_map_89mm.pdf"
-# map_out_png <- "results/figures/pheno_change_map_89mm.png"
-# insert_plot_out <- "results/figures/density_probBrown_insert.pdf"
-# pop_traj_plot_out <- "results/figures/sim_pop_trajectories_89mm_80gens.pdf"
-# perc_brown_csv_out <- "results/pheno/percent_brown_by_time.csv"
+slim_res_additive <- "results/slim_summaries_80gens_consVE/additive_constantK_2locus_late.csv"
+slim_res_recessive <- "results/slim_summaries_80gens_consVE/recessive_constantK_2locus_late.csv"
+map_out_pdf <- "results/figures/pheno_change_map_89mm.pdf"
+map_out_png <- "results/figures/pheno_change_map_89mm.png"
+insert_plot_out <- "results/figures/density_probBrown_insert.pdf"
+pop_traj_plot_out <- "results/figures/sim_pop_trajectories_89mm_80gens_consVE.pdf"
+perc_brown_csv_out <- "results/pheno/percent_brown_by_time.csv"
 
 # Load data ---------------------------------------------------------------
 future_pheno <- raster(future_file)
@@ -188,13 +188,14 @@ trajectories <- bind_rows(additive, recessive) %>%
   scale_color_viridis_d(begin = 0, end = 0.8) +
   scale_fill_viridis_d(begin = 0, end = 0.8) +
   guides(fill=guide_legend(title="<i>p</i><sub> i</sub>"), color = guide_legend(title = "<i>p</i><sub> i</sub>")) +
-  geom_segment(aes(x = 0, xend = 60, y = 1, yend = 1), linetype = "dotted", size = 0.25) +
+  geom_segment(aes(x = 0, xend = 81, y = 1, yend = 1), linetype = "dotted", size = 0.25) +
   geom_ribbon(aes(group = ID), alpha = 0.3) +
   geom_line(aes(color = as.factor(init_corin), group = ID), size = 0.25) +
   theme_cowplot() +
   theme(legend.position = c(0.07, 0.18)) +
-  facet_rep_grid(dominance ~ .) +
-  xlim(c(0,61)) +
+  facet_rep_grid(dominance ~ ., scales = "fixed") +
+  xlim(c(0,81)) +
+  ylim(c(0.4, 1.04)) +
   theme(
     axis.text.y = element_text(size = 4, angle = 90, hjust = 0.5, margin= margin(0,0,0,0, unit = "pt")),
     axis.text.x = element_text(size = 4, margin= margin(0,0,0,0, unit = "pt"), lineheight = 0),
