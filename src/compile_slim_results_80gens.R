@@ -6,9 +6,13 @@ library(assertthat)
 
 
 # additive, constant K, 2 locus, early files ---------------------------------------------
+folder <- "slim_results_final/additive_constantK/"
+folder <- "slim_results_final_80gens/additive_constantK/"
+folder <- "slim_results_final_80gens_consVE/additive_constantK_2locus/"
+
 additive_consK_2locus_early <- NULL
 for (file in list.files(
-  "slim_results_final_80gens_consVE/additive_constantK_2locus/",
+  folder,
   pattern = "early.csv",
   full.names = T
 )) {
@@ -73,15 +77,22 @@ assert_that(length(unique(additive_consK_2locus_early$lambda)) == 2, msg = "Inco
 assert_that(length(unique(additive_consK_2locus_early$replicate)) == 30, msg = "Incorrect replicates for additive_consK_2locus_early")
 
 # Save results
+write_csv(additive_consK_2locus_early, path = "results/slim_summaries_60gens/additive_constantK_2locus_early.csv", col_names = T)
+write_csv(additive_consK_2locus_early, path = "results/slim_summaries_80gens/additive_constantK_2locus_early.csv", col_names = T)
 write_csv(additive_consK_2locus_early, path = "results/slim_summaries_80gens_consVE/additive_constantK_2locus_early.csv", col_names = T)
 
 # rm intermediate files
 rm(not30, param_combos)
 
 # additive, constant K, 2 locus, late files ---------------------------------------------
+folder <- "slim_results_final/additive_constantK/"
+folder <- "slim_results_final_80gens/additive_constantK/"
+folder <- "slim_results_final_80gens_consVE/additive_constantK_2locus/"
+
+
 additive_consK_2locus_late <- NULL
 for (file in list.files(
-  "slim_results_final_80gens_consVE/additive_constantK_2locus/",
+  folder,
   pattern = "late.csv",
   full.names = T
 )) {
@@ -146,6 +157,8 @@ assert_that(length(unique(additive_consK_2locus_late$lambda)) == 2, msg = "Incor
 assert_that(length(unique(additive_consK_2locus_late$replicate)) == 30, msg = "Incorrect replicates for additive_consK_2locus_late")
 
 # Save results
+write_csv(additive_consK_2locus_late, path = "results/slim_summaries_60gens/additive_constantK_2locus_late.csv", col_names = T)
+write_csv(additive_consK_2locus_late, path = "results/slim_summaries_80gens/additive_constantK_2locus_late.csv", col_names = T)
 write_csv(additive_consK_2locus_late, path = "results/slim_summaries_80gens_consVE/additive_constantK_2locus_late.csv", col_names = T)
 
 # rm intermediate files
@@ -155,9 +168,14 @@ rm(not30, param_combos)
 
 
 # recessive, constant K, 2 locus, early files ---------------------------------------------
+folder <- "slim_results_final/recessive_constantK/"
+folder <- "slim_results_final_80gens/recessive_constantK/"
+folder <- "slim_results_final_80gens_consVE/recessive_constantK_2locus/"
+
+
 recessive_consK_2locus_early <- NULL
 for (file in list.files(
-  "slim_results_final_80gens_consVE/recessive_constantK_2locus/",
+  folder,
   pattern = "early.csv",
   full.names = T
 )) {
@@ -222,6 +240,8 @@ assert_that(length(unique(recessive_consK_2locus_early$lambda)) == 2, msg = "Inc
 assert_that(length(unique(recessive_consK_2locus_early$replicate)) == 30, msg = "Incorrect replicates for recessive_consK_2locus_early")
 
 # Save results
+write_csv(recessive_consK_2locus_early, path = "results/slim_summaries_60gens/recessive_constantK_2locus_early.csv", col_names = T)
+write_csv(recessive_consK_2locus_early, path = "results/slim_summaries_80gens/recessive_constantK_2locus_early.csv", col_names = T)
 write_csv(recessive_consK_2locus_early, path = "results/slim_summaries_80gens_consVE/recessive_constantK_2locus_early.csv", col_names = T)
 
 # rm intermediate files
@@ -230,9 +250,13 @@ rm(not30, param_combos)
 
 
 # recessive, constant K, 2 locus, late files ---------------------------------------------
+folder <- "slim_results_final/recessive_constantK/"
+folder <- "slim_results_final_80gens/recessive_constantK/"
+folder <- "slim_results_final_80gens_consVE/recessive_constantK_2locus/"
+
 recessive_consK_2locus_late <- NULL
 for (file in list.files(
-  "slim_results_final_80gens_consVE/recessive_constantK_2locus/",
+  folder,
   pattern = "late.csv",
   full.names = T
 )) {
@@ -297,6 +321,8 @@ assert_that(length(unique(recessive_consK_2locus_late$lambda)) == 2, msg = "Inco
 assert_that(length(unique(recessive_consK_2locus_late$replicate)) == 30, msg = "Incorrect replicates for recessive_consK_2locus_late")
 
 # Save results
+write_csv(recessive_consK_2locus_late, path = "results/slim_summaries_60gens/recessive_constantK_2locus_late.csv", col_names = T)
+write_csv(recessive_consK_2locus_late, path = "results/slim_summaries_80gens/recessive_constantK_2locus_late.csv", col_names = T)
 write_csv(recessive_consK_2locus_late, path = "results/slim_summaries_80gens_consVE/recessive_constantK_2locus_late.csv", col_names = T)
 
 # rm intermediate files
@@ -304,8 +330,12 @@ rm(not30, param_combos)
 
 
 # additive, vary K, 2 locus, early files ---------------------------------------------
+folder <- "slim_results_final/additive_varyK/"
+folder <- "slim_results_final_80gens/additive_varyK/"
+folder <- "slim_results_final_80gens_consVE/additive_varyK_2locus/"
+
 additive_varyK_2locus_early <- NULL
-for (file in list.files("slim_results_final_80gens_consVE/additive_varyK_2locus/", 
+for (file in list.files(folder, 
                         pattern = "early.csv", 
                         full.names = T)) {
   # parse filename for sim parameters
@@ -382,14 +412,21 @@ assert_that(length(unique(additive_varyK_2locus_early$replicate)) == 30, msg = "
 assert_that(length(unique(additive_varyK_2locus_early$init_dec)) == 2, msg = "Incorrect replicates for additive_varyK_2locus_early")
 
 # Save results
+write_csv(additive_varyK_2locus_early, path = "results/slim_summaries_60gens/additive_varyK_2locus_early.csv", col_names = T)
+write_csv(additive_varyK_2locus_early, path = "results/slim_summaries_80gens/additive_varyK_2locus_early.csv", col_names = T)
 write_csv(additive_varyK_2locus_early, path = "results/slim_summaries_80gens_consVE/additive_varyK_2locus_early.csv", col_names = T)
 
 # rm intermediate files
 rm(not30, param_combos)
 
 # additive, vary K, 2 locus, late files ---------------------------------------------
+folder <- "slim_results_final/additive_varyK/"
+folder <- "slim_results_final_80gens/additive_varyK/"
+folder <- "slim_results_final_80gens_consVE/additive_varyK_2locus/"
+
+
 additive_varyK_2locus_late <- NULL
-for (file in list.files("slim_results_final_80gens_consVE/additive_varyK_2locus/", 
+for (file in list.files(folder, 
                         pattern = "late.csv", 
                         full.names = T)) {
   # parse filename for sim parameters
@@ -466,33 +503,23 @@ assert_that(length(unique(additive_varyK_2locus_late$replicate)) == 30, msg = "I
 assert_that(length(unique(additive_varyK_2locus_late$init_dec)) == 2, msg = "Incorrect replicates for additive_varyK_2locus_late")
 
 # Save results
+write_csv(additive_varyK_2locus_late, path = "results/slim_summaries_60gens/additive_varyK_2locus_late.csv", col_names = T)
+write_csv(additive_varyK_2locus_late, path = "results/slim_summaries_80gens/additive_varyK_2locus_late.csv", col_names = T)
 write_csv(additive_varyK_2locus_late, path = "results/slim_summaries_80gens_consVE/additive_varyK_2locus_late.csv", col_names = T)
 
 # rm intermediate files
 rm(not30, param_combos)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # recessive, constant K, 1 locus, early files ---------------------------------------------
+folder <- "slim_results_final/recessive_constantK_SSH/"
+folder <- "slim_results_final_80gens/recessive_constantK_SSH/"
+folder <- "slim_results_final_80gens_consVE/recessive_constantK_1locus/"
+
+
 recessive_consK_1locus_early <- NULL
 for (file in list.files(
-  "slim_results_final_80gens_consVE/recessive_constantK_1locus/",
+  folder,
   pattern = "early.csv",
   full.names = T
 )) {
@@ -556,6 +583,8 @@ assert_that(length(unique(recessive_consK_1locus_early$lambda)) == 2, msg = "Inc
 assert_that(length(unique(recessive_consK_1locus_early$replicate)) == 30, msg = "Incorrect replicates for recessive_consK_1locus_early")
 
 # Save results
+write_csv(recessive_consK_1locus_early, path = "results/slim_summaries_60gens/recessive_constantK_1locus_early.csv", col_names = T)
+write_csv(recessive_consK_1locus_early, path = "results/slim_summaries_80gens/recessive_constantK_1locus_early.csv", col_names = T)
 write_csv(recessive_consK_1locus_early, path = "results/slim_summaries_80gens_consVE/recessive_constantK_1locus_early.csv", col_names = T)
 
 # rm intermediate files
@@ -563,9 +592,14 @@ rm(not30, param_combos)
 
 
 # recessive, constant K, 1 locus, late files ---------------------------------------------
+folder <- "slim_results_final/recessive_constantK_SSH/"
+folder <- "slim_results_final_80gens/recessive_constantK_SSH/"
+folder <- "slim_results_final_80gens_consVE/recessive_constantK_1locus/"
+
+
 recessive_consK_1locus_late <- NULL
 for (file in list.files(
-  "slim_results_final_80gens_consVE/recessive_constantK_1locus/",
+  folder,
   pattern = "late.csv",
   full.names = T
 )) {
@@ -629,6 +663,8 @@ assert_that(length(unique(recessive_consK_1locus_late$lambda)) == 2, msg = "Inco
 assert_that(length(unique(recessive_consK_1locus_late$replicate)) == 30, msg = "Incorrect replicates for recessive_consK_1locus_late")
 
 # Save results
+write_csv(recessive_consK_1locus_late, path = "results/slim_summaries_60gens/recessive_constantK_1locus_late.csv", col_names = T)
+write_csv(recessive_consK_1locus_late, path = "results/slim_summaries_80gens/recessive_constantK_1locus_late.csv", col_names = T)
 write_csv(recessive_consK_1locus_late, path = "results/slim_summaries_80gens_consVE/recessive_constantK_1locus_late.csv", col_names = T)
 
 # rm intermediate files
