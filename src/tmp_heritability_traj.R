@@ -19,7 +19,7 @@ additive_consK_2locus_early <- read_csv("results/slim_summaries_80gens/additive_
   mutate(dominance = "additive",
          K_change = "constant",
          loci = 2,
-         Ve = "recalculated",
+         Ve_type = "recalculated",
          scenario = "additive_constantK_2locus")
 
 
@@ -28,28 +28,28 @@ additive_consK_2locus_early_consVE <- read_csv("results/slim_summaries_80gens_co
   mutate(dominance = "additive",
          K_change = "constant",
          loci = 2,
-         Ve = "constant",
+         Ve_type = "constant",
          scenario = "additive_constantK_2locus")
 
 recessive_consK_2locus_early_consVE <- read_csv("results/slim_summaries_80gens_consVE/recessive_constantK_2locus_early.csv") %>% 
   mutate(dominance = "recessive",
          K_change = "constant",
          loci = 2,
-         Ve = "constant",
+         Ve_type = "constant",
          scenario = "recessive_constantK_2locus")
 
 recessive_consK_1locus_early_consVE <- read_csv("results/slim_summaries_80gens_consVE/recessive_constantK_1locus_early.csv") %>% 
   mutate(dominance = "recessive",
          K_change = "constant",
          loci = 1,
-         Ve = "constant",
+         Ve_type = "constant",
          scenario = "recessive_constantK_1locus")
 
 additive_varyK_2locus_early_consVE <- read_csv("results/slim_summaries_80gens_consVE/additive_varyK_2locus_early.csv") %>% 
   mutate(dominance = "additive",
          K_change = "varying",
          loci = 2,
-         Ve = "constant",
+         Ve_type = "constant",
          scenario = "additive_varyK_2locus")
 
 
@@ -59,22 +59,22 @@ additive_varyK_2locus_early_consVE <- read_csv("results/slim_summaries_80gens_co
 old_vs_new <- rbind(additive_consK_2locus_early, additive_consK_2locus_early_consVE) %>% 
   filter(lambda == 15) %>% 
   filter(fitness_width == 0.6562) %>% 
-  group_by(generation, init_corin, init_ednrb, Ve) %>% 
+  group_by(generation, init_corin, init_ednrb, Ve_type) %>% 
   summarise(low95 = quantile(obs_H2, c(0.025)),
             up95 = quantile(obs_H2, c(0.975)),
             obs_H2 = mean(obs_H2)) %>% 
   ungroup() %>%
-  mutate(ID = paste(init_corin, init_ednrb, Ve)) %>% 
-  mutate(Ve = as.factor(Ve))
+  mutate(ID = paste(init_corin, init_ednrb, Ve_type)) %>% 
+  mutate(Ve_type = as.factor(Ve_type))
 
 old_vs_new_plot <- old_vs_new %>% 
-  ggplot(aes(x = generation, y = obs_H2, ymin = low95, ymax = up95, fill = Ve)) +
+  ggplot(aes(x = generation, y = obs_H2, ymin = low95, ymax = up95, fill = Ve_type)) +
   scale_color_brewer(type = "qual", palette = 2) +
   scale_fill_brewer(type = "qual", palette = 2)  +
   geom_hline(aes(yintercept = 1), linetype = "dotted") +
   geom_hline(aes(yintercept = 0.64), linetype = "dashed") +
   geom_ribbon(aes(group = ID), alpha = 0.5) +
-  geom_line(aes(color = Ve, group = ID)) +
+  geom_line(aes(color = Ve_type, group = ID)) +
   facet_rep_grid(init_corin ~ init_ednrb , labeller = labeller(.rows = label_both, .cols = label_both), scales = "free") +
   theme_cowplot() +
   ylab("Heritability (Va/Vp)") +
@@ -182,5 +182,36 @@ h2_across_scenarios_plot <- h2_across_scenarios %>%
 ggsave(h2_across_scenarios_plot, filename = "results/figures/tmp/h2_across_scenarios.pdf", width = 30, height = 30, units = "cm")
 
 
+
+Ve_across_scenarios <- rbind(a,b,c,d) %>% 
+  filter(lambda == 15) %>% 
+  filter(fitness_width == 0.6562) %>%
+  group_by(generation, init_corin, init_ednrb, init_dec, scenario) %>% 
+  summarise(low95 = quantile(Ve, c(0.025), na.rm = T),
+            up95 = quantile(Ve, c(0.975), na.rm = T),
+            value = mean(Ve, na.rm = T)) %>% 
+  ungroup() %>% 
+  mutate(ID = paste(init_corin, init_ednrb, init_dec, scenario)) 
+
+Ve_across_scenarios_plot <- Ve_across_scenarios %>% 
+  ggplot(aes(x = generation, y = value, ymin = low95, ymax = up95, fill = scenario)) +
+  scale_color_brewer(type = "qual", palette = 2) +
+  scale_fill_brewer(type = "qual", palette = 2)  +
+  geom_hline(aes(yintercept = 1), linetype = "dotted") +
+  geom_hline(aes(yintercept = 0.64), linetype = "dashed") +
+  geom_ribbon(aes(group = ID), alpha = 0.5) +
+  geom_line(aes(color = scenario, group = ID)) +
+  facet_rep_grid(init_corin ~ init_ednrb , labeller = labeller(.rows = label_both, .cols = label_both), scales = "free") +
+  theme_cowplot() +
+  ylab("Ve") +
+  ggtitle("Effect of genetic architecture on Ve") +
+  theme(axis.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
+        axis.title = element_text(size = 7, margin = margin(0,0,0,0, "mm")),
+        plot.title =  element_text(size = 7, margin = margin(0,0,0,0, "mm")),
+        strip.text.x  = element_text(size = 5, margin = margin(0.5,0,0.75,0, "mm")),
+        strip.text.y = element_text(size = 5, margin = margin(0.75,0,5,0, "mm")),
+        legend.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
+        legend.title = element_text(size = 5, margin = margin (0,0,0,0, "mm")),
+        legend.key.size = unit(3, "mm"))
 
 
