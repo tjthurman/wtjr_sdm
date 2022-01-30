@@ -16,22 +16,22 @@ selection_key <- tibble(fitness_width = c(0.5446, 0.6562, 0.7805)) %>%
                                    labels = c("5%", "7%", "10%")))
 
 # Load results from the 4 sets of simulations -----------------------------
-additive_consK_2locus_late <- read_csv("results/slim_summaries_80gens_consVE/additive_constantK_2locus_late.csv") %>% 
+additive_consK_2locus_late <- read_csv("results/slim_summaries/additive_constantK_2locus_late.csv") %>% 
   mutate(dominance = "additive",
          K_change = "constant",
          loci = 2)
 
-recessive_consK_2locus_late <- read_csv("results/slim_summaries_80gens_consVE/recessive_constantK_2locus_late.csv") %>% 
+recessive_consK_2locus_late <- read_csv("results/slim_summaries/recessive_constantK_2locus_late.csv") %>% 
   mutate(dominance = "recessive",
          K_change = "constant",
          loci = 2)
 
-additive_varyK_2locus_late <- read_csv("results/slim_summaries_80gens_consVE/additive_varyK_2locus_late.csv") %>% 
+additive_varyK_2locus_late <- read_csv("results/slim_summaries/additive_varyK_2locus_late.csv") %>% 
   mutate(dominance = "additive",
          K_change = "varying",
          loci = 2)
 
-recessive_consK_1locus_late <- read_csv("results/slim_summaries_80gens_consVE/recessive_constantK_1locus_late.csv") %>% 
+recessive_consK_1locus_late <- read_csv("results/slim_summaries/recessive_constantK_1locus_late.csv") %>% 
   mutate(dominance = "recessive",
          K_change = "constant",
          loci = 1)
@@ -122,8 +122,8 @@ combo <- cowplot::plot_grid(arch_plot, varyK_plot,
                             align = "none")
 
 
-ggsave(plot = combo, filename = "results/figures/supplemental/extended_data_arch_varyK_sim_res_80gens_consVE.pdf", width = 183, height  = 208, units = "mm")
-ggsave(plot = combo, filename = "results/figures/supplemental/extended_data_arch_varyK_sim_res_80gens_consVE.jpeg", width = 183, height  = 208, units = "mm", dpi = 300)
+ggsave(plot = combo, filename = "results/figures/supplemental/extended_data_arch_varyK_sim_res.pdf", width = 183, height  = 208, units = "mm")
+ggsave(plot = combo, filename = "results/figures/supplemental/extended_data_arch_varyK_sim_res.jpeg", width = 183, height  = 208, units = "mm", dpi = 300)
 
 
 
@@ -159,9 +159,9 @@ robust <- additive_consK_2locus_late %>%
         legend.position = c(0.8, 0.94),
         legend.key.size = unit(3, "mm"))
 
-ggsave(plot = robust, filename = "results/figures/supplemental/extended_data_sim_robust_80gens_consVE.pdf", width = 183, height  = 225, units = "mm")
+ggsave(plot = robust, filename = "results/figures/supplemental/extended_data_sim_robust.pdf", width = 183, height  = 225, units = "mm")
 
-ggsave(plot = robust, filename = "results/figures/supplemental/extended_data_sim_robust_80gens_consVE.jpeg", width = 183, height  = 225, units = "mm", dpi = 300)
+ggsave(plot = robust, filename = "results/figures/supplemental/extended_data_sim_robust.jpeg", width = 183, height  = 225, units = "mm", dpi = 300)
 
 
 
