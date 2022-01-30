@@ -315,7 +315,7 @@ rule predict_future_phenotypes:
         """
         Rscript src/predict_future_pheno.R {input.pheno} {input.curr_bc} {input.curr_srt} {input.fut_bc} {input.fut_srt} {input.range} {input.gbif} {output.glm} {output.current_SRT} {output.future_SRT}
         """
-     
+
 ## figure_4_elements: make panels for Fig. 4
 # Create panels for figure 4: map of phenotypic change as pdf and png
 # conservation status by phenotype
@@ -325,8 +325,8 @@ rule figure_4_elements:
     input:
         current_srt_pheno = "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif",
         future_srt_pheno = "results/pheno/future_predicted_probWhite_SDMrange.tif",
-        slim_res_additive = slim_simulations("results/slim_summaries/additive_constantK.csv"),
-        slim_res_recessive = slim_simulations("results/slim_summaries/recessive_constantK.csv")
+        slim_res_additive = slim_simulations("results/slim_summaries/additive_constantK_2locus_late.csv"),
+        slim_res_recessive = slim_simulations("results/slim_summaries/recessive_constantK_2locus_late.csv")
     output:
         change_map_pdf= "results/figures/pheno_change_map_89mm.pdf",
         change_map_png= "results/figures/pheno_change_map_89mm.png",

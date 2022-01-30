@@ -41,12 +41,12 @@ perc_brown_csv_out <- args[9]
 # for running as a script
 current_file <- "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif"
 future_file <- "results/pheno/future_predicted_probWhite_SDMrange.tif"
-slim_res_additive <- "results/slim_summaries_80gens_consVE/additive_constantK_2locus_late.csv"
-slim_res_recessive <- "results/slim_summaries_80gens_consVE/recessive_constantK_2locus_late.csv"
+slim_res_additive <- "results/slim_summaries/additive_constantK_2locus_late.csv"
+slim_res_recessive <- "results/slim_summaries/recessive_constantK_2locus_late.csv"
 map_out_pdf <- "results/figures/pheno_change_map_89mm.pdf"
 map_out_png <- "results/figures/pheno_change_map_89mm.png"
 insert_plot_out <- "results/figures/density_probBrown_insert.pdf"
-pop_traj_plot_out <- "results/figures/sim_pop_trajectories_89mm_80gens_consVE.pdf"
+pop_traj_plot_out <- "results/figures/sim_pop_trajectories_89mm.pdf"
 perc_brown_csv_out <- "results/pheno/percent_brown_by_time.csv"
 
 # Load data ---------------------------------------------------------------
