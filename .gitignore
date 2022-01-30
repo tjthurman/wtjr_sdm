@@ -11,7 +11,7 @@ wtjr_sdm.code-workspace
 
 # Snakemake files
 .snakemake/
-sp_wtjr/*
+
 # Snakemake logs
 logs/snakemake_slurm/*.out
 logs/slurm_logs/*
@@ -19,6 +19,9 @@ logs/slim/*
 
 # Doc outputs
 *.html
+*.docx
+docs/*_cache/*
+docs/*_files/*
 
 # Raw data that is too large or code-generated
 raw_data/wc0.5/
@@ -27,7 +30,6 @@ raw_data/rasterstack4cov.tif
 raw_data/projections_25arcmin/
 raw_data/worldclim_projections_2070s/
 raw_data/worldclim_projections_2080s/
-raw_data/tmp/
 
 # Processed data that is too large
 processed_data/bioclim_30arcsec_for_WTJR_SDM.tif
@@ -40,30 +42,9 @@ results/enmeval/enmeval_res_*.RData
 results/sdm/sdm_rangemap_best_*.gr*
 results/pheno/current_predicted_probWhite*.tif
 
-# Figure files that are code-generated
-*.ai
-results/figures/*.png
-results/figures/*.pdf
-results/figures/supplemental/
-
-# Diversions and other things not for publication
-docs/methods_for_mafalda.docx
-src/tmp_comparison.R
-src/maps_for_jeff.R
-src/slim_simulations/varying_K_scratch.R
-docs/Ferreira_et_al_Coat_color_PhDversion_Main_TJT.docx
-docs/Ferreira_et_al_Coat_color_PhDversion_SM_TJT.docx
-docs/description_of_simulations_cache/
-docs/sim_results_first_round_cache/
-docs/sim_results_first_round_files/
-results/tmp/
-results/figures/tmp/
-tmp_models_from_mafalda/
-results/figures/PDF/
-results/figures/maps_for_jeff/
-
-# Full Slim model results
-# way too many files to track
+# Slim model results
+# Both old ones current results,
+# too many files to track 
 initial_slim_res.tar.gz
 slim_results/*
 slim_results_final/*
@@ -72,3 +53,16 @@ slim_results_final_80gens_consVE/*
 results/slim_summaries_60gens/*
 results/slim_summaries_80gens/*
 results/slim_summaries_80gens_consVE/*
+
+# Adobe illustrator files
+# And downstream exports
+figure_1*
+figure_4*
+*.ai
+
+# Various preliminary or internal files, not for publication
+not_for_publication/
+results/figures/tmp/
+
+
+

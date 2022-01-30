@@ -1,10 +1,10 @@
 Code and Data for
 
-## The evolution of seasonal camouflage in white-tailed jackrabbits in response to past and future climates
+## The evolution of white-tailed jackrabbit camouflage in response to past and future seasonal climates
 
 ### About
 
-This Github repository contains the code, and some of the data, needed to recreate the species distribution modelling (SDM) and phenotypic modelling analyses of:
+This Github repository contains the code, and some of the data, needed to recreate the species distribution modelling (SDM), phenotypic modelling, and evolutionary simulations from:
 
 XXX CITATION FOR PAPER HERE. 
 
@@ -17,11 +17,10 @@ You will need the following software installed on your system:
 1. Python 3. We recommend installing Python 3 through [Anaconda](https://www.anaconda.com) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html). We used Python version 3.8.3. 
 2. Snakemake. We recommend following installing `snakemake` through `conda`, see [these instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html). We used version 5.14.0.
 3. R. R can be downloaded from the [R Project for Statisical Computing](https://www.r-project.org). We used R version `4.0.2`. 
-4. The R package `renv`. See [here](https://rstudio.github.io/renv/index.html) for instructions on installing `renv`. 
+4. The R package `renv`. See [here](https://rstudio.github.io/renv/index.html) for instructions on installing `renv`. We used version `0.12.0`. 
 5. R package dependencies. These dependencies are managed with the `renv` package. To install the dependencies, open this project in RStudio (easiest) or, in your terminal, set this project as your working directory and then launch `R`. Then, call `renv::restore()` to install the necessary packages (this may take a while). 
 6. Pandoc, for compiling `.Rmd` files into `.html` files. We recommend installing `pandoc` through `conda`, see [these instructions](https://anaconda.org/conda-forge/pandoc). We used `pandoc` version 2.10.1.
-
-7. SLiM? Add versions, citations, etc. 
+7. SLiM, [a program for forward genetic simulations See the](https://academic.oup.com/mbe/article/36/3/632/5229931?login=true). See the  [SLiM website](https://messerlab.org/slim/) for information on installtion. We used version 3.6. 
 
 ### Structure
 
