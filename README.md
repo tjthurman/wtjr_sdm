@@ -31,6 +31,7 @@ This repository is set up as an RStudio project. You can open it in RStudio by o
 * `raw_data`- Raw data obtained for this project, without any processing. See the README file in that folder for more details on the data source for each item. **NB**- Many raw data files are included in this repository, but some raw data files are too large to be uploaded to Github. See the README file in the raw data folder for information on how to obtain those files, either from Dryad or from the original sources we used. 
 * `renv`- package/library management for this project. This folder is created/maintained by the `renv` package, users should not need to edit it. 
 * `results`- Analysis results, generated from raw data, processed data, and scripts. 
+* `sp_wtjr`- A folder containing an example snakemake profile for use on an HPC cluster using the SLURM job scheduler. 
 * `src`- Scripts and functions written for this project. Some scripts are in `.Rmd` files, which generate corresponding `.html` files in the `docs` folder upon knitting. 
 
 ### Data dependencies

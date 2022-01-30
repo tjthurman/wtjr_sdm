@@ -1,0 +1,13 @@
+jobs: 50
+default-resources: [cpus=1]
+local-cores: 1
+cluster: 
+    mkdir -p logs/slurm_logs/{rule}/ &&
+    sbatch
+    --partition=good_lab_large_cpu
+    --cpus-per-task={resources.cpus}
+    --job-name={rule}-{wildcards}
+    --output=logs/slurm_logs/{rule}/{rule}-{wildcards}-%j.out
+jobname: sm_wtjr_{rulename}_{jobid}.sh
+latency-wait: 20
+max-jobs-per-second: 3
