@@ -20,7 +20,7 @@ subworkflow slim_simulations:
     workdir:
         "/home/tt164677e/tim_beegfs/wtjr_sdm"
     snakefile:
-        "/home/tt164677e/tim_beegfs/wtjr_sdm/slim_simulations_final.smk"
+        "/home/tt164677e/tim_beegfs/wtjr_sdm/slim_simulations.smk"
 
 # Final desired outputs:
 # 1) Performance plots from ENMeval (ensures that all ENMeval stuff runs)
