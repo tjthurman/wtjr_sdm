@@ -41,12 +41,12 @@ processed_data/bc23_CMIP5_RCP85_2080s_5modavg.gr*
 results/enmeval/enmeval_res_*.RData
 results/sdm/sdm_rangemap_best_*.gr*
 results/pheno/current_predicted_probWhite*.tif
+results/slim_summaries/*_early.csv
+results/slim_summaries/*_late.csv
 
-# Slim model results
-# Both old ones and current results,
+# Individual Slim model results
 # too many files to track 
 results/slim_ind_sims/*
-results/slim_summaries_80gens_consVE/*
 
 # Adobe illustrator files
 # And downstream exports
