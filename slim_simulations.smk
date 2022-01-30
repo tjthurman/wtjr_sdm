@@ -1,7 +1,7 @@
 ###############
 ##   SETUP   ##
 ############### 
-localrules: all, compile_slim_results
+localrules: all, compile_slim_early, compile_slim_late, compile_slim_seed
 
 # Output file setup
 output_files = ["early.csv", "late.csv", "seed.txt"]
@@ -109,14 +109,21 @@ sim_results_recessive_consK_1locus = expand(res_pattern_recessive_consK_1locus,
 
 rule all:
     input: # slim simulation summaries
-        sim_results_additive_consK_2locus,
-        sim_results_recessive_consK_2locus,
-        sim_results_additive_varyK_2locus,
-        sim_results_recessive_consK_1locus
-        # "results/slim_summaries_80gens_Ve/additive_constantK.csv",
-        # "results/slim_summaries_80gens/additive_varyK.csv",
-        # "results/slim_summaries_80gens/recessive_constantK.csv",
-        # "results/slim_summaries_80gens/SSH_constantK.csv"
+        # Early files:
+        "results/slim_summaries/additive_constantK_2locus_early.csv",
+        "results/slim_summaries/additive_varyK_2locus_early.csv",
+        "results/slim_summaries/recessive_constantK_2locus_early.csv",
+        "results/slim_summaries/recessive_constantK_1locus_early.csv",
+        # Late files
+        "results/slim_summaries/additive_constantK_2locus_late.csv",
+        "results/slim_summaries/additive_varyK_2locus_late.csv",
+        "results/slim_summaries/recessive_constantK_2locus_late.csv",
+        "results/slim_summaries/recessive_constantK_1locus_late.csv",
+        # seed files
+        "results/slim_summaries/additive_constantK_2locus_seed.csv",
+        "results/slim_summaries/additive_varyK_2locus_seed.csv",
+        "results/slim_summaries/recessive_constantK_2locus_seed.csv",
+        "results/slim_summaries/recessive_constantK_1locus_seed.csv"
 
 rule sim_additive_constantK_2locus:
     input:
@@ -179,20 +186,57 @@ rule sim_recessive_constantK_1locus:
         slim -d generations={wildcards.gen} -d K={wildcards.K} -d initPopSize={wildcards.initPop} -d initFreqCorin={wildcards.iCorin} -d initOptPheno={wildcards.initOpt} -d finalOptPheno={wildcards.finalOpt} -d fitFuncWidth={wildcards.selection} -d V_E={wildcards.VE} -d offspringPoisLambda={wildcards.offspring}  -d replicate={wildcards.replicate} -d "outputDir='results/slim_ind_sims/recessive_constantK_1locus'" src/slim_simulations/constant_K_recessive_1locus_consVE_CLI.slim 2> {log} 
         """
 
-# rule compile_slim_results:
-#     input:
-#         sim_results_additive_constantK,
-#         sim_results_recessive_constantK,
-#         sim_results_additive_varyK,
-#         sim_results_recessive_constantK_SSH
-#     output:
-#         "results/slim_summaries_80gens/additive_constantK.csv",
-#         "results/slim_summaries_80gens/additive_varyK.csv",
-#         "results/slim_summaries_80gens/recessive_constantK.csv",
-#         "results/slim_summaries_80gens/SSH_constantK.csv"
-#     resources:
-#         cpus=1
-#     shell:
-#         """
-#         Rscript src/compile_slim_results_80gens.R
-#         """
+# Compile the many inidividual text files into single .csvs for later use. 
+rule compile_slim_early:
+    input:
+        sim_results_additive_consK_2locus,
+        sim_results_recessive_consK_2locus,
+        sim_results_additive_varyK_2locus,
+        sim_results_recessive_consK_1locus
+    output:
+        "results/slim_summaries/additive_constantK_2locus_early.csv",
+        "results/slim_summaries/additive_varyK_2locus_early.csv",
+        "results/slim_summaries/recessive_constantK_2locus_early.csv",
+        "results/slim_summaries/recessive_constantK_1locus_early.csv"
+    resources:
+        cpus=1
+    shell:
+        """
+        Rscript src/compile_slim_early.R
+        """
+
+rule compile_slim_late:
+    input:
+        sim_results_additive_consK_2locus,
+        sim_results_recessive_consK_2locus,
+        sim_results_additive_varyK_2locus,
+        sim_results_recessive_consK_1locus
+    output:
+        "results/slim_summaries/additive_constantK_2locus_late.csv",
+        "results/slim_summaries/additive_varyK_2locus_late.csv",
+        "results/slim_summaries/recessive_constantK_2locus_late.csv",
+        "results/slim_summaries/recessive_constantK_1locus_late.csv"
+    resources:
+        cpus=1
+    shell:
+        """
+        Rscript src/compile_slim_late.R
+        """
+
+rule compile_slim_seed:
+    input:
+        sim_results_additive_consK_2locus,
+        sim_results_recessive_consK_2locus,
+        sim_results_additive_varyK_2locus,
+        sim_results_recessive_consK_1locus
+    output:
+        "results/slim_summaries/additive_constantK_2locus_seed.csv",
+        "results/slim_summaries/additive_varyK_2locus_seed.csv",
+        "results/slim_summaries/recessive_constantK_2locus_seed.csv",
+        "results/slim_summaries/recessive_constantK_1locus_seed.csv"
+    resources:
+        cpus=1
+    shell:
+        """
+        Rscript src/compile_slim_seed.R
+        """
