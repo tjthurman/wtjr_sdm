@@ -12,8 +12,13 @@ feature_class=["L", "LQ", "H", "LQH", "LQHP", "LQHPT"]
 # Conservation
 CON_STATUSES=["extirpated","broad_extirp","local_extirp","poss_decline","pres_stable"]
 
+# Sliim sim scenarios
+slim_scenarios = ["additive_constantK_2locus", "additive_varyK_2locus", "recessive_constantK_1locus", "recessive_constantK_2locus"]
+# Slim sim file ext
+slim_exts = ["early.csv", "late.csv", "seed.csv"]
 
-localrules: all, dag, filegraph, help
+
+localrules: all
 
 
 subworkflow slim_simulations:
@@ -34,10 +39,8 @@ rule all:
         # and not just the final dataset
         expand("results/enmeval/performance_plot_{dist}km.pdf", dist = dataset_dists),
         # Slim simulations
-        slim_simulations("results/slim_summaries/additive_constantK.csv"),
-        slim_simulations("results/slim_summaries/additive_varyK.csv"),
-        slim_simulations("results/slim_summaries/recessive_constantK.csv"),
-        slim_simulations("results/slim_summaries/SSH_constantK.csv"),
+        # Do all output files, to ensure everything (not just late) files compile
+        slim_simulations(expand("results/slim_summaries/{scen}_{ext}", scen = slim_scenarios, ext = slim_exts)),
         # Stats in main text
         "results/conservation/broad_chisq_res.csv", # Chisq results as table
         "results/conservation/cons_by_current_color.RData", # Chisq results as R object
