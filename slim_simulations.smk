@@ -125,8 +125,23 @@ rule all:
         "results/slim_summaries/recessive_constantK_2locus_seed.csv",
         "results/slim_summaries/recessive_constantK_1locus_seed.csv"
 
+
+rule calc_Ve_via_simulation:
+    input:
+    output:
+        "results/slim_Ve_calc/Ve_calculation_additive_2locus_K2750_initPop2750_iCorin0.70339_iEDNRB0.576271_desiredH20.64_iter10000.csv"
+    log:
+        "logs/slim/calc_Ve/K2750_initPop2750_iCorin0.70339_iEDNRB0.576271_desiredH20.64_iter10000.log"
+    resources:
+        cpus=1
+    shell:
+        """
+        slim -d K=2750 -d initFreqCorin=0.7033898 -d initFreqEDNRB=0.5762712 -d initPopSize=2750 -d h2=0.64 -d iterations=10000 -d "outputDir='results/slim_Ve_calc'" src/slim_simulations/Ve_calculation_additive.slim 2> {log}
+        """
+
 rule sim_additive_constantK_2locus:
     input:
+        "results/slim_Ve_calc/Ve_calculation_additive_2locus_K2750_initPop2750_iCorin0.70339_iEDNRB0.576271_desiredH20.64_iter10000.csv"
     output:
         "results/slim_ind_sims/additive_constantK_2locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_early.csv",
         "results/slim_ind_sims/additive_constantK_2locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_late.csv",
@@ -142,6 +157,7 @@ rule sim_additive_constantK_2locus:
 
 rule sim_recessive_constantK_2locus:
     input:
+        "results/slim_Ve_calc/Ve_calculation_additive_2locus_K2750_initPop2750_iCorin0.70339_iEDNRB0.576271_desiredH20.64_iter10000.csv"
     output:
         "results/slim_ind_sims/recessive_constantK_2locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_early.csv",
         "results/slim_ind_sims/recessive_constantK_2locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_late.csv",
@@ -157,6 +173,7 @@ rule sim_recessive_constantK_2locus:
 
 rule sim_additive_varyK_2locus:
     input:
+        "results/slim_Ve_calc/Ve_calculation_additive_2locus_K2750_initPop2750_iCorin0.70339_iEDNRB0.576271_desiredH20.64_iter10000.csv"
     output:
         "results/slim_ind_sims/additive_varyK_2locus/gens{gen}_minK{minK}_maxK{maxK}_period{period}_startK{startK}_initDec{initDec}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_early.csv",
         "results/slim_ind_sims/additive_varyK_2locus/gens{gen}_minK{minK}_maxK{maxK}_period{period}_startK{startK}_initDec{initDec}_iCorin{iCorin}_iEDNRB{iEDNRB}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_late.csv",
@@ -173,6 +190,7 @@ rule sim_additive_varyK_2locus:
 
 rule sim_recessive_constantK_1locus:
     input:
+        "results/slim_Ve_calc/Ve_calculation_additive_2locus_K2750_initPop2750_iCorin0.70339_iEDNRB0.576271_desiredH20.64_iter10000.csv"
     output:
         "results/slim_ind_sims/recessive_constantK_1locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_early.csv",
         "results/slim_ind_sims/recessive_constantK_1locus/gens{gen}_K{K}_initPop{initPop}_iCorin{iCorin}_initOpt{initOpt}_finalOpt{finalOpt}_sel{selection}_Ve{VE}_lambda{offspring}_rep{replicate}_late.csv",
