@@ -59,4 +59,8 @@ not_for_publication/
 results/figures/tmp/
 
 
-
+# Other RCP data
+processed_data/bc23_CMIP5_RCP26_2080s_5modavg.gr*
+processed_data/bc23_CMIP5_RCP45_2080s_5modavg.gr*
+processed_data/bc23_CMIP5_RCP60_2080s_5modavg.gr*
+raw_data/worldclim_projections_2080s_other_RCPs/*
