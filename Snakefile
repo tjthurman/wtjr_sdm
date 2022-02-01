@@ -367,25 +367,4 @@ rule supplemental_and_analysis:
         """
         Rscript src/supp_figs_and_tables.R {input.snowcover_glm_rdata} {input.srt_glm_rdata} {input.consv_pheno_overlap} {input.current_srt_pheno} {input.future_srt_pheno} {input.current_cover_pheno} {input.best_metrics_file} {output.snow_cover_table} {output.snow_cover_metrics} {output.srt_table} {output.srt_metrics} {output.broad_chisq_res} {output.ext_data_sdm_fig} {output.ext_data_sdm_fig_jpg} {output.glm_method_compare_metrics}
         """
-        
 
-# --- Misc --- #
-## dag               : makes a DAG graph for this pipeline
-rule dag:
-    input: "Snakefile"
-    resources:
-        cpus=1
-    shell:
-        "snakemake --dag | dot -Tpng > DAG.png"
-        
-## filegraph          : makes a file graph for this pipeline
-rule filegraph:
-    input: "Snakefile"
-    shell:
-        "snakemake --filegraph | dot -Tpng > filegraph.png"
-
-## help               : prints help comments for this snakefile
-rule help:
-    input: "Snakefile"
-    shell:
-        "sed -n 's/^##//p' {input}"
