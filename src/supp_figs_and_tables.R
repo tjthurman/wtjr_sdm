@@ -16,6 +16,7 @@ library(broom)
 library(gridExtra)
 library(cowplot)
 library(lemon)
+library(RColorBrewer)
 
 
 
@@ -27,16 +28,25 @@ args = commandArgs(trailingOnly=TRUE)
 # 4 current SRT predicted phenos
 # 5 future SRT predicted phenos
 # 6 current snow cover predicted phenos
+# 7 csv of compiled sims, additive 2 locus consK
+# 8 csv of compiled sims, recessive 2 locus consK
+# 9 csv of compiled sims, additive 2 locus varyK
+# 10 csv of compiled sims, recessive 1 locus consK
 
-# 7 snow cover table out
-# 8 snow cover metrics out
-# 9 srt table out
-# 10 srt metrics out
-# 11 broad chisq out
-# 12 pheno comparison map out
-# 13 glm method compare map out
-# 14 percent brown change map out
-# 15 discrete current pheno map out
+# 11 snow cover table out
+# 12 snow cover metrics out
+# 13 srt table out
+# 14 srt metrics out
+# 15 broad chisq out
+# 16 pheno comparison map out
+# 17 glm method compare map out
+# 18 percent brown change map out
+# 19 discrete current pheno map out
+# 20 extended data arch fig out, pdf
+# 21 extended data arch fig out, jpeg
+# 22 extended data robust fig out, pdf
+# 24 extended data robust fig out, jpeg
+
 
 # Inputs
 snow_cover_glm <- args[1]
@@ -46,17 +56,25 @@ current_file <- args[4]
 future_file <- args[5]
 current_cover_file <- args[6]
 best_metrics_file <- args[7]
+additive_consK_2locus_late_file <- args[8]
+recessive_consK_2locus_late_file <- args[9]
+additive_varyK_2locus_late_file <- args[10]
+recessive_consK_1locus_late_file <- args[11]
 
 # Outputs
-snow_cover_table <- args[8]
-snow_cover_metrics <- args[9]
-srt_table <- args[10]
-srt_metrics  <- args[11]
-broad_chisq_out <- args[12]
-pheno_compare_maps <- args[12]
-ext_data_sdm_fig <- args[13]
-ext_data_sdm_fig_jpg <- args[14]
-glm_method_compare_metrics <- args[15]
+snow_cover_table <- args[12]
+snow_cover_metrics <- args[13]
+srt_table <- args[14]
+srt_metrics  <- args[15]
+broad_chisq_out <- args[16]
+pheno_compare_maps <- args[17]
+ext_data_sdm_fig <- args[18]
+ext_data_sdm_fig_jpg <- args[19]
+glm_method_compare_metrics <- args[20]
+arch_varyK_fig_pdf <- args[21]
+arch_varyK_fig_jpeg <- args[22]
+robust_fig_pdf <- args[23]
+robust_fig_jpeg <- args[24]
 
 
 # For running as a script
@@ -68,8 +86,13 @@ glm_method_compare_metrics <- args[15]
 # future_file <- "results/pheno/future_predicted_probWhite_SDMrange.tif"
 # current_cover_file <- "results/pheno/current_predicted_probWhite_SDMrange.tif"
 # best_metrics_file <- "results/enmeval/enmeval_best_model_per_thin_AIC.csv"
-
-# outputs
+# additive_consK_2locus_late_file <- "results/slim_summaries/additive_constantK_2locus_late.csv"
+# recessive_consK_2locus_late_file <- "results/slim_summaries/recessive_constantK_2locus_late.csv"
+# additive_varyK_2locus_late_file <- "results/slim_summaries/additive_varyK_2locus_late.csv"
+# recessive_consK_1locus_late_file <- "results/slim_summaries/recessive_constantK_1locus_late.csv"
+# 
+# 
+# # outputs
 # snow_cover_table <- "results/pheno/glm_table_current_snow_cover.csv"
 # snow_cover_metrics <- "results/pheno/glm_metrics_current_snow_cover.csv"
 # srt_table <- "results/pheno/glm_table_current_srt.csv"
@@ -78,6 +101,10 @@ glm_method_compare_metrics <- args[15]
 # ext_data_sdm_fig <- "results/figures/supplemental/extended_data_SDMs.pdf"
 # ext_data_sdm_fig_jpg <- "results/figures/supplemental/extended_data_SDMs.jpeg"
 # glm_method_compare_metrics <- "results/pheno/model_difference_metrics.csv"
+# arch_varyK_fig_pdf <- "results/figures/supplemental/extended_data_arch_varyK_sim_res.pdf"
+# arch_varyK_fig_jpeg <- "results/figures/supplemental/extended_data_arch_varyK_sim_res.jpeg"
+# robust_fig_pdf <- "results/figures/supplemental/extended_data_sim_robust.pdf"
+# robust_fig_jpeg <- "results/figures/supplemental/extended_data_sim_robust.jpeg"
 
 
 # Load map data -----------------------------------------------------------
@@ -471,4 +498,157 @@ combo <- cowplot::plot_grid(top_row, bottom_rows,
 
 ggsave(plot = combo, ext_data_sdm_fig, width = 183, height  = 200, units = "mm")
 ggsave(plot = combo, ext_data_sdm_fig_jpg, width = 183, height  = 200, units = "mm", dpi = 300)
+
+
+# Extended data- robustness of slim simulations ---------------------------
+additive_consK_2locus_late <- read_csv(additive_consK_2locus_late_file) %>% 
+  mutate(dominance = "additive",
+         K_change = "constant",
+         loci = 2)
+
+recessive_consK_2locus_late <- read_csv(recessive_consK_2locus_late_file) %>% 
+  mutate(dominance = "recessive",
+         K_change = "constant",
+         loci = 2)
+
+additive_varyK_2locus_late <- read_csv(additive_varyK_2locus_late_file) %>% 
+  mutate(dominance = "additive",
+         K_change = "varying",
+         loci = 2)
+
+recessive_consK_1locus_late <- read_csv(recessive_consK_1locus_late_file) %>% 
+  mutate(dominance = "recessive",
+         K_change = "constant",
+         loci = 1)
+
+selection_key <- tibble(fitness_width = c(0.5446, 0.6562, 0.7805)) %>% 
+  mutate(mismatch_penalty = factor(fitness_width, 
+                                   levels = c(0.7805, 0.6562, 0.5446),
+                                   labels = c("5%", "7%", "10%")))
+
+# Importance of genetic architecture ---------------------------------------
+# additive vs recessive vs locus number
+
+for_arch_plot <- rbind(additive_consK_2locus_late, recessive_consK_2locus_late) %>% 
+  filter(init_corin == init_ednrb) %>% 
+  dplyr::select(-init_ednrb, -freq_ednrb)
+
+arch_plot <- rbind(for_arch_plot, recessive_consK_1locus_late) %>% 
+  filter(lambda == 15) %>% 
+  rename(p_i = init_corin) %>% 
+  mutate(perc_K = N/K) %>% 
+  group_by(generation, p_i, fitness_width, dominance, loci) %>% 
+  summarise(low95 = quantile(perc_K, c(0.025)),
+            up95 = quantile(perc_K, c(0.975)),
+            perc_K = mean(perc_K)) %>% 
+  ungroup() %>% 
+  left_join(selection_key) %>%
+  mutate(ID = paste(p_i, fitness_width, dominance, loci)) %>% 
+  ggplot(aes(x = generation, y = perc_K, ymin = low95, ymax = up95, fill = mismatch_penalty)) +
+  scale_color_brewer(type = "qual", palette = 2) +
+  scale_fill_brewer(type = "qual", palette = 2)  +
+  geom_hline(aes(yintercept = 1), linetype = "dotted") +
+  geom_ribbon(aes(group = ID), alpha = 0.5) +
+  geom_line(aes(color = mismatch_penalty, group = ID)) +
+  facet_rep_grid(dominance + loci ~ p_i, labeller = labeller(.rows = label_both, .cols = label_both), scales = "fixed") +
+  theme_cowplot() +
+  ylab("Percent of carrying capacity, K") +
+  ylim(c(0,1.04)) +
+  ggtitle("Effect of genetic architecture on evolutionary rescue") +
+  theme(axis.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
+        axis.title = element_text(size = 7, margin = margin(0,0,0,0, "mm")),
+        plot.title =  element_text(size = 7, margin = margin(0,0,0,0, "mm")),
+        strip.text.x  = element_text(size = 5, margin = margin(0.5,0,0.75,0, "mm")),
+        strip.text.y = element_text(size = 5, margin = margin(0.75,0,5,0, "mm")),
+        legend.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
+        legend.title = element_text(size = 5, margin = margin (0,0,0,0, "mm")),
+        legend.position = c(0.8, 0.1),
+        legend.key.size = unit(3, "mm"))
+
+# Effect of varying carrying capacity -------------------------------------
+
+varyK_plot <- additive_varyK_2locus_late %>% 
+  dplyr::select(-min_K, -max_K, -period, -init_K) %>% 
+  rbind(mutate(additive_consK_2locus_late, init_dec = NA)) %>% 
+  filter(lambda == 15,
+         init_corin == init_ednrb) %>% 
+  rename(p_i = init_corin) %>% 
+  mutate(perc_K = N/K) %>% 
+  group_by(generation, p_i, fitness_width, init_dec, K_change) %>% 
+  summarise(low95 = quantile(perc_K, c(0.025)),
+            up95 = quantile(perc_K, c(0.975)),
+            perc_K = mean(perc_K)) %>% 
+  ungroup() %>% 
+  left_join(selection_key) %>%
+  mutate(ID = paste(p_i, fitness_width, init_dec, K_change)) %>% 
+  ggplot(aes(x = generation, y = perc_K, ymin = low95, ymax = up95, fill = mismatch_penalty)) +
+  scale_color_brewer(type = "qual", palette = 2) +
+  scale_fill_brewer(type = "qual", palette = 2)  +
+  geom_hline(aes(yintercept = 1), linetype = "dotted") +
+  geom_ribbon(aes(group = ID), alpha = 0.5) +
+  geom_line(aes(color = mismatch_penalty, group = ID)) +
+  facet_rep_grid(K_change + init_dec ~ p_i, labeller = labeller(.rows = label_both, .cols = label_both), scales = "fixed") +
+  theme_cowplot() +
+  ylab("Percent of carrying capacity, K") +
+  ylim(c(0,1.04)) +
+  ggtitle("Effect of population cycling on evolutionary rescue") +
+  theme(axis.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
+        axis.title = element_text(size = 7, margin = margin(0,0,0,0, "mm")),
+        plot.title =  element_text(size = 7, margin = margin(0,0,0,0, "mm")),
+        strip.text.x  = element_text(size = 5, margin = margin(0.5,0,0.75,0, "mm")),
+        strip.text.y = element_text(size = 5, margin = margin(0.75,0,5,0, "mm")),
+        legend.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
+        legend.title = element_text(size = 5, margin = margin (0,0,0,0, "mm")),
+        legend.position = c(0.8, 0.1),
+        legend.key.size = unit(3, "mm"))
+
+# Combo plot of these two effects -----------------------------------------
+combo <- cowplot::plot_grid(arch_plot, varyK_plot,
+                            nrow = 2, ncol = 1,
+                            labels = c("a", "b"), 
+                            label_fontfamily = "sans", 
+                            label_fontface = "bold", 
+                            label_size = 8,
+                            align = "none")
+
+
+ggsave(plot = combo, filename = arch_varyK_fig_pdf, width = 183, height  = 208, units = "mm")
+ggsave(plot = combo, filename = arch_varyK_fig_jpeg, width = 183, height  = 208, units = "mm", dpi = 300)
+
+
+
+# Effect of changes in other parameters -----------------------------------
+
+robust <- additive_consK_2locus_late %>% 
+  mutate(perc_K = N/K) %>% 
+  group_by(generation, init_corin, init_ednrb, fitness_width, lambda) %>% 
+  summarise(low95 = quantile(perc_K, c(0.025)),
+            up95 = quantile(perc_K, c(0.975)),
+            perc_K = mean(perc_K)) %>% 
+  ungroup() %>% 
+  left_join(selection_key) %>%
+  mutate(ID = paste(init_corin, init_ednrb, fitness_width, lambda)) %>% 
+  ggplot(aes(x = generation, y = perc_K, ymin = low95, ymax = up95, fill = mismatch_penalty)) +
+  scale_color_brewer(type = "qual", palette = 2) +
+  scale_fill_brewer(type = "qual", palette = 2)  +
+  geom_hline(aes(yintercept = 1), linetype = "dotted") +
+  geom_ribbon(aes(group = ID), alpha = 0.5) +
+  geom_line(aes(color = mismatch_penalty, group = ID)) +
+  facet_rep_grid(init_ednrb + lambda ~ init_corin, labeller = labeller(.rows = label_both, .cols = label_both), scales = "fixed") +
+  theme_cowplot() +
+  ylab("Percent of carrying capacity, K") +
+  ylim(c(0,1.04)) +
+  ggtitle("Effect of initial allele frequencies and reproductive output on evolutionary rescue") +
+  theme(axis.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
+        axis.title = element_text(size = 7, margin = margin(0,0,0,0, "mm")),
+        plot.title =  element_text(size = 7, margin = margin(0,0,0,0, "mm")),
+        strip.text.x  = element_text(size = 5, margin = margin(0.5,0,0.75,0, "mm")),
+        strip.text.y = element_text(size = 5, margin = margin(0.75,0,5,0, "mm")),
+        legend.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
+        legend.title = element_text(size = 5, margin = margin (0,0,0,0, "mm")),
+        legend.position = c(0.8, 0.94),
+        legend.key.size = unit(3, "mm"))
+
+ggsave(plot = robust, filename = robust_fig_pdf, width = 183, height  = 225, units = "mm")
+ggsave(plot = robust, filename = robust_fig_jpeg, width = 183, height  = 225, units = "mm", dpi = 300)
 

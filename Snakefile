@@ -60,7 +60,11 @@ rule all:
         "results/conservation/broad_chisq_res.csv",
         "results/figures/supplemental/extended_data_SDMs.pdf",
         "results/figures/supplemental/extended_data_SDMs.jpeg",
-        "results/pheno/model_difference_metrics.csv"
+        "results/pheno/model_difference_metrics.csv",
+        "results/figures/supplemental/extended_data_arch_varyK_sim_res.pdf",
+        "results/figures/supplemental/extended_data_arch_varyK_sim_res.jpeg",
+        "results/figures/supplemental/extended_data_sim_robust.pdf",
+        "results/figures/supplemental/extended_data_sim_robust.jpeg"
 
       
 ## curate_occur_data   : process WTJR occurrence data
@@ -354,7 +358,11 @@ rule supplemental_and_analysis:
         current_srt_pheno = "results/pheno/current_predicted_probWhite_SDMrange_SRT.tif",
         future_srt_pheno = "results/pheno/future_predicted_probWhite_SDMrange.tif",
         current_cover_pheno = "results/pheno/current_predicted_probWhite_SDMrange.tif",
-        best_metrics_file = "results/enmeval/enmeval_best_model_per_thin_AIC.csv"
+        best_metrics_file = "results/enmeval/enmeval_best_model_per_thin_AIC.csv",
+        additive_consK_2locus_late_file = "results/slim_summaries/additive_constantK_2locus_late.csv",
+        recessive_consK_2locus_late_file = "results/slim_summaries/recessive_constantK_2locus_late.csv",
+        additive_varyK_2locus_late_file = "results/slim_summaries/additive_varyK_2locus_late.csv",
+        recessive_consK_1locus_late_file = "results/slim_summaries/recessive_constantK_1locus_late.csv"
     output:
         snow_cover_table = "results/pheno/glm_table_current_snow_cover.csv",
         snow_cover_metrics = "results/pheno/glm_metrics_current_snow_cover.csv",
@@ -363,11 +371,15 @@ rule supplemental_and_analysis:
         broad_chisq_res = "results/conservation/broad_chisq_res.csv",
         ext_data_sdm_fig = "results/figures/supplemental/extended_data_SDMs.pdf", 
         ext_data_sdm_fig_jpg = "results/figures/supplemental/extended_data_SDMs.jpeg", 
-        glm_method_compare_metrics = "results/pheno/model_difference_metrics.csv"
+        glm_method_compare_metrics = "results/pheno/model_difference_metrics.csv",
+        arch_varyK_fig_pdf = "results/figures/supplemental/extended_data_arch_varyK_sim_res.pdf",
+        arch_varyK_fig_jpeg = "results/figures/supplemental/extended_data_arch_varyK_sim_res.jpeg",
+        robust_fig_pdf = "results/figures/supplemental/extended_data_sim_robust.pdf",
+        robust_fig_jpeg = "results/figures/supplemental/extended_data_sim_robust.jpeg"
     resources:
         cpus=1
     shell:
         """
-        Rscript src/supp_figs_and_tables.R {input.snowcover_glm_rdata} {input.srt_glm_rdata} {input.consv_pheno_overlap} {input.current_srt_pheno} {input.future_srt_pheno} {input.current_cover_pheno} {input.best_metrics_file} {output.snow_cover_table} {output.snow_cover_metrics} {output.srt_table} {output.srt_metrics} {output.broad_chisq_res} {output.ext_data_sdm_fig} {output.ext_data_sdm_fig_jpg} {output.glm_method_compare_metrics}
+        Rscript src/supp_figs_and_tables.R {input.snowcover_glm_rdata} {input.srt_glm_rdata} {input.consv_pheno_overlap} {input.current_srt_pheno} {input.future_srt_pheno} {input.current_cover_pheno} {input.best_metrics_file} {input.additive_consK_2locus_late_file} {input.recessive_consK_2locus_late_file} {input.additive_varyK_2locus_late_file} {input.recessive_consK_1locus_late_file} {output.snow_cover_table} {output.snow_cover_metrics} {output.srt_table} {output.srt_metrics} {output.broad_chisq_res} {output.ext_data_sdm_fig} {output.ext_data_sdm_fig_jpg} {output.glm_method_compare_metrics} {output.arch_varyK_fig_pdf} {output.arch_varyK_fig_jpeg} {output.robust_fig_pdf} {output.robust_fig_jpeg}
         """
 
