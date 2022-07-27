@@ -473,7 +473,7 @@ perc_brown_plot <- area_compare %>%
 # Combine SDM figs into one large figure ----------------------------------
 top_row <- cowplot::plot_grid(sdm_metrics_plot, perc_brown_plot,
                               nrow = 1, ncol = 2,
-                              labels = c("a", "b"),
+                              labels = c("A", "B"),
                               rel_widths = c(2, 1),
                               label_fontfamily = "sans", 
                               label_fontface = "bold", 
@@ -483,7 +483,7 @@ top_row <- cowplot::plot_grid(sdm_metrics_plot, perc_brown_plot,
 bottom_rows <- cowplot::plot_grid(discrete_pheno, map_model_difference,
                             map_pheno_current, map_pheno_future,
                             nrow = 2, ncol = 2, 
-                            labels = c("c", "d", "e", "f"), 
+                            labels = c("C", "D", "E", "F"), 
                             label_fontfamily = "sans", 
                             label_fontface = "bold", 
                             label_size = 8,
@@ -551,7 +551,7 @@ arch_plot <- rbind(for_arch_plot, recessive_consK_1locus_late) %>%
   geom_line(aes(color = mismatch_penalty, group = ID)) +
   facet_rep_grid(dominance + loci ~ p_i, labeller = labeller(.rows = label_both, .cols = label_both), scales = "fixed") +
   theme_cowplot() +
-  ylab("Percent of carrying capacity, K") +
+  ylab("Percent of population ceiling, K") +
   ylim(c(0,1.04)) +
   ggtitle("Effect of genetic architecture on evolutionary rescue") +
   theme(axis.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
@@ -588,7 +588,7 @@ varyK_plot <- additive_varyK_2locus_late %>%
   geom_line(aes(color = mismatch_penalty, group = ID)) +
   facet_rep_grid(K_change + init_dec ~ p_i, labeller = labeller(.rows = label_both, .cols = label_both), scales = "fixed") +
   theme_cowplot() +
-  ylab("Percent of carrying capacity, K") +
+  ylab("Percent of population ceiling, K") +
   ylim(c(0,1.04)) +
   ggtitle("Effect of population cycling on evolutionary rescue") +
   theme(axis.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
@@ -635,7 +635,7 @@ robust <- additive_consK_2locus_late %>%
   geom_line(aes(color = mismatch_penalty, group = ID)) +
   facet_rep_grid(init_ednrb + lambda ~ init_corin, labeller = labeller(.rows = label_both, .cols = label_both), scales = "fixed") +
   theme_cowplot() +
-  ylab("Percent of carrying capacity, K") +
+  ylab("Percent of population ceiling, K") +
   ylim(c(0,1.04)) +
   ggtitle("Effect of initial allele frequencies and reproductive output on evolutionary rescue") +
   theme(axis.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
