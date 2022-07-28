@@ -17,6 +17,11 @@ coast <- ne_coastline(scale = 10, returnclass = "sf")
 
 
 
+# Read in IUCN range ------------------------------------------------------
+iucn_range <- sf::read_sf("raw_data/redlist_species_data_79e8f518-a14c-4d0e-9640-5bea84d7c1b8/data_0.shp")
+plot(iucn_range[1])
+
+
 # Get SDM occurrences -----------------------------------------------------
 in_csv <- "processed_data/thin/wtjr_occ_0km_thin1.csv"
 sdm_occurrences <- read.csv(in_csv, stringsAsFactors = F) %>%
@@ -108,7 +113,9 @@ to_plot <- bind_rows(sdm_occurrences,
 state_fill <- "grey91"
 sdm_border_col <- "grey31"
 sdm_fill <- "grey80"
-  
+iucn_color <- palette_okabe_ito()[9]  
+
+
 ggplot() +
   geom_sf(data = state_prov, color = "grey51", fill = state_fill, size = 0.25) +
   geom_polygon(data = range_df, aes(x = long, y = lat, group = group, fill = name), color = sdm_border_col) + 
@@ -117,8 +124,9 @@ ggplot() +
   geom_sf(data = state_prov, color = "grey51", fill = NA, size = 0.25) +
   geom_sf(data = countries, color = "grey10", fill = NA, size = 0.25) +
   geom_sf(data = coast, color = "grey10", fill = NA, size = 0.25) +
+  geom_sf(data = iucn_range, aes(lty = "IUCN range"), color = iucn_color, fill = NA, size = 1) +
   coord_sf(
-    xlim = c(-132, -89.2),
+    xlim = c(-132, -87.8),
     ylim = c(32, 60.5),
     clip = "on", 
     expand = F)  +
@@ -141,11 +149,12 @@ ggplot() +
                     limits = "SDM range") +
   scale_color_okabe_ito() +
   guides(fill = guide_legend(title = NULL, title.position = "bottom", override.aes = list(color = sdm_border_col)),
-         color = guide_legend(title.theme = element_text(size = 10))) +
+         color = guide_legend(title.theme = element_text(size = 10)),
+         linetype = guide_legend(title = NULL, title.position = "bottom")) +
   ggsn::scalebar(x.min = -132, x.max = -90,
                  y.min = 32, y.max = 60.5, 
                  dist  = 300, dist_unit = "km", model = "WGS84", transform = T, 
                  anchor = c(x = -123.5, y = 33.5), st.size = 10/.pt, border.size = 0.25)
-ggsave("../wtjr_sdm/results/prelim_sampling_map.pdf")
+ggsave("results/prelim_sampling_map.pdf")
 
 
