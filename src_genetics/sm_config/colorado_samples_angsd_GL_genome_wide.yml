@@ -1,0 +1,57 @@
+###
+# Template config file for:
+# angsd_GL_genome_wide.smk
+# Processes .bams into genotype likelihoods across the genome
+###
+
+####################
+## Pipeline setup ##
+####################
+
+# Reference genome
+ref_genome: "/mnt/beegfs/tt164677e/genomes/lepus_townsendii/DMNS18807_06042020_pseudohap2.1_10k.fasta"
+
+# Bamlist file giving samples to calculate GLs for.
+# Calculates GLs for all files simultaneously.
+# Bamlist should give the absolute path to the bamfiles, from the root. 
+bamlist: /home/tt164677e/tim_beegfs/wtjr_genomics/data/bamlists/colorado_samples_bamlist.txt
+
+# Batch name
+# A short name to give for a given analysis batch.
+# E.g., to be able to calculate GLs for the same bamlist
+# but with different filtering levels
+batch_name: col_samples_20220428
+
+# Gather or not
+# Should the per-scaffold GL files be gathered into a single file?
+# Some analyses need it (pcangsd),
+# some don't (Fst)
+# Must be True or False
+gather: False
+
+# Test or not
+# if True, will calculate GLs for the 3 smallest scaffolds
+# as a test, and will not combine the GLs for each scaffold
+# into a final genome-wide file 
+# if False, does all scaffolds and then combines them.
+# Must be True or False. 
+test: False
+
+#############################
+## ANGSD filtering options ##
+#############################
+# Decribed below, see ANGSD manual for further detail
+SNP_pval: 1 # Only keep sites if is a SNP, with pval < X in LRT. Set to 1 for outputting all sites, regardless of SNPs (for Fst calculation between subpops)
+minMapQ: 30 # Discard reads with mapping quality below
+minQ: 30 # Discard bases with base quality below
+uniqueOnly: 1 # Discards reads that doesn't map uniquely. Must be 1 (discard) or 0 (keep).
+remove_bads: 1 # Discard 'bad' reads. Must be 1 (discard) or 0 (keep).
+only_proper_pairs: 1  # Only use reads where the mate could be mapped. Must be 1 (only use proper), or 0 (use all reads)
+trim: 0 # Number of based to discard at both ends of the reads
+C: 50 # adjust mapQ for excessive mismatches. If you used BWA and didn't already adjust mapQ in samtools, do 50. Otherwise, 0. 
+baq: 1 # Recalculate Base Alignment quality. Must be 1 (to recalculate), or 0 (no recalculate). A little unclear how this interacts with the GATK indel Realigner. I tend to re-calculate. 
+minInd: 75 # Only use site if atleast minInd of samples has data. ~80%
+setMinDepth: 75 # Remove site if total depth (all individuals) is less than int. -1 for no filtering.
+setMaxDepth: 940 # Remove site if total depth (all individuals) is greater than int. -1 for no filtering.
+setMinDepthInd: -1 # Remove individual from analysis at a given site if individual depth is less than int. -1 for no filtering.
+setMaxDepthInd: 50 # Remove individual from analysis at a given site if individual depth is greater than int. -1 for no filtering.

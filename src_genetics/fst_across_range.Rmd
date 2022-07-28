@@ -1,0 +1,163 @@
+---
+title: "Range-wide Fst"
+output:
+  rmdformats::html_clean:
+    fig_width: 10
+    thumbnails: FALSE
+    lightbox: FALSE
+    code_folding: hide
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, echo=F, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(warning = F, message = F, fig.align = "center", cache = F)
+options(scipen = 1)
+
+# Load packages -----------------------------------------------------------
+library(rmdformats)
+library(tidyverse)
+```
+
+After getting some help from Mafalda to bypass my ANGSD woes, here, finally, is a report on genome-wide Fst across the WTJR range.
+
+
+## The samples
+
+To compare the most geographically extreme samples (which are also the ones that are most separated on PC1 of our genomic PCA), I calculated Fst between the Colorado and North Dakota samples. There are 25 samples from North Dakota (mostly modern, but with 2 museum samples) and 94 samples from Colorado (a mix of modern and museum, and a mix of Mafalda's libraries and mine). So, the sample sizes are obviously a little unbalanced. If that's a serious concern I could pick a subset of the Colorado samples (say, the modern and museum samples from Cochetopa Dome and Gunnison, which is a similar number of samples). But I guess I'm not too worried about it. 
+
+
+## The pipeline
+
+I used ANGSD to estimate Fst, and it lived up to it's name and was particularly angst-y. The Fst-estimation pipeline in ANGSD requires three steps:
+
+### 1) Estimate SAF
+
+First, one needs to estimating the site frequency spectrum within each population. I did this in ANGSD v0.935, and did this separately for each scaffold, using the following options for Colorado: 
+
+```bash
+angsd -bam /home/tt164677e/tim_beegfs/wtjr_genomics/data/bamlists/colorado_samples_bamlist.txt \ 
+      -ref /mnt/beegfs/tt164677e/genomes/lepus_townsendii/DMNS18807_06042020_pseudohap2.1_10k.fasta \
+      -anc /mnt/beegfs/tt164677e/genomes/lepus_townsendii/DMNS18807_06042020_pseudohap2.1_10k.fasta \
+      -out results/angsd_GLs/colorado_samples_bamlist/col_samples_20220502/scaffolds/{scaffold}_GL \ 
+      -r {scaffold}: -gl 1 -doGlf 2 -doCounts 1 -dosaf 1 -doMajorMinor 1 -doMaf 2 -SNP_pval 1 \
+      -minMapQ 30 -minQ 30 -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 \
+      -baq 1 -minInd 75 -setMinDepth 75 -setMaxDepth 940 -setMinDepthInd -1 \
+      -setMaxDepthInd 50 -nThreads 18 
+```
+
+And for North Dakota:
+
+
+```bash
+angsd -bam /home/tt164677e/tim_beegfs/wtjr_genomics/data/bamlists/NDK_samples_bamlist.txt \
+      -ref /mnt/beegfs/tt164677e/genomes/lepus_townsendii/DMNS18807_06042020_pseudohap2.1_10k.fasta \
+      -anc /mnt/beegfs/tt164677e/genomes/lepus_townsendii/DMNS18807_06042020_pseudohap2.1_10k.fasta \
+      -out results/angsd_GLs/NDK_samples_bamlist/ndk_samples_20220502/scaffolds/{scaffold}_GL \
+      -r {scaffold}: -gl 1 -doGlf 2 -doCounts 1 -dosaf 1 -doMajorMinor 1 -doMaf 2 -SNP_pval 1 \
+      -minMapQ 30 -minQ 30 -uniqueOnly 1 -remove_bads 1 -only_proper_pairs 1 -trim 0 -C 50 \
+      -baq 1 -minInd 20 -setMinDepth 20 -setMaxDepth 250 -setMinDepthInd -1 \
+      -setMaxDepthInd 50 -nThreads 18 
+```
+
+These levels of filtering require sites to br present in ~80% of samples in each population, and the maxdepth filter ignores sites as probable repeats if they average 10X coverage across all samples (unlikely in our ~2X coverage data). 
+
+### 2) Estimate 2d-SFS
+
+Next, we estimate the 2d-SFS, to use as the prior when estimating Fst. Doing this for the whole genome all at once isn't really feasible. Instead, I used the largest scaffold, scaffold 227, to calculate the 2d-SFS. This is where ANGSD has mysteriously stopped working for me on Griz, and I have been unable to figure out why. Thankfully, Mafalda could help me out and run this step on her servers, where it worked just fine. 
+
+### 3) Prepare the Fst index file
+
+Finally, using the 2d-SFS from scaffold 227 as the prior, I used ANGSD v0.921 (this doesn't work with 0.935 for some reason) to make Fst index files for each scaffold. These are binary representations of a simple tabular file. For each site, the file gives two quantities, a and b, which can be used to calculate per-site Fst ($a/(a+b)$), or can be used to calculate Fst across multiple sites or windows in either a weighted ($\Sigma(a)/\Sigma(a+b)$) or unweighted ($mean(a/(a+b))$) estimate.  From these files, there are a few ways to go about getting a genome-wide Fst estimate. I'll try three of them, going in my order of preference. 
+
+## Genome-wide Fst from the Fst index files
+
+First, we can just convert all the binary files to tables, concatenate them, and calculate genome-wide Fst according to the formulas above:
+
+```{r, cache = T}
+read_delim("results/angsd_Fst/colorado_samples_bamlist_NDK_samples_bamlist/wtjr_COL-NDK_20220503/fst/genome_fst_print.txt",
+                        delim  = "\t", col_names = c("scaffold", "position", "a", "b")) %>% 
+  mutate(sum =  a + b) %>% 
+  mutate(ratio = a/(sum)) %>% 
+  summarize(weighted_fst = sum(a, na.rm = T)/sum(sum, na.rm = T),
+            unweighted_fst = mean(ratio, na.rm = T)) %>% 
+  knitr::kable(.)
+```
+
+
+Of the two estimates, ANGSD recommends the weighted one (I think they've even taken the unweighted estimate out of later versions of the software). So, this genome wide estimate of 0.023 is pretty low and indicative of very little differentiation across the range. Interestingly, it is less than the Fst we see across different populations in CO, as reported in what we've got so far. Of course, since Fst is based on ratios of within- and between-population diversity, if we have a lot of diversity within the CO samples that would lead to lower Fst compared to ND. Which is fine, and low structure/high connectivity is likely positive for conservation. 
+
+
+## Averaging across windows
+
+Another option is to use ANGSD to calculate Fst in sliding or tiled windows, and then average across those. I calculated Fst in 50kb tiled windows across the genome.
+
+```{r, cache = T}
+res_folder <- "results/angsd_Fst/colorado_samples_bamlist_NDK_samples_bamlist/wtjr_COL-NDK_20220503/fst/winSize50000/winStep50000"
+
+# Function that loads and compiles Fsr data from a given folder.
+# Pretty untested, relies on a very specific naming scheme of files to work (the scheme I am using). 
+compile_angsd_fst_results <- function(res_folder) {
+  fsts <- tibble(NULL)
+  window_size <- as.numeric(str_remove(str_split(res_folder, "/")[[1]][str_detect(str_split(res_folder, "/")[[1]], "winSize")], "winSize"))
+  step_size <- as.numeric(str_remove(str_split(res_folder, "/")[[1]][str_detect(str_split(res_folder, "/")[[1]], "winStep")], "winStep"))
+  
+  for (file in list.files(res_folder, pattern = "fst_")) {
+    scaffold <- str_remove(str_split(file, pattern = "_")[[1]][2], ".txt")
+    
+    fst  <- read_delim(file.path(res_folder, file), delim = "\t", skip = 1, 
+                       col_names = c("region", "scaff", "midpoint", "sites", "fst"), 
+                       col_types = "cciin" ) %>% 
+      mutate(scaffold = scaffold) %>% 
+      dplyr::select(scaffold, scaff, region, sites, midpoint, fst)
+    
+    if (sum(fst$scaffold == fst$scaff) != dim(fst)[1]) {
+      stop("scaffold names don't match")
+    }
+    
+    fsts <- rbind(fsts, dplyr::select(fst, -scaff))
+  }
+  
+  return(fsts)
+}
+
+# Compile results form original way, using the default options in angsd
+all_fst <- compile_angsd_fst_results(res_folder)
+```
+
+If we take the mean across all those windows, our estimate of Fst is `r mean(all_fst$fst)`, very similar to the above. One issue with the window approach is that it equally weights all windows, including ones with only a few sites analyzed, leading to weird outlier windows and high variance. We can counteract that, by filtering out windows with few sites, or doing a weighted mean weighted by number of sites analyzed. The weighted average across windows is basically the same as the above estimate: `r weighted.mean(all_fst$fst, all_fst$sites)`. One advantage of the windowed approach is that we could give some level of variation around the mean: quantiles, standard deviations, whatever, which we can't do with the genome-wide mean above. 
+
+## Averaging across scaffolds
+
+```{r, cache = T}
+raw <- read_lines("results/angsd_Fst/colorado_samples_bamlist_NDK_samples_bamlist/wtjr_COL-NDK_20220503/fst/genome_fst_stats_res_stderr.txt")
+
+
+scaffolds <- raw[seq(from = 1, to = length(raw), by = 3)] %>% 
+  str_extract("[:digit:]+") %>% 
+  as.numeric()
+
+fst_info <- raw[seq(from = 3, to = length(raw), by = 3)] %>% 
+  str_remove("\\\t-> ") %>% 
+  str_remove("FST\\.Unweight") %>%
+  str_remove(" Fst\\.Weight") %>% 
+  str_remove("nObs\\:") %>% 
+  str_remove_all("\\[") %>% 
+  str_remove_all("\\]") %>% 
+  str_remove_all(" ") 
+
+per_scaffold_fst <- bind_cols(scaffold = scaffolds,
+          fst_string = fst_info) %>%
+  separate(col = "fst_string", 
+           into = c("nObs", "unweight_fst", "weight_fst"),
+           sep = ":", 
+           convert = T) 
+
+```
+
+I parallelize my WGS workflows across scaffolds, so its pretty easy to grab the per-scaffold estimates of Fst from ANGSD. We can average across scaffolds equally (probably not ideal, given how much they vary in size) and get an estimate of `r mean(per_scaffold_fst$weight_fst, na.rm = T)`. Or we can weight scaffolds by the number of sites that were analyze for each, and get an estimate of `r weighted.mean(per_scaffold_fst$weight_fst, per_scaffold_fst$nObs, na.rm = T)`, which is again very similar to our other estimats. 
+
+## Conclusions
+
+Any way you slice it, genome-wide Fst is pretty low. Unless folks have strong preferences or objections, I'd say we just go with the first method and use Fst = 0.023 as our estimate in the paper. 
+
