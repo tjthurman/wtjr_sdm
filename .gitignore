@@ -57,6 +57,9 @@ figure_4*
 # Various preliminary or internal files, not for publication
 not_for_publication/
 results/figures/tmp/
+docs/*
+results/prelim_sampling_map.pdf
+results/prelim_sampling_map.jpg
 
 
 # Other RCP data
@@ -65,6 +68,4 @@ processed_data/bc23_CMIP5_RCP45_2080s_5modavg.gr*
 processed_data/bc23_CMIP5_RCP60_2080s_5modavg.gr*
 raw_data/worldclim_projections_2080s_other_RCPs/*
 
-results/prelim_sampling_map.pdf
 
-results/prelim_sampling_map.jpg

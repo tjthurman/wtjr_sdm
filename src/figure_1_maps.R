@@ -33,10 +33,10 @@ colo_png <- args[6]
 # For running as script
 # map_file <- "results/pheno/current_predicted_probWhite_SDMrange.tif"
 # colo_samples <- "raw_data/sample_coordinates_74individuals.txt"
-# us_pdf <- "results/figures/current_pheno_map_89mm.pdf"
-# us_png <- "results/figures/current_pheno_map_89mm.png"
-# colo_pdf <- "results/figures/colorado_89mm.pdf"
-# colo_png <- "results/figures/colorado_89mm.png"
+# us_pdf <- "results/figures/current_pheno_map_120mm.pdf"
+# us_png <- "results/figures/current_pheno_map_120mm.png"
+# colo_pdf <- "results/figures/colorado_120mm.pdf"
+# colo_png <- "results/figures/colorado_120mm.png"
 
 # Load data -----------------------------------------------------------
 pred.new <- raster(map_file) %>% 
@@ -75,8 +75,8 @@ us <- ggplot() +
                                 ticks.colour = "black", 
                                 frame.colour = "black", 
                                 frame.linewidth = 1, 
-                                barwidth = unit(2.5, "mm"), 
-                                barheight = unit(10, "mm"),
+                                barwidth = unit(3.5, "mm"), 
+                                barheight = unit(14, "mm"),
                                 label.hjust = 1)) +
   scale_y_continuous(breaks = seq(35, 55, by = 5)) + 
   scale_x_continuous(breaks = seq(-130, -100, by = 10)) +
@@ -89,19 +89,19 @@ us <- ggplot() +
         legend.box.margin = margin(0,0,0,0, unit = "pt"),
         legend.margin = margin(0,0,0,0, unit = "pt"),
         legend.key = element_blank(),
-        legend.text = element_text(size = 5, margin = margin(0,0,0,0, unit = "pt"), hjust = 1),
+        legend.text = element_text(size = 7, margin = margin(0,0,0,0, unit = "pt"), hjust = 1),
         axis.ticks = element_line(size = 1),
         axis.title = element_blank(), 
-        axis.text = element_text(size = 5, color = "black"),
+        axis.text = element_text(size = 7, color = "black"),
         panel.background = element_rect(fill = "white"),
         panel.border = element_rect(fill = NA, color = "black", size = 1.5),
         plot.margin = unit(c(0, 0, 0, 0), "cm")) +
   ggsn::scalebar(x.min = -132, x.max = -80.5,
            y.min = 32, y.max = 56.5, 
-           dist  = 300, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -123.5, y = 33.5), st.size = 5/.pt, border.size = 0.25)
+           dist  = 300, dist_unit = "km", model = "WGS84", transform = T, anchor = c(x = -123.5, y = 33.5), st.size = 7/.pt, border.size = 0.25)
 
-ggsave(us, filename = us_pdf, width = 83, height = 55.6, units = "mm")
-ggsave(us, filename = us_png, width = 83, height = 55.6, units = "mm", dpi = 72)
+ggsave(us, filename = us_pdf, width = 115, height = 74, units = "mm")
+ggsave(us, filename = us_png, width = 115, height = 74, units = "mm", dpi = 300)
 
 
 
@@ -158,14 +158,14 @@ colorado <- ggplot() +
   aes(x = Long, y = Lat) +
   coord_quickmap(
     xlim = c(-109, -102),
-    ylim = c(37, 41),
+    ylim = c(37, 41.02),
     clip = "on", 
     expand = F) +
   geom_tile(data = pred.pheno.df, aes(fill = probBrown, color = probBrown)) +
   scale_fill_gradientn(colors = pal(100), guide = F) +
   scale_color_gradientn(colors = pal(100), guide = F) +
   geom_point(data  = cluster_plots, aes(size = samples), color = "black", fill = "#F4742A", shape = 21, stroke = 0.25) +
-  scale_size_continuous(range= c(0.75, 3.5)) +
+  scale_size_continuous(range= c(1, 4)) +
   theme(panel.background = element_rect(fill = rgb(133,141,147, maxColorValue = 255), colour = rgb(133,141,147, maxColorValue = 255)),
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
@@ -175,8 +175,8 @@ colorado <- ggplot() +
         legend.margin = margin(0,0,0,0, "pt"),
         legend.key = element_blank(),
         legend.key.size = unit(0.2, "mm"),
-        legend.text = element_text(color = "white", size = 5, face = "bold", margin = margin(0,0,0,0, unit = "mm")),
-        legend.title = element_text(color = "white", size = 5, face = "bold", vjust = 0, margin = margin(t = 0, r = 0, b = 0, l = 0, unit = "pt")),
+        legend.text = element_text(color = "white", size = 7, face = "bold", margin = margin(0,0,0,0, unit = "mm")),
+        legend.title = element_text(color = "white", size = 7, face = "bold", vjust = 0, margin = margin(t = 0, r = 0, b = 0, l = 0, unit = "pt")),
         legend.spacing = unit(.03, "mm"),
         axis.title = element_blank(),
         axis.text = element_blank(),
@@ -185,9 +185,8 @@ colorado <- ggplot() +
         plot.background = element_rect(fill = "transparent", color = NA)) +
   labs(x = NULL, y = NULL)
 
-ggsave(colorado, filename = colo_pdf, width = 31.5, height = 23.2, unit = "mm")
-
-ggsave(colorado, filename = colo_png, width = 31.5, height = 23.2, unit = "mm", dpi = 72)
+ggsave(colorado, filename = colo_pdf, width = 43.5, height = 32, unit = "mm")
+ggsave(colorado, filename = colo_png, width = 43.5, height = 32, unit = "mm", dpi = 300)
 
   
 
