@@ -1,0 +1,144 @@
+bam_file,sample,year,latitude,longitude,winter_pheno,state,source,museum,batch
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/AMNH-123030_realigned_sorted.bam,AMNH-123030,NA,37.33,-107.94,NA,Colorado,AMNH,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-1179_realigned_sorted.bam,DMNS-1179,NA,40.86,-102.8,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-16612_realigned_sorted.bam,DMNS-16612,NA,39.86,-104.67,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-1679_realigned_sorted.bam,DMNS-1679,NA,39.37,-104.86,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-1704_realigned_sorted.bam,DMNS-1704,NA,37.83,-105.97,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-1705_realigned_sorted.bam,DMNS-1705,NA,37.83,-105.97,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-1774_realigned_sorted.bam,DMNS-1774,NA,37.83,-105.97,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-1775_realigned_sorted.bam,DMNS-1775,NA,37.83,-105.97,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-1776_realigned_sorted.bam,DMNS-1776,NA,37.83,-105.97,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18790_realigned_sorted.bam,DMNS-18790,NA,38.23,-106.76,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18791_realigned_sorted.bam,DMNS-18791,NA,38.22,-106.78,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18792_realigned_sorted.bam,DMNS-18792,NA,38.19,-106.7,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18793_realigned_sorted.bam,DMNS-18793,NA,38.03,-106.21,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18794_realigned_sorted.bam,DMNS-18794,NA,38.5,-106.85,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18795_realigned_sorted.bam,DMNS-18795,NA,38.5,-106.85,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18796_realigned_sorted.bam,DMNS-18796,NA,38.51,-106.84,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18797_realigned_sorted.bam,DMNS-18797,NA,38.22,-106.78,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18798_realigned_sorted.bam,DMNS-18798,NA,38.23,-106.81,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18799_realigned_sorted.bam,DMNS-18799,NA,38.21,-106.8,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18800_realigned_sorted.bam,DMNS-18800,NA,38.22,-106.8,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18801_realigned_sorted.bam,DMNS-18801,NA,38.51,-106.83,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18802_realigned_sorted.bam,DMNS-18802,NA,38.22,-106.8,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18803_realigned_sorted.bam,DMNS-18803,NA,38.02,-106.2,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18804_realigned_sorted.bam,DMNS-18804,NA,38.28,-106.73,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18805_realigned_sorted.bam,DMNS-18805,NA,38.19,-106.83,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18806_realigned_sorted.bam,DMNS-18806,NA,38.19,-106.74,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18807_realigned_sorted.bam,DMNS-18807,NA,38.2,-106.74,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-18808_realigned_sorted.bam,DMNS-18808,NA,37.98,-106.18,NA,Colorado,Field,FALSE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-2245_realigned_sorted.bam,DMNS-2245,NA,40.49,-107.26,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3109_realigned_sorted.bam,DMNS-3109,NA,39.15,-105.72,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3112_realigned_sorted.bam,DMNS-3112,NA,37.21,-106.21,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3114_realigned_sorted.bam,DMNS-3114,NA,40.9,-104.8,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3115_realigned_sorted.bam,DMNS-3115,NA,40.9,-104.8,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3120_realigned_sorted.bam,DMNS-3120,NA,40.56,-106.44,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3122_realigned_sorted.bam,DMNS-3122,NA,40.9,-104.8,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3128_realigned_sorted.bam,DMNS-3128,NA,40.46,-104.46,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3129_realigned_sorted.bam,DMNS-3129,NA,38.81,-106.21,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3132_realigned_sorted.bam,DMNS-3132,NA,39.75,-104.61,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3133_realigned_sorted.bam,DMNS-3133,NA,39.75,-104.61,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3134_realigned_sorted.bam,DMNS-3134,NA,39.75,-104.61,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3135_realigned_sorted.bam,DMNS-3135,NA,40,-102.42,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3138_realigned_sorted.bam,DMNS-3138,NA,38.42,-105.61,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3141_realigned_sorted.bam,DMNS-3141,NA,38.06,-105.36,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3146_realigned_sorted.bam,DMNS-3146,NA,40.12,-106.18,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3163_realigned_sorted.bam,DMNS-3163,NA,40.62,-108.2,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3168_realigned_sorted.bam,DMNS-3168,NA,38.94,-103.28,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-3182_realigned_sorted.bam,DMNS-3182,NA,39.74,-104.32,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-4070_realigned_sorted.bam,DMNS-4070,NA,39.74,-104.32,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-4086_realigned_sorted.bam,DMNS-4086,NA,39.76,-104.43,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-4087_realigned_sorted.bam,DMNS-4087,NA,39.76,-104.43,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-4088_realigned_sorted.bam,DMNS-4088,NA,39.76,-104.43,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-4089_realigned_sorted.bam,DMNS-4089,NA,39.76,-104.43,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-4312_realigned_sorted.bam,DMNS-4312,NA,39.63,-106.04,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-4313_realigned_sorted.bam,DMNS-4313,NA,39.63,-106.04,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-4319_realigned_sorted.bam,DMNS-4319,NA,39.22,-105.97,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-5676_realigned_sorted.bam,DMNS-5676,NA,39.38,-105.8,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-5677_realigned_sorted.bam,DMNS-5677,NA,39.38,-105.8,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-5678_realigned_sorted.bam,DMNS-5678,NA,39.38,-105.8,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-5679_realigned_sorted.bam,DMNS-5679,NA,39.38,-105.8,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-5680_realigned_sorted.bam,DMNS-5680,NA,39.38,-105.8,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-5681_realigned_sorted.bam,DMNS-5681,NA,39.38,-105.8,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-5682_realigned_sorted.bam,DMNS-5682,NA,39.38,-105.8,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/DMNS-5736_realigned_sorted.bam,DMNS-5736,NA,40.17,-105.1,NA,Colorado,DMNS,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UCM-1194_realigned_sorted.bam,UCM-1194,NA,39.35,-104.46,NA,Colorado,UCM,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UCM-13095_realigned_sorted.bam,UCM-13095,1966,39.74081,-103.59161,brown,CO,UCM,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UCM-7879_realigned_sorted.bam,UCM-7879,NA,38.83,-104.82,NA,Colorado,UCM,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UCM-7880_realigned_sorted.bam,UCM-7880,1907,38.92707,-104.47903,brown,CO,UCM,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UCM-7888_realigned_sorted.bam,UCM-7888,NA,38.16,-108.37,NA,Colorado,UCM,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UCM-7890_realigned_sorted.bam,UCM-7890,1907,38.2486,-105.94865,brown,CO,UCM,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UCM-7892_realigned_sorted.bam,UCM-7892,NA,38.25,-105.95,NA,Colorado,UCM,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UCM-7909_realigned_sorted.bam,UCM-7909,1908,37.65089,-105.87299,brown,CO,UCM,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UCM-7911_realigned_sorted.bam,UCM-7911,1908,37.65089,-105.87299,brown,CO,UCM,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UCM-7916_realigned_sorted.bam,UCM-7916,1908,38.15999,-108.3748,brown,CO,UCM,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UCM-7918_realigned_sorted.bam,UCM-7918,NA,38.64,-107.58,NA,Colorado,UCM,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UMNH-23776_realigned_sorted.bam,UMNH-23776,NA,38.21,-106.81,NA,Colorado,UMNH,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UMNH-23777_realigned_sorted.bam,UMNH-23777,NA,38.19,-106.68,NA,Colorado,UMNH,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UMNH-23778_realigned_sorted.bam,UMNH-23778,NA,38.21,-106.81,NA,Colorado,UMNH,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UMNH-23779_realigned_sorted.bam,UMNH-23779,NA,38.21,-106.81,NA,Colorado,UMNH,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UMNH-23784_realigned_sorted.bam,UMNH-23784,NA,38.2,-106.83,NA,Colorado,UMNH,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UMNH-23790_realigned_sorted.bam,UMNH-23790,NA,38.21,-106.81,NA,Colorado,UMNH,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UMNH-23804_realigned_sorted.bam,UMNH-23804,NA,38.2,-106.83,NA,Colorado,UMNH,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_prev_seq/realigned/UMNH-23805_realigned_sorted.bam,UMNH-23805,NA,38.19,-106.68,NA,Colorado,UMNH,TRUE,mafalda
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/AMNH_120584.realigned.sorted.bam,AMNH_120584,1935,44.0682,-114.74204,NA,ID,AMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/AMNH_123864.realigned.sorted.bam,AMNH_123864,1936,42.94858,-95.01193,NA,IA,AMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/AMNH_123867.realigned.sorted.bam,AMNH_123867,1936,42.94858,-95.01193,NA,IA,AMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/AMNH_129296.realigned.sorted.bam,AMNH_129296,1933,48.41221,-97.41063,1,ND,AMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/AMNH_33599.realigned.sorted.bam,AMNH_33599,1912,44.32432,-117.94464,NA,OR,AMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/AMNH_90911.realigned.sorted.bam,AMNH_90911,1926,48.41221,-97.41063,1,ND,AMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/DMNS_11073.realigned.sorted.bam,DMNS_11073,2007,38.7952,-106.4887,NA,CO,DMNS,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_COL_4140.realigned.sorted.bam,LTW_COL_4140,NA,39.04814,-105.56139,NA,CO,LTW_COL_4140,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4143.realigned.sorted.bam,LTW_NDK_4143,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4144.realigned.sorted.bam,LTW_NDK_4144,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4145.realigned.sorted.bam,LTW_NDK_4145,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4146.realigned.sorted.bam,LTW_NDK_4146,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4147.realigned.sorted.bam,LTW_NDK_4147,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4148.realigned.sorted.bam,LTW_NDK_4148,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4149.realigned.sorted.bam,LTW_NDK_4149,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4150.realigned.sorted.bam,LTW_NDK_4150,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4151.realigned.sorted.bam,LTW_NDK_4151,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4152.realigned.sorted.bam,LTW_NDK_4152,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4153.realigned.sorted.bam,LTW_NDK_4153,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4154.realigned.sorted.bam,LTW_NDK_4154,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4155.realigned.sorted.bam,LTW_NDK_4155,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4156.realigned.sorted.bam,LTW_NDK_4156,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4157.realigned.sorted.bam,LTW_NDK_4157,2017,46.350186,-96.634486,Winter white,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4158.realigned.sorted.bam,LTW_NDK_4158,2017,48.424938,-101.356984,NA,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4159.realigned.sorted.bam,LTW_NDK_4159,2017,48.424938,-101.356984,NA,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4160.realigned.sorted.bam,LTW_NDK_4160,2017,48.424938,-101.356984,NA,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4161.realigned.sorted.bam,LTW_NDK_4161,2017,48.424938,-101.356984,NA,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4162.realigned.sorted.bam,LTW_NDK_4162,2017,48.424938,-101.356984,NA,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4163.realigned.sorted.bam,LTW_NDK_4163,2017,48.424938,-101.356984,NA,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4164.realigned.sorted.bam,LTW_NDK_4164,2017,48.424938,-101.356984,NA,ND,Shot,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_NDK_4167.realigned.sorted.bam,LTW_NDK_4167,2018,46.8248,-96.8827,Winter white,ND,Roadkill,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_WYO_4168.realigned.sorted.bam,LTW_WYO_4168,2017,42.12297207,-109.4526845,Winter white (2),WY,Caught by grayhound,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_WYO_4169.realigned.sorted.bam,LTW_WYO_4169,2017,42.12297207,-109.4526845,Winter white (2),WY,Caught by grayhound,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_WYO_4170.realigned.sorted.bam,LTW_WYO_4170,2017,42.12297207,-109.4526845,Winter white (2),WY,Caught by grayhound,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_WYO_4171.realigned.sorted.bam,LTW_WYO_4171,2017,42.12297207,-109.4526845,Winter white (2),WY,Caught by grayhound,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_WYO_4172.realigned.sorted.bam,LTW_WYO_4172,2017,42.12297207,-109.4526845,Winter white (2),WY,Caught by grayhound,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/LTW_WYO_4173.realigned.sorted.bam,LTW_WYO_4173,2017,42.12297207,-109.4526845,Winter white (2),WY,Caught by grayhound,FALSE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UCM_13087.realigned.sorted.bam,UCM_13087,1964,39.25082,-106.29252,NA,CO,UCM,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UCM_13103.realigned.sorted.bam,UCM_13103,1960,42.11203,-109.4427,NA,WY,UCM,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UCM_13104.realigned.sorted.bam,UCM_13104,1960,41.79106,-107.23866,NA,WY,UCM,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UCM_13107.realigned.sorted.bam,UCM_13107,1960,42.86438,-110.07099,NA,WY,UCM,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_18886.realigned.sorted.bam,UMNH_18886,1963,41.559943,-111.197511,NA,UT,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_20224.realigned.sorted.bam,UMNH_20224,1964,41.7097013,-111.1878204,NA,UT,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_21749.realigned.sorted.bam,UMNH_21749,1962,40.39917,-110.34987,NA,UT,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_22367.realigned.sorted.bam,UMNH_22367,1966,40.9804,-111.085,NA,UT,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_23773.realigned.sorted.bam,UMNH_23773,1960,38.26028,-106.61544,NA,CO,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_23774.realigned.sorted.bam,UMNH_23774,1960,38.26028,-106.61544,NA,CO,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_23775.realigned.sorted.bam,UMNH_23775,1960,38.26028,-106.61544,NA,CO,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_23780.realigned.sorted.bam,UMNH_23780,1960,38.26028,-106.61544,NA,CO,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_23781.realigned.sorted.bam,UMNH_23781,1960,38.26028,-106.61544,NA,CO,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_23782.realigned.sorted.bam,UMNH_23782,1960,38.26028,-106.61544,NA,CO,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_23783.realigned.sorted.bam,UMNH_23783,1960,38.26028,-106.61544,NA,CO,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_23798.realigned.sorted.bam,UMNH_23798,1960,38.2163382,-106.6134455,ears,CO,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_23807.realigned.sorted.bam,UMNH_23807,1960,38.26028,-106.61544,NA,CO,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_23808.realigned.sorted.bam,UMNH_23808,1960,38.26028,-106.61544,NA,CO,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_24500.realigned.sorted.bam,UMNH_24500,1968,40.155,-109.97,NA,UT,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_24501.realigned.sorted.bam,UMNH_24501,1967,39.793,-110.549,NA,UT,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_24506.realigned.sorted.bam,UMNH_24506,1968,40.19558,-109.96642,NA,UT,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_7018.realigned.sorted.bam,UMNH_7018,1948,41.93155,-113.34866,NA,utah,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_7019.realigned.sorted.bam,UMNH_7019,1948,40.72472,-111.34111,1 or 2,utah,UMNH,TRUE,tim
+/home/tt164677e/tim_beegfs/wtjr_genomics/processed_reads_new_seq/realigned/UMNH_9544.realigned.sorted.bam,UMNH_9544,1953,38.0821,-110.50814,NA,utah,UMNH,TRUE,tim
