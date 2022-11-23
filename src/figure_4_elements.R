@@ -43,10 +43,10 @@ perc_brown_csv_out <- args[9]
 # future_file <- "results/pheno/future_predicted_probWhite_SDMrange.tif"
 # slim_res_additive <- "results/slim_summaries/additive_constantK_2locus_late.csv"
 # slim_res_recessive <- "results/slim_summaries/recessive_constantK_2locus_late.csv"
-# map_out_pdf <- "results/figures/pheno_change_map_89mm.pdf"
-# map_out_png <- "results/figures/pheno_change_map_89mm.png"
-# insert_plot_out <- "results/figures/density_probBrown_insert.pdf"
-# pop_traj_plot_out <- "results/figures/sim_pop_trajectories_89mm.pdf"
+# map_out_pdf <- "results/figures/pheno_change_map_55mm.pdf"
+# map_out_png <- "results/figures/pheno_change_map_55mm.png"
+# insert_plot_out <- "results/figures/density_probBrown_insert_55mm.pdf"
+# pop_traj_plot_out <- "results/figures/sim_pop_trajectories_55mm.pdf"
 # perc_brown_csv_out <- "results/pheno/percent_brown_by_time.csv"
 
 # Load data ---------------------------------------------------------------
@@ -98,7 +98,8 @@ us <- ggplot() +
         legend.background = element_blank(),
         legend.key = element_blank(),
         legend.text = element_blank(),
-        axis.ticks = element_line(size = 0.75, color = "black"),
+        axis.ticks = element_line(size = 0.35, color = "black"),
+        axis.ticks.length = unit(0.5, "mm"),
         axis.text = element_text(size = 5, color = "black"),
         axis.title = element_blank(),
         axis.text.y.left = element_text(angle = 90, vjust = 0.5, hjust = 0.5, size = 5),
@@ -113,8 +114,8 @@ us <- ggplot() +
            st.size = 5/.pt, border.size = 0.25, st.dist = 0.0325) 
 
 
-ggsave(us, filename = map_out_png, width = 57, height = 34.34, units = "mm", dpi = 72)
-ggsave(us, filename = map_out_pdf, width = 57, height = 34.34, units = "mm")
+ggsave(us, filename = map_out_png, width = 54.5, height = 34, units = "mm", dpi = 300)
+ggsave(us, filename = map_out_pdf, width = 54.5, height = 34, units = "mm")
 
 # Insert --------------------------------------------------------
 # Density of Prob white across years:
@@ -155,7 +156,7 @@ insert <- probBrown_df %>%
         legend.margin = margin(0,0,0,0, "mm"), 
         plot.margin = margin(0.08, 0.1, 0, 0.04, "cm"))
 
-ggsave(insert, filename = insert_plot_out, height = 13.8, width = 17.5, units = "mm")
+ggsave(insert, filename = insert_plot_out, height = 13.8, width = 16.5, units = "mm")
 
 
 
@@ -192,17 +193,17 @@ trajectories <- bind_rows(additive, recessive) %>%
   geom_ribbon(aes(group = ID), alpha = 0.3) +
   geom_line(aes(color = as.factor(init_corin), group = ID), size = 0.25) +
   theme_cowplot() +
-  theme(legend.position = c(0.07, 0.18)) +
-  facet_rep_grid(dominance ~ ., scales = "fixed") +
+  theme(legend.position = c(0.03, 0.35)) +
+  facet_rep_grid(. ~ dominance, scales = "fixed", repeat.tick.labels = T) +
   xlim(c(0,81)) +
   ylim(c(0.4, 1.04)) +
   theme(
-    axis.text.y = element_text(size = 4, angle = 90, hjust = 0.5, margin= margin(0,0,0,0, unit = "pt")),
-    axis.text.x = element_text(size = 4, margin= margin(0,0,0,0, unit = "pt"), lineheight = 0),
+    axis.text.y = element_text(size = 5, angle = 90, hjust = 0.5, margin= margin(0,0,0,0, unit = "pt")),
+    axis.text.x = element_text(size = 5, margin= margin(1,0,0,0, unit = "pt"), lineheight = 0),
     axis.title = element_blank(),
-    axis.ticks.length = unit(0.25, "mm"),
-    axis.ticks = element_line(size = 0.25), 
-    axis.line = element_line(size = 0.25),
+    axis.ticks.length = unit(0.35, "mm"),
+    axis.ticks = element_line(size = 0.35), 
+    axis.line = element_line(size = 0.35),
     legend.title = element_markdown(size = 5, margin= margin(0,0,0,0, unit = "pt"),  padding = unit(c(0,0,0,0), "pt")),
     legend.text = element_text(size = 5, margin= margin(0,0,0,0, unit = "pt")),
     legend.key.size = unit(1.5, "mm"),
@@ -219,7 +220,7 @@ trajectories <- bind_rows(additive, recessive) %>%
     strip.background = element_blank(),
     strip.placement = "inside")
 
-ggsave(trajectories, filename = pop_traj_plot_out, width = 29, height = 31.5, units = "mm")
+ggsave(trajectories, filename = pop_traj_plot_out, width = 52.5, height = 19, units = "mm")
 
 
 # Stats on proportion brown --------------------------------------------------------

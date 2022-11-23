@@ -46,12 +46,12 @@ rule all:
         "results/conservation/cons_by_current_color.RData", # Chisq results as R object
         "results/pheno/percent_brown_by_time.csv", # Percent brown at different times
         # Figure 1 elements
-        "results/figures/current_pheno_map_89mm.pdf", # Figure 1A
-        "results/figures/colorado_89mm.pdf", # Figure 1C 
+        "results/figures/current_pheno_map_120mm.pdf", # Figure 1A
+        "results/figures/colorado_120mm.pdf", # Figure 1C 
         # Figure 4 elements
-        "results/figures/pheno_change_map_89mm.pdf", # Figure 4A
-        "results/figures/sim_pop_trajectories_89mm.pdf", # Figure 4B
-        "results/figures/density_probBrown_insert.pdf", # Figure 4A insert
+        "results/figures/pheno_change_map_55mm.pdf", # Figure 4A
+        "results/figures/sim_pop_trajectories_55mm.pdf", # Figure 4B
+        "results/figures/density_probBrown_insert_55mm.pdf", # Figure 4A insert
         # Supplementary figures, tables, and analysis
         "results/pheno/glm_table_current_snow_cover.csv",
         "results/pheno/glm_metrics_current_snow_cover.csv",
@@ -274,10 +274,10 @@ rule figure_1_maps:
         pheno_range = "results/pheno/current_predicted_probWhite_SDMrange.tif",
         sample_coords = "raw_data/sample_coordinates_74individuals.txt"
     output:
-        colo_pdf= "results/figures/colorado_89mm.pdf",
-        colo_png= "results/figures/colorado_89mm.png",
-        us_pdf = "results/figures/current_pheno_map_89mm.pdf",
-        us_png = "results/figures/current_pheno_map_89mm.png"
+        colo_pdf= "results/figures/colorado_120mm.pdf",
+        colo_png= "results/figures/colorado_120mm.png",
+        us_pdf = "results/figures/current_pheno_map_120mm.pdf",
+        us_png = "results/figures/current_pheno_map_120mm.png"
     resources:
         cpus=1
     shell:
@@ -335,10 +335,10 @@ rule figure_4_elements:
         slim_res_additive = slim_simulations("results/slim_summaries/additive_constantK_2locus_late.csv"),
         slim_res_recessive = slim_simulations("results/slim_summaries/recessive_constantK_2locus_late.csv")
     output:
-        change_map_pdf= "results/figures/pheno_change_map_89mm.pdf",
-        change_map_png= "results/figures/pheno_change_map_89mm.png",
-        density_insert = "results/figures/density_probBrown_insert.pdf",
-        pop_traj_plot_out = "results/figures/sim_pop_trajectories_89mm.pdf",
+        change_map_pdf= "results/figures/pheno_change_map_55mm.pdf",
+        change_map_png= "results/figures/pheno_change_map_55mm.png",
+        density_insert = "results/figures/density_probBrown_insert_55mm.pdf",
+        pop_traj_plot_out = "results/figures/sim_pop_trajectories_55mm.pdf",
         prec_brown_by_time= "results/pheno/percent_brown_by_time.csv"
     resources:
         cpus=1
