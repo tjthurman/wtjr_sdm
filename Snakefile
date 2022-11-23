@@ -21,11 +21,12 @@ slim_exts = ["early.csv", "late.csv", "seed.csv"]
 localrules: all
 
 
+# May need to change the working directory and path to the snakefile to work on your machine
 subworkflow slim_simulations:
     workdir:
-        "/home/tt164677e/tim_beegfs/wtjr_sdm"
+        "."
     snakefile:
-        "/home/tt164677e/tim_beegfs/wtjr_sdm/slim_simulations.smk"
+        "./slim_simulations.smk"
 
 # Final desired outputs:
 # 1) Performance plots from ENMeval (ensures that all ENMeval stuff runs)
@@ -64,7 +65,9 @@ rule all:
         "results/figures/supplemental/extended_data_arch_varyK_sim_res.pdf",
         "results/figures/supplemental/extended_data_arch_varyK_sim_res.jpeg",
         "results/figures/supplemental/extended_data_sim_robust.pdf",
-        "results/figures/supplemental/extended_data_sim_robust.jpeg"
+        "results/figures/supplemental/extended_data_sim_robust.jpeg",
+        "results/figures/supplemental/sampling_map.pdf",
+        "results/figures/supplemental/sampling_map.jpeg"
 
       
 ## curate_occur_data   : process WTJR occurrence data
@@ -362,7 +365,12 @@ rule supplemental_and_analysis:
         additive_consK_2locus_late_file = "results/slim_summaries/additive_constantK_2locus_late.csv",
         recessive_consK_2locus_late_file = "results/slim_summaries/recessive_constantK_2locus_late.csv",
         additive_varyK_2locus_late_file = "results/slim_summaries/additive_varyK_2locus_late.csv",
-        recessive_consK_1locus_late_file = "results/slim_summaries/recessive_constantK_1locus_late.csv"
+        recessive_consK_1locus_late_file = "results/slim_summaries/recessive_constantK_1locus_late.csv",
+        shapefile = "raw_data/redlist_species_data_79e8f518-a14c-4d0e-9640-5bea84d7c1b8/data_0.shp",
+        occurrence_csv = "processed_data/thin/wtjr_occ_0km_thin1.csv",
+        sdm_rangemap = "results/sdm/sdm_rangemap_best_sens95.grd",
+        gen_sample_info = "raw_data/genetics/samples_info.csv",
+        gwas_sample_file = "raw_data/genetics/WTJR_74lowcovsamples_code_disamb.xlsx"
     output:
         snow_cover_table = "results/pheno/glm_table_current_snow_cover.csv",
         snow_cover_metrics = "results/pheno/glm_metrics_current_snow_cover.csv",
@@ -375,11 +383,12 @@ rule supplemental_and_analysis:
         arch_varyK_fig_pdf = "results/figures/supplemental/extended_data_arch_varyK_sim_res.pdf",
         arch_varyK_fig_jpeg = "results/figures/supplemental/extended_data_arch_varyK_sim_res.jpeg",
         robust_fig_pdf = "results/figures/supplemental/extended_data_sim_robust.pdf",
-        robust_fig_jpeg = "results/figures/supplemental/extended_data_sim_robust.jpeg"
+        robust_fig_jpeg = "results/figures/supplemental/extended_data_sim_robust.jpeg",
+        sampling_map_pdf = "results/figures/supplemental/sampling_map.pdf",
+        sampling_map_jpeg = "results/figures/supplemental/sampling_map.jpeg"
     resources:
         cpus=1
     shell:
         """
-        Rscript src/supp_figs_and_tables.R {input.snowcover_glm_rdata} {input.srt_glm_rdata} {input.consv_pheno_overlap} {input.current_srt_pheno} {input.future_srt_pheno} {input.current_cover_pheno} {input.best_metrics_file} {input.additive_consK_2locus_late_file} {input.recessive_consK_2locus_late_file} {input.additive_varyK_2locus_late_file} {input.recessive_consK_1locus_late_file} {output.snow_cover_table} {output.snow_cover_metrics} {output.srt_table} {output.srt_metrics} {output.broad_chisq_res} {output.ext_data_sdm_fig} {output.ext_data_sdm_fig_jpg} {output.glm_method_compare_metrics} {output.arch_varyK_fig_pdf} {output.arch_varyK_fig_jpeg} {output.robust_fig_pdf} {output.robust_fig_jpeg}
+        Rscript src/supp_figs_and_tables.R {input.snowcover_glm_rdata} {input.srt_glm_rdata} {input.consv_pheno_overlap} {input.current_srt_pheno} {input.future_srt_pheno} {input.current_cover_pheno} {input.best_metrics_file} {input.additive_consK_2locus_late_file} {input.recessive_consK_2locus_late_file} {input.additive_varyK_2locus_late_file} {input.recessive_consK_1locus_late_file} {input.shapefile} {input.occurrence_csv} {input.sdm_rangemap} {input.gen_sample_info} {input.gwas_sample_file} {output.snow_cover_table} {output.snow_cover_metrics} {output.srt_table} {output.srt_metrics} {output.broad_chisq_res} {output.ext_data_sdm_fig} {output.ext_data_sdm_fig_jpg} {output.glm_method_compare_metrics} {output.arch_varyK_fig_pdf} {output.arch_varyK_fig_jpeg} {output.robust_fig_pdf} {output.robust_fig_jpeg} {output.sampling_map_pdf} {output.sampling_map_jpeg}
         """
-

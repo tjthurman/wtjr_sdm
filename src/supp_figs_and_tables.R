@@ -7,7 +7,6 @@
 
 
 # Load packages -----------------------------------------------------------
-library(tidyverse)
 library(rnaturalearth)
 library(rnaturalearthhires)
 library(raster)
@@ -17,6 +16,9 @@ library(gridExtra)
 library(cowplot)
 library(lemon)
 library(RColorBrewer)
+library(readxl)
+library(ggokabeito)
+library(tidyverse)
 
 
 
@@ -60,21 +62,28 @@ additive_consK_2locus_late_file <- args[8]
 recessive_consK_2locus_late_file <- args[9]
 additive_varyK_2locus_late_file <- args[10]
 recessive_consK_1locus_late_file <- args[11]
+shapefile <- args[12]
+occurrence_csv <- args[13]
+sdm_rangemap <- args[14]
+gen_sample_info <- args[15]
+gwas_sample_file <- args[16]
+
 
 # Outputs
-snow_cover_table <- args[12]
-snow_cover_metrics <- args[13]
-srt_table <- args[14]
-srt_metrics  <- args[15]
-broad_chisq_out <- args[16]
-ext_data_sdm_fig <- args[17]
-ext_data_sdm_fig_jpg <- args[18]
-glm_method_compare_metrics <- args[19]
-arch_varyK_fig_pdf <- args[20]
-arch_varyK_fig_jpeg <- args[21]
-robust_fig_pdf <- args[22]
-robust_fig_jpeg <- args[23]
-
+snow_cover_table <- args[17]
+snow_cover_metrics <- args[18]
+srt_table <- args[19]
+srt_metrics  <- args[20]
+broad_chisq_out <- args[21]
+ext_data_sdm_fig <- args[22]
+ext_data_sdm_fig_jpg <- args[23]
+glm_method_compare_metrics <- args[24]
+arch_varyK_fig_pdf <- args[25]
+arch_varyK_fig_jpeg <- args[26]
+robust_fig_pdf <- args[27]
+robust_fig_jpeg <- args[28]
+sampling_map_pdf <- args[29]
+sampling_map_jpeg <- args[30]
 
 # For running as a script
 # Inputs
@@ -89,7 +98,11 @@ robust_fig_jpeg <- args[23]
 # recessive_consK_2locus_late_file <- "results/slim_summaries/recessive_constantK_2locus_late.csv"
 # additive_varyK_2locus_late_file <- "results/slim_summaries/additive_varyK_2locus_late.csv"
 # recessive_consK_1locus_late_file <- "results/slim_summaries/recessive_constantK_1locus_late.csv"
-# 
+# shapefile <- "raw_data/redlist_species_data_79e8f518-a14c-4d0e-9640-5bea84d7c1b8/data_0.shp"
+# occurrence_csv <- "processed_data/thin/wtjr_occ_0km_thin1.csv"
+# sdm_rangemap <- "results/sdm/sdm_rangemap_best_sens95.grd"
+# gen_sample_info <- "raw_data/genetics/samples_info.csv"
+# gwas_sample_file <- "raw_data/genetics/WTJR_74lowcovsamples_code_disamb.xlsx"
 # 
 # # outputs
 # snow_cover_table <- "results/pheno/glm_table_current_snow_cover.csv"
@@ -104,6 +117,9 @@ robust_fig_jpeg <- args[23]
 # arch_varyK_fig_jpeg <- "results/figures/supplemental/extended_data_arch_varyK_sim_res.jpeg"
 # robust_fig_pdf <- "results/figures/supplemental/extended_data_sim_robust.pdf"
 # robust_fig_jpeg <- "results/figures/supplemental/extended_data_sim_robust.jpeg"
+# sampling_map_pdf <- "results/figures/supplemental/sampling_map.pdf"
+# sampling_map_jpeg <- "results/figures/supplemental/sampling_map.jpeg"
+
 
 
 # Load map data -----------------------------------------------------------
@@ -139,6 +155,113 @@ broad.chisq.res %>%
 
 
 # FIGURES -----------------------------------------------------------------
+
+# Sampling map ------------------------------------------------------------
+# Read in IUCN range 
+iucn_range <- sf::read_sf(shapefile)
+
+# Get SDM occurrences
+sdm_occurrences <- read.csv(occurrence_csv, stringsAsFactors = F) %>%
+  dplyr::select(longitude = roundlon, latitude = roundlat) %>% 
+  mutate(`Sample type` = "SDM- presence")
+
+# Get SDM rangemap 
+range_raster <- raster(sdm_rangemap) %>% 
+  aggregate(., fact = 8)
+
+
+z <- rasterToPolygons(range_raster, dissolve = T)
+
+# Do some modification of the polygones to be able to plot with ggplot
+# in order to plot polygons, first fortify the data
+z@data$id <- rownames(z@data)
+# create a data.frame from our spatial object
+zdata <- fortify(z, region = "id")
+# merge the "fortified" data with the data from our spatial object
+range_df <- merge(zdata, z@data,
+                  by = "id") %>% 
+  mutate(name = ifelse(!hole, "SDM range", "hole")) %>% 
+  arrange(hole, order) %>% 
+  mutate(order = 1:nrow(.))
+
+holes <- range_df %>% 
+  filter(hole)
+
+
+
+# get locations for all genetic samples
+sample_info <- read_csv(gen_sample_info)
+
+# Data on which samples went into the 74 for GWAS
+disambig <- read_xlsx(gwas_sample_file) 
+
+
+genetic_samples <- sample_info %>% 
+  dplyr::select(sample, latitude, longitude) %>% 
+  mutate(`Sample type` = ifelse(sample %in% str_replace(disambig$SampleID, "_", "-"), "WGS- GWAS", "WGS- other"))
+
+# Combine it all
+samples_to_plot <- bind_rows(sdm_occurrences,
+                     genetic_samples)
+
+# Make the plot
+state_fill <- "grey91"
+sdm_border_col <- "grey31"
+sdm_fill <- "grey80"
+iucn_color <- palette_okabe_ito()[9]  
+
+
+sampling_map <- ggplot() +
+  geom_sf(data = state_prov, color = "grey51", fill = state_fill, size = 0.25) +
+  geom_polygon(data = range_df, aes(x = long, y = lat, group = group, fill = name), color = sdm_border_col) + 
+  geom_polygon(data = holes, aes(x = long, y = lat, group = group), fill = state_fill, color = sdm_border_col) + 
+  scale_fill_manual(values = c("SDM range" = sdm_fill,
+                               "hole" = state_fill),
+                    limits = "SDM range") +
+  geom_point(data = samples_to_plot, aes(x = longitude, y = latitude, 
+                                 color = `Sample type`, 
+                                 size = `Sample type`)) +
+  geom_sf(data = state_prov, color = "grey51", fill = NA, size = 0.25) +
+  geom_sf(data = countries, color = "grey10", fill = NA, size = 0.25) +
+  geom_sf(data = coast, color = "grey10", fill = NA, size = 0.25) +
+  geom_sf(data = iucn_range, aes(lty = "IUCN range"), color = iucn_color, fill = NA, size = 1) +
+  coord_sf(
+    xlim = c(-132, -87.8),
+    ylim = c(32, 60.5),
+    clip = "on", 
+    expand = F)  +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        legend.position = c(0.84, 0.84),
+        legend.box.background  = element_rect(fill = "grey98", color = "black", size = 0.8),
+        legend.background = element_blank(),
+        legend.spacing = unit(-0.5, "mm"),
+        legend.box.margin = margin(1,1,1,1, unit = "pt"),
+        legend.margin = margin(1,3,1,3, unit = "pt"),
+        legend.key = element_blank(),
+        axis.title = element_blank(), 
+        panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(fill = NA, color = "black", size = 1.5),
+        plot.margin = unit(c(0, 0, 0, 0), "cm")) +
+  scale_x_continuous(breaks = seq(-130, -89.2, by = 10)) +
+  scale_size_manual(values = c("SDM- presence" = 0.75,
+                               "WGS- GWAS" = 2,
+                               "WGS- other" = 2)) +
+  scale_color_manual(values = c("SDM- presence" = palette_okabe_ito()[1],
+                                "WGS- GWAS" = palette_okabe_ito()[5],
+                                "WGS- other" = palette_okabe_ito()[3])) +
+  guides(fill = guide_legend(title = NULL, title.position = "bottom", override.aes = list(color = sdm_border_col)),
+         color = guide_legend(title.theme = element_text(size = 10)),
+         linetype = guide_legend(title = NULL, title.position = "bottom")) +
+  ggsn::scalebar(x.min = -132, x.max = -90,
+                 y.min = 32, y.max = 60.5, 
+                 dist  = 300, dist_unit = "km", model = "WGS84", transform = T, 
+                 anchor = c(x = -123.5, y = 33.5), st.size = 10/.pt, border.size = 0.25)
+
+ggsave(sampling_map, filename = sampling_map_pdf, width = 6.25, height = 6.25, units = "in")
+ggsave(sampling_map, filename = sampling_map_jpeg, width = 6.25, height = 6.25, units = "in", dpi = 320)
+
+
 # Load predicted phenotypes ----------------------------------------------------
 future_pheno <- raster(future_file) %>% 
   aggregate(., fact = 4, expand = F)
