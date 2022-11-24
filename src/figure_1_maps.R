@@ -104,8 +104,6 @@ ggsave(us, filename = us_pdf, width = 115, height = 74, units = "mm")
 ggsave(us, filename = us_png, width = 115, height = 74, units = "mm", dpi = 300)
 
 
-
-
 # Colorado Insert ---------------------------------------------------------
 # Get locations of genomics samples
 colo.samples <- read.delim(colo_samples)
@@ -189,5 +187,3 @@ ggsave(colorado, filename = colo_pdf, width = 43.5, height = 32, unit = "mm")
 ggsave(colorado, filename = colo_png, width = 43.5, height = 32, unit = "mm", dpi = 300)
 
   
-
-

@@ -35,7 +35,7 @@ initialize() {
 	// higher PC scores and more alleles == more brown
 	// I linearly re-scale the PC scores into 
 	// a 0-1 interval, based on the min-max of the average PC1 score
-	// across genotype categories (Fig 2F) (rescale -6 to 4 into 0 to 1). 
+	// across genotype categories (rescale -6 to 4 into 0 to 1). 
 	if (exists("slimgui"))
 	{
 		defineGlobal("K", 2750);	// carrying capacity		

@@ -26,13 +26,17 @@ You will need the following software installed on your system:
 
 This repository is set up as an RStudio project. You can open it in RStudio by opening the `wtjr_sdm.Rproj` file. The project is organized into a few top-level folders:
 
-* `docs`- Folder for the documents created by knitting `.Rmd` files in the `src` folder. 
 * `processed_data`- Data that has been processed/curated and is ready for analysis. All these files are created from raw data files (in the `raw_data` folder) and analysis scripts found in `src/`.
 * `raw_data`- Raw data obtained for this project, without any processing. See the README file in that folder for more details on the data source for each item. **NB**- Many raw data files are included in this repository, but some raw data files are too large to be uploaded to Github. See the README file in the raw data folder for information on how to obtain those files, either from Dryad or from the original sources we used. 
 * `renv`- package/library management for this project. This folder is created/maintained by the `renv` package, users should not need to edit it. 
 * `results`- Analysis results, generated from raw data, processed data, and scripts. 
 * `sp_wtjr`- A folder containing an example snakemake profile for use on an HPC cluster using the SLURM job scheduler. 
 * `src`- Scripts and functions written for this project. Some scripts are in `.Rmd` files, which generate corresponding `.html` files in the `docs` folder upon knitting. 
+
+Other important files:
+
+* `Snakefile`- The main snakemake workflow for the SDM, phenotypic modelling, and evolutionary simulation analysis. 
+* `slim_simulations.smk`- A snakemake workflow (a sub-workflow of the main snakefile) used to run and compile the results of the evolutionary simulations performed in SLiM. 
 
 ### Data dependencies
 

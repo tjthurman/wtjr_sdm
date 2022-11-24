@@ -21,7 +21,6 @@ args = commandArgs(trailingOnly=TRUE)
 # 4 out directory
 # 5 seed
 
-
 # Load Data ---------------------------------------------------------------
 wtjr.occ.unique.gps <- read.csv(args[1], stringsAsFactors = F)
 
@@ -33,12 +32,3 @@ wtjr.occ.unique.gps %>%
        lat.col = "roundlat", long.col = "roundlon", 
        reps = as.numeric(args[3]), out.dir = args[4],
        out.base = paste0("wtjr_occ_", args[2], "km"), log.file = file.path(args[4], paste0("thin_log_", args[2], "km.txt")))
-
-
-
-
-
-
-
-
-

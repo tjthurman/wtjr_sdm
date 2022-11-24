@@ -11,8 +11,6 @@ library(tidyverse)
 library(readxl)
 library(raster)
 
-
-
 # Get arguments -----------------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
 # 1 input phenotype data
