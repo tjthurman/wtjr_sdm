@@ -4,9 +4,13 @@ Code and Data for
 
 ### About
 
-This Github repository contains the code, and some of the data, needed to recreate the species distribution modelling (SDM), phenotypic modelling, and evolutionary simulations from:
+This GitHUb repository contains code and some data, needed to recreate analyses from:
 
 XXX CITATION FOR PAPER HERE. 
+
+The top level of this repository contains code and data needed to recreate the species distribution modelling (SDM), phenotypic modelling, and evolutionary simulations. This repository also contains a folder, `genomics/`, containing code to run the additional genomic analyses performed on all 143 samples across the range. See the README within that folder for further information on those analyses. The remainder of this README focuses on the other analyses. 
+
+## SDM, phenotypic modelling, and simulations
 
 We have used a set of software tools to try to make this analysis pipeline as reproducible as possible. We used the Python program `Snakemake` to create a reproducible analysis pipeline. Most analyses are performed in `R`, and we used the `renv` package to manage libraries/packages for `R`. 
 

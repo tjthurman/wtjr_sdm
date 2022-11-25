@@ -1,0 +1,15 @@
+name: wtjr_process_reads
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - samtools
+  - multiqc
+  - bwa
+  - qualimap
+  - fastp
+  - snakemake
+  - bcftools
+  - picard
+  - gatk

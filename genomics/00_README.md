@@ -1,0 +1,21 @@
+This folder contains code and data needed to recreate genomic analyses from:
+
+XXX CITATION FOR PAPER HERE. 
+
+## Folder organization
+
+This folder is organized according to the analysis steps we performed:
+
+* `01_process_raw_reads/` - Code for processing raw read data this code must be run before all other analyses. See README within for more information on running the analysis and software environments. 
+
+
+## Data dependencies
+
+All raw sequencing data for these analyses are available from the NCBI short-read archive at under BioProject number PRJNA726805: https://www.ncbi.nlm.nih.gov/sra/PRJNA726805. To replicate our analyses, users may need to change filepaths in our code to be compatible with their file system. 
+
+
+## Software 
+
+We used snakemake to manage workflows for these analyses, and used `conda` and `renv` to manage software dependencies. For each analysis, we include a `conda` environment file describing the software dependencies needed. These analyses also require R (we used version 4.0.2). See top-level repository for more information on installing these software packages. 
+
+
