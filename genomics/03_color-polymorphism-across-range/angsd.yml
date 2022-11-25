@@ -1,0 +1,7 @@
+name: angsd
+channels:
+  - defaults
+dependencies:
+  - angsd=0.921
+  - snakemake-minimal
+  - parallel
