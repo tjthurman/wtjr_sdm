@@ -8,6 +8,8 @@ This folder is organized according to the analysis steps we performed:
 
 * `01_process_raw_reads/` - Code for processing raw read data this code must be run before all other analyses. See README within for more information on running the analysis and software environments. 
 
+* `02_genome-wide_PCA/`- Code for performing a genome-wide PCA and create the PCA plot presented in the supplemental material. See README within for more information on running the analysis and software environments. 
+
 
 ## Data dependencies
 
