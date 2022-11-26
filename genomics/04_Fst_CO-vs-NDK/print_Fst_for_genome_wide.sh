@@ -11,7 +11,7 @@
 
 # Run with Fst conda environment
 
-cd /home/tt164677e/tim_beegfs/wtjr_genomics/results/angsd_Fst/colorado_samples_bamlist_fixed_NDK_samples_bamlist/wtjr_COL-NDK_20221113/by_scaff_idx
+cd /home/tt164677e/tim_beegfs/wtjr_genomics/results/angsd_Fst/colorado_samples_bamlist_NDK_samples_bamlist/wtjr_COL-NDK_20221113/by_scaff_idx
 
 
 for file in *.fst.idx
