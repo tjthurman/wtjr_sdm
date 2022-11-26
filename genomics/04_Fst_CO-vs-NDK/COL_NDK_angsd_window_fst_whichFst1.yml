@@ -1,0 +1,46 @@
+###
+# Template config file for:
+# angsd_window_fst.smk
+# Calculates slinding-window Fst between two populations
+# Assumes populations have already had .saf files calculated with the 
+# the angsd_GL_genome_wide.smk pipeline
+###
+
+####################
+## Pipeline setup ##
+####################
+
+# Reference genome
+ref_genome: /mnt/beegfs/tt164677e/genomes/lepus_townsendii/DMNS18807_06042020_pseudohap2.1_10k.fasta
+
+
+# Bamlists giving the list of files that went into the
+# calculation of the GLs for the .saf index files for each population
+# Bamlist should give the absolute path to the bamfiles, from the root. 
+pop1_bamlist: /home/tt164677e/tim_beegfs/wtjr_genomics/data/bamlists/colorado_samples_bamlist_fixed.txt
+pop2_bamlist: /home/tt164677e/tim_beegfs/wtjr_genomics/data/bamlists/NDK_samples_bamlist.txt
+
+
+# Batch names
+# A short name to give for a given analysis batch.
+# the batch names for the populations should match the batch names used
+# for creating the .saf files
+# The batch name for the Fst file should be new and unique to the analysis set
+# by analysis set, I mean the set of previous analyses and filters
+# One could run this pipeline multiple tim
+pop1_batch_name: col_samples_20221112
+pop2_batch_name: ndk_samples_20220502
+fst_batch_name: wtjr_COL-NDK_20221113
+
+# Scaffold to use for prior of 2D SFS
+# Should be one with the most SNPs
+# Should be a character, so put in quotes if scaffold names are numeric
+scaffold_prior: "227"
+
+# Test or not
+# if True, will calculate Fsts for the 3 smallest scaffolds
+# as a test
+# if False, does all scaffolds
+# Must be True or False. 
+test: False
+

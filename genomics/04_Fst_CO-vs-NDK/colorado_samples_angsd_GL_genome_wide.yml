@@ -20,7 +20,7 @@ bamlist: /home/tt164677e/tim_beegfs/wtjr_genomics/data/bamlists/colorado_samples
 # A short name to give for a given analysis batch.
 # E.g., to be able to calculate GLs for the same bamlist
 # but with different filtering levels
-batch_name: col_samples_20220428
+batch_name: col_samples_20221112
 
 # Gather or not
 # Should the per-scaffold GL files be gathered into a single file?
@@ -50,8 +50,8 @@ only_proper_pairs: 1  # Only use reads where the mate could be mapped. Must be 1
 trim: 0 # Number of based to discard at both ends of the reads
 C: 50 # adjust mapQ for excessive mismatches. If you used BWA and didn't already adjust mapQ in samtools, do 50. Otherwise, 0. 
 baq: 1 # Recalculate Base Alignment quality. Must be 1 (to recalculate), or 0 (no recalculate). A little unclear how this interacts with the GATK indel Realigner. I tend to re-calculate. 
-minInd: 75 # Only use site if atleast minInd of samples has data. ~80%
-setMinDepth: 75 # Remove site if total depth (all individuals) is less than int. -1 for no filtering.
-setMaxDepth: 940 # Remove site if total depth (all individuals) is greater than int. -1 for no filtering.
+minInd: 76 # Only use site if atleast minInd of samples has data. ~80%
+setMinDepth: 76 # Remove site if total depth (all individuals) is less than int. -1 for no filtering.
+setMaxDepth: 950 # Remove site if total depth (all individuals) is greater than int. -1 for no filtering.
 setMinDepthInd: -1 # Remove individual from analysis at a given site if individual depth is less than int. -1 for no filtering.
 setMaxDepthInd: 50 # Remove individual from analysis at a given site if individual depth is greater than int. -1 for no filtering.

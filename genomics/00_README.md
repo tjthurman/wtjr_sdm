@@ -12,6 +12,8 @@ This folder is organized according to the analysis steps we performed:
 
 * `03_color-polymoprhism-across-range/`- Code for estimating allele frequencies of the top color-associated SNPs inside and outside Colorado and generating the piechart presented in the supplemental material. See README within for more information on running the analysis and software environments. 
 
+* `04_Fst_CO-vs-NDK/` - Code for estimating genome-wide Fst between white-tailed jackrabbit samples from Colorado and North Dakota. See README within for more information on running the analysis and software environments. 
+
 
 ## Data dependencies
 

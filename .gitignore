@@ -43,6 +43,7 @@ results/sdm/sdm_rangemap_best_*.gr*
 results/pheno/current_predicted_probWhite*.tif
 results/slim_summaries/*_early.csv
 results/slim_summaries/*_late.csv
+genomics/results/angsd_Fst/
 
 # Individual Slim model results
 # too many files to track 
@@ -58,3 +59,5 @@ figure_4*
 not_for_publication/
 results/figures/tmp/
 docs/*
+
+genomics/results/angsd_Fst/
