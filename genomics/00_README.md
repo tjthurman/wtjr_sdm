@@ -14,6 +14,8 @@ This folder is organized according to the analysis steps we performed:
 
 * `04_Fst_CO-vs-NDK/` - Code for estimating genome-wide Fst between white-tailed jackrabbit samples from Colorado and North Dakota. See README within for more information on running the analysis and software environments. 
 
+* `05_dosage-environment-correlation/`- Code for estimating the correlation between dosage of white-associated allele and environmental variables across the range. See README within for more information on running the analysis and required software. 
+
 
 ## Data dependencies
 

@@ -3,7 +3,7 @@ library(tidyverse)
 
 # Get samples sequenced ---------------------------------------------------
 # Import from the bamlist
-seqed_samples <- read_delim(file = "data/all_wtjr_sample_bamlist.txt", delim = "\t", col_names = "bam_file") %>% 
+seqed_samples <- read_delim(file = "genomics/bamlists/all_samples_bamlist.txt", delim = "\t", col_names = "bam_file") %>% 
   mutate(sample = basename(bam_file)) %>% 
   mutate(sample = str_remove(sample, ".realigned.sorted.bam")) %>% 
   mutate(sample = str_remove(sample, "_realigned_sorted.bam"))
@@ -15,7 +15,7 @@ samples <- seqed_samples %>%
 
 # Import beagle GLs -------------------------------------------------------
 # Also gives us allele identity
-# A function to convert the numric allel identites from angsd to characters
+# A function to convert the numeric allele identites from angsd to characters
 angsd_allele_ids <- function(numeric) {
   switch (numeric,
     "0" = {out <- "A"},
@@ -27,11 +27,9 @@ angsd_allele_ids <- function(numeric) {
   out
 }
 angsd_allele_ids <- Vectorize(angsd_allele_ids)
-angsd_allele_ids("0")
 
-  
 # Import each
-asip_GLs <- read_delim("results/angsd/beagle_GL_scaffold/all_wtjr_samples/asip_site_GLs.beagle", delim = "\t", 
+asip_GLs <- read_delim("genomics/results/angsd/beagle_GL_scaffold/filter_95ind_10X/asip_site_GLs.beagle", delim = "\t", 
            col_names = c("location", 
                          "major_allele",
                          "minor_allele",
@@ -41,7 +39,7 @@ asip_GLs <- read_delim("results/angsd/beagle_GL_scaffold/all_wtjr_samples/asip_s
   mutate(minor_allele = angsd_allele_ids(as.character(minor_allele)))
 
 
-corin_GLs <- read_delim("results/angsd/beagle_GL_scaffold/all_wtjr_samples/corin_site_GLs.beagle", delim = "\t", 
+corin_GLs <- read_delim("genomics/results/angsd/beagle_GL_scaffold/filter_95ind_10X/corin_site_GLs.beagle", delim = "\t", 
                        col_names = c("location", 
                                      "major_allele",
                                      "minor_allele",
@@ -50,7 +48,7 @@ corin_GLs <- read_delim("results/angsd/beagle_GL_scaffold/all_wtjr_samples/corin
   mutate(major_allele = angsd_allele_ids(as.character(major_allele))) %>% 
   mutate(minor_allele = angsd_allele_ids(as.character(minor_allele))) 
 
-ednrb_GLs <- read_delim("results/angsd/beagle_GL_scaffold/all_wtjr_samples/ednrb_site_GLs.beagle", delim = "\t", 
+ednrb_GLs <- read_delim("genomics/results/angsd/beagle_GL_scaffold/filter_95ind_10X/ednrb_site_GLs.beagle", delim = "\t", 
                        col_names = c("location", 
                                      "major_allele",
                                      "minor_allele",
@@ -59,7 +57,7 @@ ednrb_GLs <- read_delim("results/angsd/beagle_GL_scaffold/all_wtjr_samples/ednrb
   mutate(major_allele = angsd_allele_ids(as.character(major_allele))) %>% 
   mutate(minor_allele = angsd_allele_ids(as.character(minor_allele))) 
 
-scaff380_GLs <- read_delim("results/angsd/beagle_GL_scaffold/all_wtjr_samples/scaff380_site_GLs.beagle", delim = "\t", 
+scaff380_GLs <- read_delim("genomics/results/angsd/beagle_GL_scaffold/filter_95ind_10X/scaff380_site_GLs.beagle", delim = "\t", 
                            col_names = c("location", 
                                          "major_allele",
                                          "minor_allele",
@@ -68,64 +66,10 @@ scaff380_GLs <- read_delim("results/angsd/beagle_GL_scaffold/all_wtjr_samples/sc
   mutate(major_allele = angsd_allele_ids(as.character(major_allele))) %>% 
   mutate(minor_allele = angsd_allele_ids(as.character(minor_allele))) 
 
-
-
-# Figure out which site is most imformative -------------------------------
-# Might be interesting to try to think of this in terms of bits,
-# just out of interest.
-# Then, could take the site with the most bits. 
-
-# Perhaps too much to worry about for now. but if I can figure out an easy way, maybe. 
-asip_GLs %>% 
-  dplyr::select(-(scaffold:minor_allele)) %>% 
-  pivot_longer(-location, names_to =  "sample") %>% 
-  mutate(sample = str_remove(sample, "_[[Mm]]+")) %>% 
-  mutate(dist = (value - (1/3))^2) %>% 
-  group_by(location, sample) %>% 
-  summarize(qc_score = sqrt(sum(dist))/0.8164966) %>% 
-  ungroup() %>% 
-  write_csv("results/angsd/asip_GL_qc_scores.csv")
-
-
-corin_GLs %>% 
-  dplyr::select(-(scaffold:minor_allele)) %>% 
-  pivot_longer(-location, names_to =  "sample") %>% 
-  mutate(sample = str_remove(sample, "_[[Mm]]+")) %>% 
-  mutate(dist = (value - (1/3))^2) %>% 
-  group_by(location, sample) %>% 
-  summarize(qc_score = sqrt(sum(dist))/0.8164966) %>% 
-  ungroup() %>% 
-  write_csv("results/angsd/corin_GL_qc_scores.csv")
-
-ednrb_GLs %>% 
-  dplyr::select(-(scaffold:minor_allele)) %>% 
-  pivot_longer(-location, names_to =  "sample") %>% 
-  mutate(sample = str_remove(sample, "_[[Mm]]+")) %>% 
-  mutate(dist = (value - (1/3))^2) %>% 
-  group_by(location, sample) %>% 
-  summarize(qc_score = sqrt(sum(dist))/0.8164966) %>% 
-  ungroup() %>% 
-  write_csv("results/angsd/ednrb_GL_qc_scores.csv")
-
-scaff380_GLs %>% 
-  dplyr::select(-(scaffold:minor_allele)) %>% 
-  pivot_longer(-location, names_to =  "sample") %>% 
-  mutate(sample = str_remove(sample, "_[[Mm]]+")) %>% 
-  mutate(dist = (value - (1/3))^2) %>% 
-  group_by(location, sample) %>% 
-  summarize(qc_score = sqrt(sum(dist))/0.8164966) %>% 
-  ungroup() %>% 
-  write_csv("results/angsd/scaff380_GL_qc_scores.csv")
-  
-
-
-
 # Import Massarray info on allele identity --------------------------------
 # Massarry is based on orycun coords,
 # which are the reverse complement of WTJR
 # So, need to complement them here
-
-
 complement <- function(dnachar) {
   switch(dnachar,
          "A" = out <- "T",
@@ -138,14 +82,14 @@ complement <- function(dnachar) {
 }
 complement <- Vectorize(complement)
 
-allele_ids <- read_csv("data/white_brown_allele_ids.csv") %>% 
+allele_ids <- read_csv("genomics/03_color-polymorphism-across-range/white_brown_allele_ids.csv") %>% 
   filter(!is.na(gene)) %>% 
   mutate(white_allele = complement(white_allele)) %>% 
   mutate(brown_allele = complement(brown_allele))
 
 
 # Import info on translating between coord systems ------------------------
-translate_coords <- read_csv("data/color_allele_coord_translation.csv", col_types = "cc") %>% 
+translate_coords <- read_csv("genomics/03_color-polymorphism-across-range/color_allele_coord_translation.csv", col_types = "cc") %>% 
   separate(orycun_location, into = c("scaffold_orycun", "position_orycun"), remove = T, convert = T) %>% 
   separate(wtjr_location, into = c("scaffold", "position"), remove = T, convert = T)
 
@@ -217,57 +161,53 @@ ednrb_colors <- ednrb_GLs %>%
   select(-value) 
 
 
-# With scaffold 380, don't have any preset colors. Need to figure this out. 
-# First, will read in the QC scores and subset to only sites/individuals with good enough QC scores to try to 
+# With scaffold 380, don't have MASSarray data. Figure out color alleles by looking
+# at dosages of individuals with known phenotype. 
+# First, will subset to only sites/individuals with good enough QC scores to try to 
 # figure out which allele is brown and which is white. 
-scaff380_qc <- read_csv("results/angsd/scaff380_GL_qc_scores.csv")
+scaff380_qc <- scaff380_GLs %>% 
+    dplyr::select(-(scaffold:minor_allele)) %>%
+    pivot_longer(-location, names_to =  "sample") %>%
+    mutate(sample = str_remove(sample, "_[[Mm]]+")) %>%
+    mutate(dist = (value - (1/3))^2) %>%
+    group_by(location, sample) %>%
+    summarize(qc_score = sqrt(sum(dist))/0.8164966) %>%
+    ungroup()
 # Then, pull in the color info for each sample from table S3
-sample_colors <- read_csv("data/sample_colors.csv") %>% 
+sample_colors <- read_csv("genomics/05_dosage-environment-correlation/sample_colors.csv") %>% 
   mutate(sample = str_replace(sample, "_", "-"))
-x <- scaff380_GLs %>% 
-  pivot_longer(AMNH_123864_MM:last_col()) %>% 
-  mutate(sample = str_remove(name, "_[[Mm]]+")) %>% 
-  mutate(genotype = str_extract(name, "_[[Mm]]+")) %>% 
-  left_join(scaff380_qc) %>% 
-  filter(qc_score > 0.6) %>% 
-  left_join(sample_colors) %>% 
-  filter(!is.na(color)) %>% 
-  group_by(location, scaffold, position, major_allele, minor_allele, genotype, color) %>% 
-  summarize(mean_gl = mean(value, na.rm = T))
 
-
-scaff380_dosages <- read_csv("results/pcangsd/all_wtjr_samples/scaff380_dosages.csv", col_names = c("location", samples)) %>% 
+scaff380_dosages <- read_csv("genomics/results/pcangsd/95ind_10X_filter/scaff380_dosages.csv", col_names = c("location", samples)) %>% 
   separate(location, into = c("scaffold", "position"), remove = F, convert = T) 
 
 
 z <- scaff380_dosages %>% 
-  pivot_longer(AMNH_123864:last_col(), names_to = "sample", values_to = "dosage") %>% 
+  pivot_longer(`AMNH-123030`:last_col(), names_to = "sample", values_to = "dosage") %>% 
   left_join(sample_colors) %>% 
   filter(!is.na(color)) %>% 
   group_by(location, scaffold, position, color) %>% 
   summarize(mean_dosage = mean(dosage))
-
-
+# Higher dosage == more brown. Dosages are for the brown allele. 
 
 
 # Import Genotype dosages -------------------------------------------------
-asip_dosages <- read_csv("results/pcangsd/all_wtjr_samples/asip_dosages.csv", col_names = c("location", samples)) %>% 
+asip_dosages <- read_csv("genomics/results/pcangsd/95ind_10X_filter/asip_dosages.csv", col_names = c("location", samples)) %>% 
   separate(location, into = c("scaffold", "position"), remove = F, convert = T) %>% 
   left_join(asip_colors) %>% 
   relocate(minor_color:major_color, .after = position)
 
-corin_dosages <- read_csv("results/pcangsd/all_wtjr_samples/corin_dosages.csv", col_names = c("location", samples)) %>% 
+corin_dosages <- read_csv("genomics/results/pcangsd/95ind_10X_filter/corin_dosages.csv", col_names = c("location", samples)) %>% 
   separate(location, into = c("scaffold", "position"), remove = F, convert = T) %>% 
   left_join(corin_colors) %>% 
   relocate(minor_color:major_color, .after = position)
 
-ednrb_dosages <- read_csv("results/pcangsd/all_wtjr_samples/ednrb_dosages.csv", col_names = c("location", samples)) %>% 
+ednrb_dosages <- read_csv("genomics/results/pcangsd/95ind_10X_filter/ednrb_dosages.csv", col_names = c("location", samples)) %>% 
   separate(location, into = c("scaffold", "position"), remove = F, convert = T) %>% 
   left_join(ednrb_colors) %>% 
   relocate(minor_color:major_color, .after = position)
 
 
-# Get all dosages in terms of white
+# Get all dosages in terms of white allele
 dosages_white <- function(dosage_row) {
   if (dosage_row["minor_color"] == "white") { # if minor is already white
     return(dosage_row) # don't do anything
@@ -289,26 +229,22 @@ corin_white_dosage <- as_tibble(t(apply(X= corin_dosages, MARGIN = 1, FUN = dosa
 ednrb_white_dosage <- as_tibble(t(apply(X= ednrb_dosages, MARGIN = 1, FUN = dosages_white)))
 
 scaff380_white_dosage <- scaff380_dosages %>% 
-  pivot_longer(AMNH_123864:last_col()) %>% 
+  pivot_longer(`AMNH-123030`:last_col()) %>% 
   mutate(value = 2 - value) %>% 
   pivot_wider()
 
 # Save them all
 asip_white_dosage %>% 
   select(-minor_color, -major_color) %>% 
-  write_csv("results/pcangsd/asip_dosages_white.csv", col_names = T)
+  write_csv("genomics/results/pcangsd/95ind_10X_filter/asip_dosages_white.csv", col_names = T)
 
 corin_white_dosage %>% 
   select(-minor_color, -major_color) %>% 
-  write_csv("results/pcangsd/corin_dosages_white.csv", col_names = T)
+  write_csv("genomics/results/pcangsd/95ind_10X_filter/corin_dosages_white.csv", col_names = T)
 
 ednrb_white_dosage %>% 
   select(-minor_color, -major_color) %>% 
-  write_csv("results/pcangsd/ednrb_dosages_white.csv", col_names = T)
+  write_csv("genomics/results/pcangsd/95ind_10X_filter/ednrb_dosages_white.csv", col_names = T)
 
 scaff380_white_dosage %>% 
-  write_csv("results/pcangsd/scaff380_dosages_white.csv", col_names = T)
-
-
-# After working by hand, seems like scaff380's minor alleles are all for the brown allele, so will just do 2- dosage to save
-
+  write_csv("genomics/results/pcangsd/95ind_10X_filter/scaff380_dosages_white.csv", col_names = T)
