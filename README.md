@@ -2,6 +2,8 @@ Code and Data for
 
 ## The evolution of white-tailed jackrabbit camouflage in response to past and future seasonal climates
 
+<a href="https://zenodo.org/badge/latestdoi/292969677"><img src="https://zenodo.org/badge/292969677.svg" alt="DOI"></a>
+
 ### About
 
 This GitHUb repository contains code and some data, needed to recreate analyses from:
