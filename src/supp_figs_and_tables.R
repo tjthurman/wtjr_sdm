@@ -674,7 +674,8 @@ arch_plot <- rbind(for_arch_plot, recessive_consK_1locus_late) %>%
   geom_line(aes(color = mismatch_penalty, group = ID)) +
   facet_rep_grid(dominance + loci ~ p_i, labeller = labeller(.rows = label_both, .cols = label_both), scales = "fixed") +
   theme_cowplot() +
-  ylab("Percent of population ceiling, K") +
+  ylab("Proportion of population ceiling, K") +
+  xlab("Generation") +
   ylim(c(0,1.04)) +
   ggtitle("Effect of genetic architecture on evolutionary rescue") +
   theme(axis.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
@@ -711,7 +712,8 @@ varyK_plot <- additive_varyK_2locus_late %>%
   geom_line(aes(color = mismatch_penalty, group = ID)) +
   facet_rep_grid(K_change + init_dec ~ p_i, labeller = labeller(.rows = label_both, .cols = label_both), scales = "fixed") +
   theme_cowplot() +
-  ylab("Percent of population ceiling, K") +
+  ylab("roportion of population ceiling, K") +
+  xlab("Generation") +
   ylim(c(0,1.04)) +
   ggtitle("Effect of population cycling on evolutionary rescue") +
   theme(axis.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
@@ -758,7 +760,8 @@ robust <- additive_consK_2locus_late %>%
   geom_line(aes(color = mismatch_penalty, group = ID)) +
   facet_rep_grid(init_ednrb + lambda ~ init_corin, labeller = labeller(.rows = label_both, .cols = label_both), scales = "fixed") +
   theme_cowplot() +
-  ylab("Percent of population ceiling, K") +
+  ylab("Proportion of population ceiling, K") +
+  xlab("Generation") +
   ylim(c(0,1.04)) +
   ggtitle("Effect of initial allele frequencies and reproductive output on evolutionary rescue") +
   theme(axis.text = element_text(size = 5, margin = margin(0,0,0,0, "mm")),
