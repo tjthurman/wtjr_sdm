@@ -12,6 +12,7 @@ library(rnaturalearthhires)
 library(raster)
 library(ggsn)
 library(geosphere)
+library(ggrastr)
 
 # Get arguments -----------------------------------------------------------
 args = commandArgs(trailingOnly=TRUE)
@@ -59,7 +60,7 @@ names(pred.pheno.df) <- c("probWhite", "Long", "Lat", "probBrown")
 
 us <- ggplot() +
   geom_sf(data = state_prov, color = "grey61", fill = rgb(133,141,147, maxColorValue = 255), size = 0.25) +
-  geom_tile(data = pred.pheno.df, aes(fill = probBrown, color = probBrown, x = Long, y = Lat)) +
+  ggrastr::rasterise(geom_tile(data = pred.pheno.df, aes(fill = probBrown, color = probBrown, x = Long, y = Lat)), dpi = 400) +
   geom_sf(data = state_prov, color = "grey61", fill = NA, size = 0.25) +
   geom_sf(data = countries, color = "grey10", fill = NA, size = 0.25) +
   geom_sf(data= coast, color = "grey10", fill = NA, size = 0.25) +
@@ -159,7 +160,7 @@ colorado <- ggplot() +
     ylim = c(37, 41.02),
     clip = "on", 
     expand = F) +
-  geom_tile(data = pred.pheno.df, aes(fill = probBrown, color = probBrown)) +
+  rasterize(geom_tile(data = pred.pheno.df, aes(fill = probBrown, color = probBrown)), dpi = 400) +
   scale_fill_gradientn(colors = pal(100), guide = F) +
   scale_color_gradientn(colors = pal(100), guide = F) +
   geom_point(data  = cluster_plots, aes(size = samples), color = "black", fill = "#F4742A", shape = 21, stroke = 0.25) +

@@ -14,6 +14,7 @@ library(ggsn)
 library(cowplot)
 library(lemon)
 library(ggtext)
+library(ggrastr)
 
 
 # Get arguments -----------------------------------------------------------
@@ -74,7 +75,7 @@ names(change.df) <- c("change_probBrown", "Long", "Lat")
 
 us <- ggplot() +
   geom_sf(data = state_prov, color = "grey61", fill = rgb(133,141,147, maxColorValue = 255), size = 0.25) +
-  geom_tile(data = change.df, aes(fill = change_probBrown, color = change_probBrown, x = Long, y = Lat)) +
+  ggrastr::rasterise(geom_tile(data = change.df, aes(fill = change_probBrown, color = change_probBrown, x = Long, y = Lat)), dpi = 400)  +
   geom_sf(data = state_prov, color = "grey61", fill = NA, size = 0.25) +
   geom_sf(data = countries, color = "grey10", fill = NA, size = 0.25) +
   geom_sf(data= coast, color = "grey10", fill = NA, size = 0.25) +
@@ -114,7 +115,7 @@ us <- ggplot() +
            st.size = 5/.pt, border.size = 0.25, st.dist = 0.0325) 
 
 
-ggsave(us, filename = map_out_png, width = 54.5, height = 34, units = "mm", dpi = 300)
+ggsave(us, filename = map_out_png, width = 54.5, height = 34, units = "mm", dpi = 400)
 ggsave(us, filename = map_out_pdf, width = 54.5, height = 34, units = "mm")
 
 # Insert --------------------------------------------------------
