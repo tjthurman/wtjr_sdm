@@ -712,7 +712,7 @@ varyK_plot <- additive_varyK_2locus_late %>%
   geom_line(aes(color = mismatch_penalty, group = ID)) +
   facet_rep_grid(K_change + init_dec ~ p_i, labeller = labeller(.rows = label_both, .cols = label_both), scales = "fixed") +
   theme_cowplot() +
-  ylab("roportion of population ceiling, K") +
+  ylab("Proportion of population ceiling, K") +
   xlab("Generation") +
   ylim(c(0,1.04)) +
   ggtitle("Effect of population cycling on evolutionary rescue") +
@@ -729,7 +729,7 @@ varyK_plot <- additive_varyK_2locus_late %>%
 # Combo plot of these two effects -----------------------------------------
 combo <- cowplot::plot_grid(arch_plot, varyK_plot,
                             nrow = 2, ncol = 1,
-                            labels = c("a", "b"), 
+                            labels = c("A", "B"), 
                             label_fontfamily = "sans", 
                             label_fontface = "bold", 
                             label_size = 8,
@@ -737,7 +737,7 @@ combo <- cowplot::plot_grid(arch_plot, varyK_plot,
 
 
 ggsave(plot = combo, filename = arch_varyK_fig_pdf, width = 183, height  = 208, units = "mm")
-ggsave(plot = combo, filename = arch_varyK_fig_jpeg, width = 183, height  = 208, units = "mm", dpi = 300)
+ggsave(plot = combo, filename = arch_varyK_fig_jpeg, width = 183, height  = 208, units = "mm", dpi = 400)
 
 
 
@@ -775,5 +775,5 @@ robust <- additive_consK_2locus_late %>%
         legend.key.size = unit(3, "mm"))
 
 ggsave(plot = robust, filename = robust_fig_pdf, width = 183, height  = 225, units = "mm")
-ggsave(plot = robust, filename = robust_fig_jpeg, width = 183, height  = 225, units = "mm", dpi = 300)
+ggsave(plot = robust, filename = robust_fig_jpeg, width = 183, height  = 225, units = "mm", dpi = 400)
 
